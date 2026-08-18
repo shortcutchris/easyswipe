@@ -9,7 +9,7 @@ final class WindowFrameApplierTests: XCTestCase {
         let requested = CGRect(x: 1200, y: 24, width: 800, height: 1076)
         let accessibility = AccessibilitySpy(
             enhancedUI: true,
-            observedFrames: [requested]
+            observedFrames: [CGRect(x: 100, y: 100, width: 600, height: 600), requested]
         )
         let applier = AccessibilityWindowFrameApplier(accessibility: accessibility)
 
@@ -20,6 +20,7 @@ final class WindowFrameApplierTests: XCTestCase {
             accessibility.operations,
             [
                 .setEnhancedUI(false),
+                .readFrame,
                 .setSize(requested.size),
                 .setPosition(requested.origin),
                 .setSize(requested.size),
@@ -34,7 +35,7 @@ final class WindowFrameApplierTests: XCTestCase {
         let partial = CGRect(x: 0, y: 250, width: 800, height: 850)
         let accessibility = AccessibilitySpy(
             enhancedUI: false,
-            observedFrames: [partial, requested]
+            observedFrames: [CGRect(x: 100, y: 100, width: 600, height: 600), partial, requested]
         )
         let applier = AccessibilityWindowFrameApplier(accessibility: accessibility)
 
@@ -50,20 +51,34 @@ final class WindowFrameApplierTests: XCTestCase {
                 .setSize(requested.size),
             ])
         XCTAssertEqual(accessibility.operations.filter(\.isPosition).count, 2)
-        XCTAssertEqual(accessibility.operations.filter(\.isFrameRead).count, 2)
+        XCTAssertEqual(accessibility.operations.filter(\.isFrameRead).count, 3)
     }
 
-    func testRejectsPartialResultAfterBoundedRetries() {
+    func testAcceptsAppConstrainedResultAfterBoundedRetries() {
         let requested = CGRect(x: 0, y: 24, width: 800, height: 1076)
+        let initial = CGRect(x: 100, y: 100, width: 600, height: 600)
         let partial = CGRect(x: 0, y: 250, width: 800, height: 850)
         let accessibility = AccessibilitySpy(
             enhancedUI: false,
-            observedFrames: [partial, partial]
+            observedFrames: [initial, partial, partial]
+        )
+        let applier = AccessibilityWindowFrameApplier(accessibility: accessibility)
+
+        XCTAssertEqual(applier.apply(requested, to: makeTarget()), partial)
+        XCTAssertEqual(accessibility.operations.filter(\.isFrameRead).count, 3)
+    }
+
+    func testRejectsConstrainedResultWhenWindowDidNotChange() {
+        let requested = CGRect(x: 0, y: 24, width: 800, height: 1076)
+        let initial = CGRect(x: 100, y: 100, width: 600, height: 600)
+        let accessibility = AccessibilitySpy(
+            enhancedUI: false,
+            observedFrames: [initial, initial, initial]
         )
         let applier = AccessibilityWindowFrameApplier(accessibility: accessibility)
 
         XCTAssertNil(applier.apply(requested, to: makeTarget()))
-        XCTAssertEqual(accessibility.operations.filter(\.isFrameRead).count, 2)
+        XCTAssertEqual(accessibility.operations.filter(\.isFrameRead).count, 3)
     }
 
     func testAcceptsOnePointAccessibilityRounding() {
@@ -71,12 +86,12 @@ final class WindowFrameApplierTests: XCTestCase {
         let rounded = CGRect(x: 101, y: 25, width: 800, height: 1075)
         let accessibility = AccessibilitySpy(
             enhancedUI: false,
-            observedFrames: [rounded]
+            observedFrames: [CGRect(x: 100, y: 100, width: 600, height: 600), rounded]
         )
         let applier = AccessibilityWindowFrameApplier(accessibility: accessibility)
 
         XCTAssertEqual(applier.apply(requested, to: makeTarget()), rounded)
-        XCTAssertEqual(accessibility.operations.filter(\.isFrameRead).count, 1)
+        XCTAssertEqual(accessibility.operations.filter(\.isFrameRead).count, 2)
     }
 
     private func makeTarget() -> AXWindowTarget {

@@ -31,6 +31,16 @@ enum AXBridge {
         return (value as? NSNumber)?.boolValue
     }
 
+    static func actionNames(_ element: AXUIElement) -> Set<String> {
+        var names: CFArray?
+        guard AXUIElementCopyActionNames(element, &names) == .success,
+            let names = names as? [String]
+        else {
+            return []
+        }
+        return Set(names)
+    }
+
     static func point(_ element: AXUIElement, attribute: CFString) -> CGPoint? {
         guard let value = value(element, attribute: attribute),
             CFGetTypeID(value) == AXValueGetTypeID()

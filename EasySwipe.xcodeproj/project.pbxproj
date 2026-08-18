@@ -494,7 +494,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Config/EasySwipe.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				EASYSWIPE_FEED_URL = "https://raw.githubusercontent.com/shortcutchris/easyswipe-releases/main/appcast.xml";
 				EASYSWIPE_SPARKLE_PUBLIC_KEY = "a5+ZLh811liNfhGI69w0MTTkEr1OfVJOGer3M8FhMGA=";
 				ENABLE_APP_SANDBOX = NO;
@@ -504,7 +504,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.shortcutchris.EasySwipe;
 				PRODUCT_MODULE_NAME = EasySwipe;
 				PRODUCT_NAME = EasySwipe;
@@ -518,7 +518,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Config/EasySwipe.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				EASYSWIPE_FEED_URL = "https://raw.githubusercontent.com/shortcutchris/easyswipe-releases/main/appcast.xml";
 				EASYSWIPE_SPARKLE_PUBLIC_KEY = "a5+ZLh811liNfhGI69w0MTTkEr1OfVJOGer3M8FhMGA=";
 				ENABLE_APP_SANDBOX = NO;
@@ -528,7 +528,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.shortcutchris.EasySwipe;
 				PRODUCT_MODULE_NAME = EasySwipe;
 				PRODUCT_NAME = EasySwipe;

@@ -119,11 +119,13 @@ Priorität der Erkennung:
 
 1. Semantische Accessibility-Informationen für Titelbar oder Fensterrahmen verwenden.
 2. Falls eine App keine ausreichenden semantischen Daten liefert, eine konservative obere Rahmenzone als Fallback verwenden.
-3. Interaktive Accessibility-Rollen wie Button, Textfeld, Suchfeld, Tab, Slider oder Scrollbereich ausschließen.
+3. Direkte Steuerelemente wie Buttons, Textfelder, Suchfelder, Tabs, Slider, Zeilen und Scrollbars ausschließen.
+4. Bei benutzerdefinierten Rollen zusätzlich aktivierende Accessibility-Aktionen wie `AXPress`, `AXConfirm` oder `AXPick` berücksichtigen. `AXShowMenu` allein gilt nicht als Aktivierung, weil Web-Container diese Aktion häufig nur für ihr Kontextmenü anbieten.
+5. Reine Container wie Toolbar, Scrollbereich, Tabgruppe oder Webbereich bis zum umgebenden Fenster durchlaufen.
 
 Die Fallback-Zone darf nicht dazu führen, dass horizontales Scrollen in Safari-Tabs, Browser-Tabstrips oder anderen interaktiven Toolbars Fensterbewegungen auslöst.
 
-Warp verwendet auf macOS eine eigene Titelleisten- und Tab-Oberfläche mit tief verschachtelten Accessibility-Containern. Für Bundle-IDs unter `dev.warp.Warp…` dürfen deshalb Containerrollen wie `AXToolbar`, `AXScrollArea`, `AXTabGroup` und eine fensterweite `AXTextArea` innerhalb der oberen 64 Punkte als Titelbarregion gelten. Darin enthaltene Buttons, Tabs und Textfelder bleiben ausgeschlossen. Für andere Apps bleibt die strengere Standardregel unverändert.
+Electron-, Chromium-, Catalyst-, SwiftUI- und andere benutzerdefinierte Oberflächen verwenden häufig tief verschachtelte Container als Accessibility-Oberfläche ihrer Titelleiste. Diese Container dürfen den Weg zum umgebenden Fenster nicht blockieren; darin enthaltene echte Steuerelemente bleiben ausgeschlossen. Warp verwendet zusätzlich eine fensterweite `AXTextArea` und eine 64 Punkte hohe eigene Titelleistenoberfläche, die über sein Kompatibilitätsprofil zugelassen wird.
 
 ### 6.3 Nicht unterstützte Fenster
 
@@ -134,7 +136,7 @@ Folgende Fenster werden im MVP ohne Aktion und ohne HUD ignoriert:
 - Fenster ohne setzbare Positions- oder Größenattribute bei Links/Rechts,
 - Fenster ohne setzbare Positions- oder Größenattribute bei Swipe nach oben,
 - Fenster ohne setzbares Minimierungsattribut bei Swipe nach unten,
-- Popovers, Menüs, Tooltips und temporäre Panels,
+- Sheets, Popovers, Menüs, Tooltips, Systemdialoge und rahmenlose temporäre Panels,
 - Fenster, die während der Geste geschlossen oder ungültig werden,
 - eigene EasySwipe-Fenster und HUDs.
 

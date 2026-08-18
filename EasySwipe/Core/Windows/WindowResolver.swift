@@ -17,23 +17,92 @@ struct WindowCompatibilityProfile: Equatable, Sendable {
         allowedTopRegionRoles =
             isWarp
             ? [
-                "AXBrowser",
-                "AXList",
-                "AXOutline",
-                kAXScrollAreaRole as String,
-                kAXTabGroupRole as String,
-                "AXTable",
                 kAXTextAreaRole as String,
-                "AXToolbar",
             ]
             : []
         minimumTitlebarHeight = isWarp ? 64 : 38
-        maximumAncestorDepth = isWarp ? 40 : 20
+        maximumAncestorDepth = 48
     }
+}
 
-    func rejects(role: String, interactiveRoles: Set<String>) -> Bool {
-        guard interactiveRoles.contains(role) else { return false }
-        return !allowedTopRegionRoles.contains(role)
+struct WindowHitRegionPolicy: Sendable {
+    private let blockingRoles: Set<String> = [
+        kAXButtonRole as String,
+        kAXCheckBoxRole as String,
+        kAXColorWellRole as String,
+        kAXComboBoxRole as String,
+        kAXDateFieldRole as String,
+        kAXDockItemRole as String,
+        kAXDrawerRole as String,
+        kAXGrowAreaRole as String,
+        kAXHelpTagRole as String,
+        kAXIncrementorRole as String,
+        kAXMenuBarItemRole as String,
+        kAXMenuBarRole as String,
+        kAXMenuButtonRole as String,
+        kAXMenuItemRole as String,
+        kAXMenuRole as String,
+        kAXPopUpButtonRole as String,
+        kAXRadioButtonRole as String,
+        kAXRowRole as String,
+        kAXScrollBarRole as String,
+        kAXSheetRole as String,
+        kAXSliderRole as String,
+        kAXSplitterRole as String,
+        kAXTextAreaRole as String,
+        kAXTextFieldRole as String,
+        kAXTimeFieldRole as String,
+        "AXCell",
+        "AXColumn",
+        "AXDisclosureTriangle",
+        "AXLink",
+        "AXPopover",
+        "AXTab",
+        "AXTooltip",
+    ]
+
+    private let blockingActions: Set<String> = [
+        kAXCancelAction as String,
+        kAXConfirmAction as String,
+        kAXDecrementAction as String,
+        kAXIncrementAction as String,
+        kAXPickAction as String,
+        kAXPressAction as String,
+        kAXShowAlternateUIAction as String,
+        kAXShowDefaultUIAction as String,
+    ]
+
+    func rejects(
+        role: String?,
+        actionNames: Set<String>,
+        compatibility: WindowCompatibilityProfile
+    ) -> Bool {
+        if let role, compatibility.allowedTopRegionRoles.contains(role) {
+            return false
+        }
+        if let role, blockingRoles.contains(role) {
+            return true
+        }
+        return !blockingActions.isDisjoint(with: actionNames)
+    }
+}
+
+struct WindowEligibilityPolicy: Sendable {
+    func accepts(subrole: String?, isModal: Bool, hasTitlebarEvidence: Bool) -> Bool {
+        guard !isModal else { return false }
+
+        switch subrole {
+        case kAXStandardWindowSubrole:
+            return true
+        case kAXSystemDialogSubrole, kAXSystemFloatingWindowSubrole:
+            return false
+        default:
+            // Dialogs, utility windows, and third-party windows with missing or
+            // custom subroles remain eligible only when they expose a native
+            // title or at least one standard titlebar control. This excludes
+            // borderless overlays while preserving legitimate secondary windows.
+            return hasTitlebarEvidence
+        }
     }
 }
 
@@ -42,29 +111,8 @@ final class WindowResolver: WindowResolving {
     private let systemWideElement = AXUIElementCreateSystemWide()
     private let geometry: ScreenGeometryService
     private let ownProcessIdentifier: pid_t
-
-    private let interactiveRoles: Set<String> = [
-        kAXButtonRole as String,
-        kAXCheckBoxRole as String,
-        kAXComboBoxRole as String,
-        "AXBrowser",
-        "AXDisclosureTriangle",
-        "AXIncrementor",
-        "AXLink",
-        "AXList",
-        "AXMenuButton",
-        "AXOutline",
-        kAXPopUpButtonRole as String,
-        kAXRadioButtonRole as String,
-        kAXScrollAreaRole as String,
-        kAXSliderRole as String,
-        "AXTab",
-        kAXTabGroupRole as String,
-        "AXTable",
-        kAXTextAreaRole as String,
-        kAXTextFieldRole as String,
-        "AXToolbar",
-    ]
+    private let hitRegionPolicy = WindowHitRegionPolicy()
+    private let windowEligibilityPolicy = WindowEligibilityPolicy()
 
     init(
         geometry: ScreenGeometryService,
@@ -89,7 +137,17 @@ final class WindowResolver: WindowResolving {
         guard error == .success, let hitElement else { return nil }
 
         var hitProcessIdentifier: pid_t = 0
-        _ = AXUIElementGetPid(hitElement, &hitProcessIdentifier)
+        guard AXUIElementGetPid(hitElement, &hitProcessIdentifier) == .success,
+            hitProcessIdentifier != ownProcessIdentifier
+        else {
+            return nil
+        }
+
+        // Bound all subsequent AX reads for an unresponsive target app,
+        // including the ancestor walk used to classify custom title bars.
+        let application = AXUIElementCreateApplication(hitProcessIdentifier)
+        _ = AXUIElementSetMessagingTimeout(application, 0.2)
+
         let bundleIdentifier =
             NSRunningApplication(processIdentifier: hitProcessIdentifier)?.bundleIdentifier
         let compatibility = WindowCompatibilityProfile(bundleIdentifier: bundleIdentifier)
@@ -107,11 +165,6 @@ final class WindowResolver: WindowResolving {
         else {
             return nil
         }
-
-        // Bound subsequent AX reads and writes for an unresponsive target app.
-        // The timeout set on the application element applies to its descendants.
-        let application = AXUIElementCreateApplication(processIdentifier)
-        _ = AXUIElementSetMessagingTimeout(application, 0.2)
 
         guard AXBridge.bool(window, attribute: "AXFullScreen" as CFString) != true,
             let axFrame = AXBridge.frame(window)
@@ -152,12 +205,16 @@ final class WindowResolver: WindowResolving {
             guard let candidate = current else { return nil }
             let role = AXBridge.string(candidate, attribute: kAXRoleAttribute as CFString)
 
-            if let role, compatibility.rejects(role: role, interactiveRoles: interactiveRoles) {
+            if hitRegionPolicy.rejects(
+                role: role,
+                actionNames: AXBridge.actionNames(candidate),
+                compatibility: compatibility
+            ) {
                 return nil
             }
 
             if role == kAXWindowRole as String {
-                return candidate
+                return isEligibleWindow(candidate) ? candidate : nil
             }
 
             if let parent = AXBridge.element(candidate, attribute: kAXParentAttribute as CFString) {
@@ -167,12 +224,28 @@ final class WindowResolver: WindowResolving {
 
             // Some third-party accessibility trees omit parents but still
             // expose their containing window directly.
-            return directWindow
+            return directWindow.flatMap { isEligibleWindow($0) ? $0 : nil }
         }
 
         // Deep custom accessibility trees can exceed the conservative ancestor
         // walk even though the hit element exposes its window directly.
-        return directWindow
+        return directWindow.flatMap { isEligibleWindow($0) ? $0 : nil }
+    }
+
+    private func isEligibleWindow(_ window: AXUIElement) -> Bool {
+        let subrole = AXBridge.string(window, attribute: kAXSubroleAttribute as CFString)
+        let isModal = AXBridge.bool(window, attribute: kAXModalAttribute as CFString) == true
+        let hasTitlebarEvidence =
+            AXBridge.element(window, attribute: kAXCloseButtonAttribute as CFString) != nil
+            || AXBridge.element(window, attribute: kAXMinimizeButtonAttribute as CFString) != nil
+            || AXBridge.element(window, attribute: kAXZoomButtonAttribute as CFString) != nil
+            || AXBridge.element(window, attribute: kAXTitleUIElementAttribute as CFString) != nil
+
+        return windowEligibilityPolicy.accepts(
+            subrole: subrole,
+            isModal: isModal,
+            hasTitlebarEvidence: hasTitlebarEvidence
+        )
     }
 
     private func estimatedTitlebarHeight(
