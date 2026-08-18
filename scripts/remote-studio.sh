@@ -13,6 +13,8 @@ readonly RESULT_BUNDLE="${ARTIFACTS_ROOT}/EasySwipeTests.xcresult"
 readonly SUMMARY_FILE="${ARTIFACTS_ROOT}/EasySwipeTests-summary.json"
 readonly STAGED_APP="${ARTIFACTS_ROOT}/EasySwipe.app"
 readonly STAGED_ZIP="${ARTIFACTS_ROOT}/EasySwipe-0.1.0-development.zip"
+readonly LOCAL_APP="${REPOSITORY_ROOT}/artifacts/EasySwipe.app"
+readonly LOCAL_SIGNING_MANIFEST="${REPOSITORY_ROOT}/artifacts/signing-verification.json"
 readonly SSH_OPTIONS=(-o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes)
 
 validate_remote_path() {
@@ -227,8 +229,89 @@ fetch_artifact() {
   rsync -az "${REMOTE_HOST}:${ARTIFACTS_ROOT}/verification.json" "${REPOSITORY_ROOT}/artifacts/"
 }
 
+sign_local_artifact() {
+  local identity="${EASYSWIPE_CODE_SIGN_IDENTITY:-}"
+  if [[ -z "${identity}" ]]; then
+    print -u2 "Set EASYSWIPE_CODE_SIGN_IDENTITY to a Developer ID Application identity."
+    exit 2
+  fi
+  if [[ ! -d "${LOCAL_APP}" ]]; then
+    print -u2 "Fetch a verified artifact before local signing: ${LOCAL_APP}"
+    exit 2
+  fi
+  if [[ ! -f "${REPOSITORY_ROOT}/artifacts/verification.json" ]]; then
+    print -u2 "Missing verification manifest; fetch the current artifact first."
+    exit 2
+  fi
+
+  local source_revision artifact_revision
+  source_revision="$(git -C "${REPOSITORY_ROOT}" rev-parse HEAD)"
+  artifact_revision="$(/usr/bin/python3 -c \
+    'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["sourceRevision"])' \
+    "${REPOSITORY_ROOT}/artifacts/verification.json")"
+  if [[ "${artifact_revision}" != "${source_revision}" ]]; then
+    print -u2 "Refusing stale artifact: expected ${source_revision}, found ${artifact_revision}."
+    exit 3
+  fi
+
+  local sparkle="${LOCAL_APP}/Contents/Frameworks/Sparkle.framework/Versions/B"
+  /usr/bin/codesign --force --sign "${identity}" --options runtime --timestamp \
+    "${sparkle}/XPCServices/Installer.xpc"
+  /usr/bin/codesign --force --sign "${identity}" --options runtime --timestamp \
+    --preserve-metadata=entitlements "${sparkle}/XPCServices/Downloader.xpc"
+  /usr/bin/codesign --force --sign "${identity}" --options runtime --timestamp \
+    "${sparkle}/Autoupdate"
+  /usr/bin/codesign --force --sign "${identity}" --options runtime --timestamp \
+    "${sparkle}/Updater.app"
+  /usr/bin/codesign --force --sign "${identity}" --options runtime --timestamp \
+    "${LOCAL_APP}/Contents/Frameworks/Sparkle.framework"
+  /usr/bin/codesign --force --sign "${identity}" --options runtime --timestamp \
+    --entitlements "${REPOSITORY_ROOT}/Config/EasySwipe.entitlements" "${LOCAL_APP}"
+
+  /usr/bin/codesign --verify --deep --strict --verbose=2 "${LOCAL_APP}"
+  local team_identifier
+  team_identifier="$(/usr/bin/codesign -d --verbose=4 "${LOCAL_APP}" 2>&1 \
+    | /usr/bin/sed -n 's/^TeamIdentifier=//p')"
+  if [[ -z "${team_identifier}" || "${team_identifier}" == "not set" ]]; then
+    print -u2 "Local signature has no stable TeamIdentifier."
+    exit 3
+  fi
+  if /usr/bin/codesign -d --entitlements - "${LOCAL_APP}" 2>&1 \
+    | /usr/bin/grep -q 'disable-library-validation\|get-task-allow'; then
+    print -u2 "Local signed app retained development-only entitlements."
+    exit 3
+  fi
+
+  EASYSWIPE_STARTUP_PROBE=1 "${LOCAL_APP}/Contents/MacOS/EasySwipe"
+  /usr/bin/python3 - "${REPOSITORY_ROOT}/artifacts/verification.json" \
+    "${LOCAL_SIGNING_MANIFEST}" "${identity}" "${team_identifier}" <<'PY'
+import datetime
+import json
+import sys
+
+with open(sys.argv[1], encoding='utf-8') as handle:
+    remote = json.load(handle)
+
+manifest = {
+    'sourceRevision': remote['sourceRevision'],
+    'build': remote['build'],
+    'signedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'identity': sys.argv[3],
+    'teamIdentifier': sys.argv[4],
+    'stablePrivacyIdentity': True,
+    'nestedCodeSignatures': 'Passed',
+    'startupProbe': 'Passed',
+    'notarized': False,
+}
+with open(sys.argv[2], 'w', encoding='utf-8') as handle:
+    json.dump(manifest, handle, indent=2, sort_keys=True)
+    handle.write('\n')
+print(json.dumps(manifest, sort_keys=True))
+PY
+}
+
 usage() {
-  print "Usage: $0 doctor|sync|build|test|release|verify|fetch"
+  print "Usage: $0 doctor|sync|build|test|release|verify|fetch|local-sign"
 }
 
 case "${1:-}" in
@@ -239,5 +322,6 @@ case "${1:-}" in
   release) sync_sources; release_project ;;
   verify) sync_sources; verify_project ;;
   fetch) fetch_artifact ;;
+  local-sign) sign_local_artifact ;;
   *) usage; exit 2 ;;
 esac

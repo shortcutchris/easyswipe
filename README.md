@@ -50,9 +50,13 @@ scripts/remote-studio.sh doctor
 scripts/remote-studio.sh test
 scripts/remote-studio.sh verify
 scripts/remote-studio.sh fetch
+EASYSWIPE_CODE_SIGN_IDENTITY='Developer ID Application: NAME (TEAMID)' \
+  scripts/remote-studio.sh local-sign
 ```
 
 `verify` runs all unit tests, produces an ad-hoc-signed Release app, verifies its nested code signatures, launches a short-lived startup probe, asserts `LSUIElement`, and requires both `arm64` and `x86_64` architectures. The ad-hoc artifact uses a development-only entitlement so Hardened Runtime can load the separately signed Sparkle framework. Production archives retain Library Validation and use Developer ID signing. `fetch` copies the app, development ZIP, and verification manifest into the ignored local `artifacts/` directory.
+
+`local-sign` re-signs the fetched app and all embedded Sparkle helpers with a Developer ID identity from the local Keychain. This gives successive hands-on builds a stable macOS code identity so Accessibility permission can persist. It removes the development-only entitlements and writes `artifacts/signing-verification.json`. This local candidate is not notarized and is not a public release.
 
 ## Updates and distribution
 

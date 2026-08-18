@@ -13,6 +13,8 @@ Only the Sparkle public key and appcast URL belong in the compiled app. Never co
 
 The remote development artifact overrides `CODE_SIGN_ENTITLEMENTS` with `Config/EasySwipeDevelopment.entitlements` because an ad-hoc host cannot pass Library Validation for Sparkle's separately signed framework. Do not use that entitlement for production. The production `Release` configuration uses `Config/EasySwipe.entitlements` and a Developer ID signature.
 
+Ad-hoc signatures have a code-hash-bound designated requirement, so macOS privacy permissions do not persist across rebuilt binaries. For repeated local hardware checks, fetch the verified artifact and run `scripts/remote-studio.sh local-sign` with `EASYSWIPE_CODE_SIGN_IDENTITY` set to the intended Developer ID identity. After switching from ad-hoc to Developer ID signing, remove the stale Accessibility entry and grant the signed app once. Subsequent builds signed by the same Developer ID and using the same bundle identifier retain that code identity.
+
 ## Versioning
 
 Update `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in `project.yml`, then regenerate `EasySwipe.xcodeproj`. The build number must increase for every published build.

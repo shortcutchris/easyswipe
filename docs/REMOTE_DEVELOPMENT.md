@@ -11,6 +11,8 @@ scripts/remote-studio.sh test
 scripts/remote-studio.sh release
 scripts/remote-studio.sh verify
 scripts/remote-studio.sh fetch
+EASYSWIPE_CODE_SIGN_IDENTITY='Developer ID Application: NAME (TEAMID)' \
+  scripts/remote-studio.sh local-sign
 ```
 
 The runner mirrors the repository to `/Users/chris/Developer/easyswipe`, keeps test and release build products in separate Derived Data directories under `/Users/chris/Developer/DerivedData`, and stages verified artifacts under `/Users/chris/Developer/EasySwipeArtifacts`.
@@ -20,5 +22,7 @@ It intentionally excludes Git metadata, credentials, signing material, Sparkle p
 `release` creates an optimized, hardened-runtime, ad-hoc-signed development Release build, asserts that the executable contains both `arm64` and `x86_64` slices, and runs a short-lived startup probe. The development build alone disables Library Validation so its ad-hoc host can load Sparkle's separately signed framework; production signing does not use this entitlement.
 
 `verify` requires both a successful `xcodebuild test` process and an independently parsed `.xcresult` summary with `result == Passed` and zero failures. It then runs the Release pipeline, validates nested code signatures, successful process startup and menu-bar-only metadata, creates a ZIP, and writes a non-secret verification manifest.
+
+`local-sign` runs only on the controlling Mac after `fetch`. It re-signs Sparkle's nested XPC services, helper executable, updater app, framework, and finally EasySwipe with the explicitly supplied Developer ID identity. It verifies the nested signatures, rejects development-only entitlements, runs the startup probe, and records the stable Team ID in an ignored local manifest. Keeping the same Developer ID and bundle identifier lets macOS recognize later builds as the same privacy-sensitive app. The signing identity and private key remain in the local Keychain and are never synchronized to the Studio.
 
 The staged build is a development artifact. Public distribution additionally requires a Developer ID signature, notarization, and production Sparkle configuration as described in `docs/RELEASING.md`.
