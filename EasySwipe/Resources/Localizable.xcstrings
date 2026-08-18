@@ -1,0 +1,192 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "common.close" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Schließen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Close" } }
+      }
+    },
+    "common.ok" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "OK" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "OK" } }
+      }
+    },
+    "gesture.down" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nach unten wischen, um zu minimieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Swipe down to minimize" } }
+      }
+    },
+    "gesture.left" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nach links wischen für die linke Hälfte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Swipe left to fill the left half" } }
+      }
+    },
+    "gesture.right" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nach rechts wischen für die rechte Hälfte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Swipe right to fill the right half" } }
+      }
+    },
+    "guide.footer" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bewege den Mauszeiger über eine Fenstertitelbar, wische und hebe dann die Finger an." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Place the pointer over a window title bar, swipe, then lift your fingers." } }
+      }
+    },
+    "guide.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe-Gesten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe Gestures" } }
+      }
+    },
+    "hud.left" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fenster links angeordnet" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Window arranged left" } }
+      }
+    },
+    "hud.minimize" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fenster minimiert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Window minimized" } }
+      }
+    },
+    "hud.right" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fenster rechts angeordnet" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Window arranged right" } }
+      }
+    },
+    "login.error.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Anmeldeeinstellung konnte nicht geändert werden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Could Not Change Login Setting" } }
+      }
+    },
+    "login.requiresApproval" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erlaube EasySwipe unter Systemeinstellungen > Allgemein > Anmeldeobjekte, um den Start beim Anmelden zu aktivieren." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Allow EasySwipe in System Settings > General > Login Items to finish enabling launch at login." } }
+      }
+    },
+    "menu.about" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Über EasySwipe" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "About EasySwipe" } }
+      }
+    },
+    "menu.checkForUpdates" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nach Updates suchen…" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check for Updates…" } }
+      }
+    },
+    "menu.enabled" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe aktiv" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe Enabled" } }
+      }
+    },
+    "menu.gestureGuide" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Gestenübersicht…" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Gesture Guide…" } }
+      }
+    },
+    "menu.launchAtLogin" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Beim Anmelden starten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Launch at Login" } }
+      }
+    },
+    "menu.permissions" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Berechtigungen…" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Permissions…" } }
+      }
+    },
+    "menu.quit" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe beenden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Quit EasySwipe" } }
+      }
+    },
+    "onboarding.deviceHint" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verwende zwei Finger auf einem Trackpad oder wische über die Touch-Oberfläche deiner Magic Mouse." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Use two fingers on a trackpad, or swipe on the touch surface of your Magic Mouse." } }
+      }
+    },
+    "onboarding.finish" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einrichtung abschließen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Finish Setup" } }
+      }
+    },
+    "onboarding.subtitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ordne Fenster direkt über ihre Titelbar an." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Arrange windows directly from their title bars." } }
+      }
+    },
+    "onboarding.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Willkommen bei EasySwipe" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Welcome to EasySwipe" } }
+      }
+    },
+    "permission.explanation" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe verwendet Bedienungshilfen, um das Fenster unter dem Mauszeiger zu erkennen und anzuordnen. Fensterinhalte werden nie gelesen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe uses Accessibility to identify and arrange the window below your pointer. It never reads window contents." } }
+      }
+    },
+    "permission.granted" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Berechtigung erteilt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Permission granted" } }
+      }
+    },
+    "permission.missing" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Berechtigung erforderlich" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Permission required" } }
+      }
+    },
+    "permission.openSettings" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Systemeinstellungen öffnen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open System Settings" } }
+      }
+    },
+    "permission.request" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Berechtigung erteilen…" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Grant Permission…" } }
+      }
+    },
+    "permission.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bedienungshilfen-Berechtigung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Accessibility Permission" } }
+      }
+    },
+    "update.unavailable.message" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dieser Entwicklungsbuild hat keinen signierten Update-Feed. Release-Builds können mit einem Sparkle-Appcast und öffentlichem Schlüssel konfiguriert werden." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This development build has no signed update feed. Release builds can be configured with a Sparkle appcast and public key." } }
+      }
+    },
+    "update.unavailable.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Updates nicht konfiguriert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Updates Not Configured" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

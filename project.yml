@@ -1,0 +1,92 @@
+name: EasySwipe
+
+options:
+  bundleIdPrefix: com.shortcutchris
+  deploymentTarget:
+    macOS: "14.0"
+  developmentLanguage: en
+  xcodeVersion: "26.0"
+  createIntermediateGroups: true
+
+configs:
+  Debug: debug
+  Release: release
+
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    exactVersion: 2.9.6
+
+settings:
+  base:
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    CLANG_ENABLE_MODULES: YES
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    DEVELOPMENT_TEAM: ""
+  configs:
+    Debug:
+      ENABLE_HARDENED_RUNTIME: NO
+    Release:
+      CLANG_ENABLE_CODE_COVERAGE: NO
+      ENABLE_HARDENED_RUNTIME: YES
+      ENABLE_TESTABILITY: NO
+
+targets:
+  EasySwipe:
+    type: application
+    platform: macOS
+    sources:
+      - path: EasySwipe
+    dependencies:
+      - package: Sparkle
+    info:
+      path: Config/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: $(DEVELOPMENT_LANGUAGE)
+        CFBundleDisplayName: EasySwipe
+        CFBundleExecutable: $(EXECUTABLE_NAME)
+        CFBundleIdentifier: $(PRODUCT_BUNDLE_IDENTIFIER)
+        CFBundleInfoDictionaryVersion: "6.0"
+        CFBundleName: $(PRODUCT_NAME)
+        CFBundlePackageType: APPL
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        LSUIElement: true
+        NSHumanReadableCopyright: Copyright © 2026 shortcutchris
+        SUEnableAutomaticChecks: true
+        SUFeedURL: $(EASYSWIPE_FEED_URL)
+        SUPublicEDKey: $(EASYSWIPE_SPARKLE_PUBLIC_KEY)
+    settings:
+      base:
+        CODE_SIGN_ENTITLEMENTS: Config/EasySwipe.entitlements
+        PRODUCT_BUNDLE_IDENTIFIER: com.shortcutchris.EasySwipe
+        PRODUCT_NAME: EasySwipe
+        PRODUCT_MODULE_NAME: EasySwipe
+        MARKETING_VERSION: 0.1.0
+        CURRENT_PROJECT_VERSION: 1
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Config/Info.plist
+        ENABLE_APP_SANDBOX: NO
+        EASYSWIPE_FEED_URL: ""
+        EASYSWIPE_SPARKLE_PUBLIC_KEY: ""
+    scheme:
+      testTargets:
+        - EasySwipeTests
+
+  EasySwipeTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: EasySwipeTests
+    dependencies:
+      - target: EasySwipe
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.shortcutchris.EasySwipeTests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/EasySwipe.app/Contents/MacOS/EasySwipe"
+        BUNDLE_LOADER: "$(TEST_HOST)"

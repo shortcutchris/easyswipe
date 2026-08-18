@@ -1,6 +1,6 @@
 # EasySwipe – MVP-Spezifikation
 
-- Status: Entwurf 0.1
+- Status: Implementierungsbasis 0.1.0
 - Datum: 18. August 2026
 - Produkttyp: native macOS-Menüleisten-App
 - Vorläufiges Deployment-Ziel: macOS 14 oder neuer
@@ -224,8 +224,8 @@ Das Fenster darf erst „Bereit“ melden, wenn die zwingenden Berechtigungen ak
 ### 10.2 Berechtigungsprinzip
 
 - Accessibility ist erforderlich, um Fenster anderer Apps zu identifizieren und zu verändern.
-- Ein globaler Quartz Event Tap wird für kontinuierliche Scrollereignisse verwendet.
-- Ob zusätzlich Eingabeüberwachung erforderlich ist, wird während des technischen Prototyps auf allen unterstützten macOS-Versionen verifiziert.
+- Ein globaler, passiver `NSEvent`-Monitor beobachtet ausschließlich kontinuierliche Scrollereignisse und unterdrückt oder verändert sie nicht.
+- Die Implementierung benötigt für den Listener keine separate Eingabeüberwachungs-Berechtigung. Accessibility bleibt für das Ermitteln und Verändern fremder Fenster erforderlich.
 - Die App fordert nur tatsächlich benötigte Rechte an.
 - Ein Entzug der Berechtigung wird während der Laufzeit erkannt; die Listener werden gestoppt und der Menüstatus aktualisiert.
 
@@ -319,8 +319,8 @@ Sparkles Standardoberfläche wird in der zum System passenden, von Sparkle angeb
 
 - **AppCoordinator:** Lebenszyklus und Zusammenspiel der Dienste.
 - **StatusMenuController:** Menüleisten-Icon, Menü und lokalisierte Zustände.
-- **PermissionController:** Accessibility- und gegebenenfalls Input-Monitoring-Status.
-- **GestureEventMonitor:** globaler Event Tap und Ereignisfilterung.
+- **PermissionController:** Accessibility-Status und Live-Aktualisierung bei Änderungen.
+- **GestureEventMonitor:** globaler `NSEvent`-Scrollmonitor und Ereignisfilterung.
 - **GestureRecognizer:** geräteunabhängige Normalisierung und Zustandsmaschine.
 - **WindowResolver:** AX-Element unter Maus, Fenster- und Titelbarprüfung.
 - **WindowActionService:** Links/Rechts/Minimieren und Ergebnisprüfung.
@@ -332,8 +332,8 @@ Sparkles Standardoberfläche wird in der zum System passenden, von Sparkle angeb
 
 ### 15.2 Nebenläufigkeit
 
-- Event-Tap-Callback bleibt extrem kurz und blockiert den System-Event-Stream nicht.
-- Deltas werden an eine dedizierte serielle Verarbeitung übergeben.
+- Der globale Event-Monitor-Callback bleibt extrem kurz und reicht ausschließlich normalisierte, sendbare Scrollmetadaten weiter.
+- Deltas werden aus dem Callback als sendbare Werte auf den seriell arbeitenden Main Actor übergeben.
 - AppKit-, AX-Schreib- und HUD-Aktionen werden kontrolliert auf dem Main Actor beziehungsweise geeigneten seriellen Kontext ausgeführt.
 - Langsame oder nicht antwortende AX-Ziel-Apps erhalten ein kurzes Timeout; EasySwipe blockiert nicht global.
 
@@ -364,7 +364,7 @@ Der tatsächliche Login-Item- und Berechtigungsstatus wird stets vom System gele
 - Ungültige Geste: still abbrechen.
 - Nicht unterstütztes Fenster: still abbrechen.
 - Fehlende Berechtigung: keine Aktion; Warnzustand im Menü, optional einmalige lokale Hinweisanzeige.
-- Event Tap vom System deaktiviert: automatisch einmal neu aktivieren; bei wiederholtem Fehler Listener stoppen und Status anzeigen.
+- Globaler Event-Monitor nicht verfügbar: Listener stoppen und Warnzustand im Menü anzeigen.
 - AX-Ziel antwortet nicht: Geste abbrechen, Event-Verarbeitung fortsetzen.
 - Sparkle-Fehler: Sparkle-Standardmeldung bei manueller Prüfung; keine Auswirkung auf die Kernfunktion.
 - Login-Item-Fehler: lokalisierte Erklärung direkt nach der Benutzeraktion.
@@ -441,15 +441,13 @@ Der MVP gilt als funktionsfähig, wenn alle folgenden Kriterien erfüllt sind:
 14. Ein signiertes, notarisiertes Testupdate kann über den Appcast installiert werden.
 15. Ohne die nötigen Berechtigungen wird keine teilweise oder unvorhersehbare Fensteraktion ausgeführt.
 
-## 21. Offene Entscheidungen vor Implementierung
+## 21. Offene Entscheidungen vor öffentlicher Distribution
 
-- Finaler Produktname und Bundle Identifier.
 - Update-Host und öffentliche Produkt-/Support-URLs.
-- Endgültiges Mindest-macOS nach technischem Event-Tap-Prototyp.
-- Ob Accessibility allein für den Listener genügt oder zusätzlich Eingabeüberwachung nötig ist.
-- Exakte Titelbar-Fallback-Höhe für Apps mit unvollständiger Accessibility-Struktur.
-- Finale Erkennungsschwellen getrennt nach Trackpad und Magic Mouse.
-- Finale HUD-Systemsymbole und Feintiming nach einem visuellen Prototyp.
+- Developer-ID-Team, Notarisierungsprofil und Sparkle-EdDSA-Schlüsselpaar.
+- Exakte Titelbar-Fallback-Höhe nach breiten Hardware- und App-Kompatibilitätstests.
+- Finale Erkennungsschwellen getrennt nach Trackpad und Magic Mouse, falls Hardwaretests einen relevanten Unterschied zeigen.
+- Finale App-Icon-Gestaltung sowie HUD-Feintiming nach visuellem und praktischem Hardwaretest.
 
 ## 22. Referenzen
 
@@ -463,4 +461,3 @@ Der MVP gilt als funktionsfähig, wenn alle folgenden Kriterien erfüllt sind:
 - Apple – Magic Mouse settings: <https://support.apple.com/guide/mac-help/mh29222/mac>
 - Sparkle – Documentation: <https://sparkle-project.org/documentation/>
 - Sparkle – Programmatic setup: <https://sparkle-project.org/documentation/programmatic-setup/>
-
