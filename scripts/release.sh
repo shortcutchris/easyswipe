@@ -18,11 +18,14 @@ readonly RELEASE_NOTES="${REPOSITORY_ROOT}/docs/releases/${VERSION}.md"
 readonly LOCAL_APP="${REPOSITORY_ROOT}/artifacts/EasySwipe.app"
 readonly SPARKLE_TOOLS="${REPOSITORY_ROOT}/artifacts/sparkle-tools"
 readonly ARCHIVE_NAME="EasySwipe-${VERSION}-${BUILD}.zip"
+readonly LATEST_ARCHIVE_NAME="EasySwipe.zip"
 readonly RELEASES_ROOT="${REPOSITORY_ROOT}/artifacts/releases"
 readonly RELEASE_RUN_ID="$(/bin/date -u +%Y%m%dT%H%M%SZ)"
 readonly RELEASE_WORKSPACE="${RELEASES_ROOT}/${VERSION}-${BUILD}-${RELEASE_RUN_ID}"
 readonly RELEASE_APP="${RELEASE_WORKSPACE}/EasySwipe.app"
 readonly RELEASE_ARCHIVE="${RELEASE_WORKSPACE}/${ARCHIVE_NAME}"
+readonly LATEST_ARCHIVE="${RELEASE_WORKSPACE}/${LATEST_ARCHIVE_NAME}"
+readonly LATEST_DOWNLOAD_URL="https://github.com/${RELEASE_REPOSITORY}/releases/latest/download/${LATEST_ARCHIVE_NAME}"
 readonly NOTARY_ARCHIVE="${RELEASES_ROOT}/EasySwipe-${VERSION}-${BUILD}-${RELEASE_RUN_ID}-notarization.zip"
 readonly NOTARY_RESULT="${RELEASE_WORKSPACE}/notarization.json"
 readonly GENERATED_FEED="${RELEASE_WORKSPACE}/appcast.xml"
@@ -208,7 +211,13 @@ PY
 }
 
 publish_release() {
-  gh release create "${TAG}" "${RELEASE_ARCHIVE}" "${RELEASE_ARCHIVE}.sha256" \
+  /bin/cp "${RELEASE_ARCHIVE}" "${LATEST_ARCHIVE}"
+  /usr/bin/cmp "${RELEASE_ARCHIVE}" "${LATEST_ARCHIVE}"
+
+  gh release create "${TAG}" \
+    "${RELEASE_ARCHIVE}" \
+    "${RELEASE_ARCHIVE}.sha256" \
+    "${LATEST_ARCHIVE}" \
     --repo "${RELEASE_REPOSITORY}" \
     --title "EasySwipe ${VERSION}" \
     --notes-file "${RELEASE_NOTES}"
@@ -222,6 +231,9 @@ publish_release() {
 
   /usr/bin/curl --fail --silent --show-error --location \
     "${RELEASE_URL_PREFIX}${ARCHIVE_NAME}" >/dev/null
+  /usr/bin/curl --fail --silent --show-error --location \
+    --retry 5 --retry-all-errors --retry-delay 2 \
+    "${LATEST_DOWNLOAD_URL}" >/dev/null
   gh api -H "Accept: application/vnd.github.raw+json" \
     "repos/${RELEASE_REPOSITORY}/contents/appcast.xml?ref=main" \
     | /usr/bin/grep -Fq "${RELEASE_URL_PREFIX}${ARCHIVE_NAME}" \
