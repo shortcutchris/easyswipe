@@ -120,7 +120,7 @@ release_project() {
     esac
     /bin/test \"\$(/usr/bin/plutil -extract LSUIElement raw -o - '${STAGED_APP}/Contents/Info.plist')\" = true
     /bin/test \"\$(/usr/bin/plutil -extract CFBundleShortVersionString raw -o - '${STAGED_APP}/Contents/Info.plist')\" = 0.1.0
-    /bin/test \"\$(/usr/bin/plutil -extract CFBundleVersion raw -o - '${STAGED_APP}/Contents/Info.plist')\" = 2
+    /bin/test \"\$(/usr/bin/plutil -extract CFBundleVersion raw -o - '${STAGED_APP}/Contents/Info.plist')\" = 3
     /bin/test \"\$(/usr/bin/plutil -extract CFBundleIconFile raw -o - '${STAGED_APP}/Contents/Info.plist')\" = AppIcon
     /bin/test -f '${STAGED_APP}/Contents/Resources/AppIcon.icns'
     EASYSWIPE_STARTUP_PROBE=1 '${STAGED_APP}/Contents/MacOS/EasySwipe'

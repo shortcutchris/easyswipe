@@ -23,7 +23,7 @@ final class SwipeGestureRecognizerTests: XCTestCase {
     func testRecognizesPhysicalSwipeDown() {
         var recognizer = SwipeGestureRecognizer()
         recognizer.begin()
-        recognizer.update(deltaX: 2, deltaY: 48)
+        recognizer.update(deltaX: 2, deltaY: -48)
 
         XCTAssertEqual(recognizer.finish(), .minimize)
     }
@@ -31,7 +31,7 @@ final class SwipeGestureRecognizerTests: XCTestCase {
     func testRejectsSwipeUp() {
         var recognizer = SwipeGestureRecognizer()
         recognizer.begin()
-        recognizer.update(deltaX: 0, deltaY: -80)
+        recognizer.update(deltaX: 0, deltaY: 80)
 
         XCTAssertNil(recognizer.finish())
     }
@@ -69,5 +69,24 @@ final class SwipeGestureRecognizerTests: XCTestCase {
 
         XCTAssertFalse(recognizer.isTracking)
         XCTAssertNil(recognizer.finish())
+    }
+
+    func testPreviewAppearsInsideCommitThreshold() {
+        var recognizer = SwipeGestureRecognizer()
+        recognizer.begin()
+        recognizer.update(deltaX: 14, deltaY: 0)
+
+        XCTAssertEqual(recognizer.previewAction, .snapLeft)
+        XCTAssertNil(recognizer.finish())
+    }
+
+    func testPreviewTracksDirectionReversal() {
+        var recognizer = SwipeGestureRecognizer()
+        recognizer.begin()
+        recognizer.update(deltaX: 20, deltaY: 0)
+        XCTAssertEqual(recognizer.previewAction, .snapLeft)
+
+        recognizer.update(deltaX: -42, deltaY: 0)
+        XCTAssertEqual(recognizer.previewAction, .snapRight)
     }
 }

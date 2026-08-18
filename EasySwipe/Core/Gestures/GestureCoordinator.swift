@@ -16,6 +16,7 @@ final class GestureCoordinator {
     private var recognizer: SwipeGestureRecognizer
     private var state: SessionState = .idle
     private var fallbackEndTimer: Timer?
+    private var previewedAction: WindowGestureAction?
 
     init(
         resolver: any WindowResolving,
@@ -78,6 +79,8 @@ final class GestureCoordinator {
         fallbackEndTimer = nil
         recognizer.cancel()
         state = .idle
+        previewedAction = nil
+        hudPresenter.dismiss()
     }
 
     private func resetForNewSequence() {
@@ -96,11 +99,24 @@ final class GestureCoordinator {
     }
 
     private func update(with sample: ScrollSample) {
-        guard case .tracking = state else { return }
+        guard case .tracking(let target) = state else { return }
         recognizer.update(
             deltaX: sample.physicalDeltaX,
             deltaY: sample.physicalDeltaY
         )
+        updatePreview(over: target)
+    }
+
+    private func updatePreview(over target: AXWindowTarget) {
+        let action = recognizer.previewAction
+        guard action != previewedAction else { return }
+
+        previewedAction = action
+        if let action {
+            hudPresenter.showPreview(action: action, over: target.initialAppKitFrame)
+        } else {
+            hudPresenter.dismiss()
+        }
     }
 
     private func finish() {
@@ -115,14 +131,16 @@ final class GestureCoordinator {
 
         let action = recognizer.finish()
         state = .idle
+        previewedAction = nil
 
         guard let action,
             let result = actionService.perform(action, on: target)
         else {
+            hudPresenter.dismiss()
             return
         }
 
-        hudPresenter.show(action: result.action, over: result.hudFrame)
+        hudPresenter.confirm(action: result.action, over: result.hudFrame)
     }
 
     private func scheduleFallbackEnd() {

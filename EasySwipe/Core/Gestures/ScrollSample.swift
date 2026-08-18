@@ -63,7 +63,8 @@ struct ScrollSample: Equatable, Sendable {
     init(event: NSEvent) {
         // AppKit pre-applies the user's natural-scrolling preference. Undo that
         // preference so the values consistently describe physical finger motion.
-        // In this coordinate convention left and down are positive.
+        // In AppKit's device-relative convention left is positive X and down
+        // is negative Y.
         let delta = ScrollDeltaNormalizer.physical(
             deltaX: Double(event.scrollingDeltaX),
             deltaY: Double(event.scrollingDeltaY),

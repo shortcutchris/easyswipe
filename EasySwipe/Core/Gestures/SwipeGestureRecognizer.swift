@@ -23,17 +23,29 @@ struct SwipeGestureRecognizer: Sendable {
         accumulatedY += deltaY
     }
 
+    var previewAction: WindowGestureAction? {
+        resolvedAction(minimumDistance: configuration.deadZone)
+    }
+
     mutating func finish() -> WindowGestureAction? {
         guard isTracking else { return nil }
         defer { reset() }
+
+        return resolvedAction(minimumDistance: configuration.triggerDistance)
+    }
+
+    mutating func cancel() {
+        reset()
+    }
+
+    private func resolvedAction(minimumDistance: Double) -> WindowGestureAction? {
+        guard isTracking else { return nil }
 
         let absoluteX = abs(accumulatedX)
         let absoluteY = abs(accumulatedY)
         let longestAxis = max(absoluteX, absoluteY)
 
-        guard longestAxis >= configuration.deadZone,
-            longestAxis >= configuration.triggerDistance
-        else {
+        guard longestAxis >= minimumDistance else {
             return nil
         }
 
@@ -43,17 +55,14 @@ struct SwipeGestureRecognizer: Sendable {
         }
 
         if absoluteY >= absoluteX * configuration.dominanceRatio,
-            accumulatedY > 0
+            accumulatedY < 0
         {
-            // Positive Y represents fingers-down. Up is intentionally unsupported.
+            // Device-relative AppKit deltas use negative Y for fingers-down.
+            // Up is intentionally unsupported.
             return .minimize
         }
 
         return nil
-    }
-
-    mutating func cancel() {
-        reset()
     }
 
     private mutating func reset() {

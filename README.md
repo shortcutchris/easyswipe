@@ -15,7 +15,7 @@ Version `0.1.0` implements the complete source-level MVP:
 - title-bar targeting through the macOS Accessibility API;
 - left/right window snapping based on `NSScreen.visibleFrame`;
 - window minimization;
-- brief nonactivating HUD feedback;
+- immediate nonactivating HUD direction previews with brief action confirmation;
 - a dedicated macOS application icon;
 - menu bar controls and first-run permission onboarding;
 - launch-at-login support through `SMAppService`;

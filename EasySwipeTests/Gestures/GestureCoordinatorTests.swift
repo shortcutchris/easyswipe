@@ -11,11 +11,12 @@ final class GestureCoordinatorTests: XCTestCase {
         harness.coordinator.handle(sample(deltaX: 30, phase: .began))
         harness.coordinator.handle(sample(deltaX: 20, phase: .changed))
         XCTAssertTrue(harness.actions.performed.isEmpty)
+        XCTAssertEqual(harness.hud.previews, [.snapLeft])
 
         harness.coordinator.handle(sample(phase: .ended))
 
         XCTAssertEqual(harness.actions.performed, [.snapLeft])
-        XCTAssertEqual(harness.hud.presented, [.snapLeft])
+        XCTAssertEqual(harness.hud.confirmations, [.snapLeft])
     }
 
     func testMomentumNeverCommitsTrackedGesture() {
@@ -28,7 +29,7 @@ final class GestureCoordinatorTests: XCTestCase {
         harness.coordinator.handle(sample(phase: .ended))
 
         XCTAssertTrue(harness.actions.performed.isEmpty)
-        XCTAssertTrue(harness.hud.presented.isEmpty)
+        XCTAssertTrue(harness.hud.confirmations.isEmpty)
     }
 
     func testImpreciseWheelInputNeverStartsGesture() {
@@ -43,6 +44,42 @@ final class GestureCoordinatorTests: XCTestCase {
 
         XCTAssertEqual(harness.resolver.resolveCount, 0)
         XCTAssertTrue(harness.actions.performed.isEmpty)
+        XCTAssertTrue(harness.hud.previews.isEmpty)
+    }
+
+    func testDownSwipePreviewsAndMinimizes() {
+        let harness = Harness()
+
+        harness.coordinator.handle(sample(deltaY: -18, phase: .began))
+        XCTAssertEqual(harness.hud.previews, [.minimize])
+        XCTAssertTrue(harness.actions.performed.isEmpty)
+
+        harness.coordinator.handle(sample(deltaY: -30, phase: .ended))
+
+        XCTAssertEqual(harness.actions.performed, [.minimize])
+        XCTAssertEqual(harness.hud.confirmations, [.minimize])
+    }
+
+    func testShortGestureDismissesPreviewWithoutPerformingAction() {
+        let harness = Harness()
+
+        harness.coordinator.handle(sample(deltaX: 14, phase: .began))
+        XCTAssertEqual(harness.hud.previews, [.snapLeft])
+
+        harness.coordinator.handle(sample(phase: .ended))
+
+        XCTAssertTrue(harness.actions.performed.isEmpty)
+        XCTAssertTrue(harness.hud.confirmations.isEmpty)
+        XCTAssertGreaterThan(harness.hud.dismissCount, 0)
+    }
+
+    func testPreviewChangesWhenGestureDirectionReverses() {
+        let harness = Harness()
+
+        harness.coordinator.handle(sample(deltaX: 20, phase: .began))
+        harness.coordinator.handle(sample(deltaX: -42, phase: .changed))
+
+        XCTAssertEqual(harness.hud.previews, [.snapLeft, .snapRight])
     }
 
     private func sample(
@@ -120,9 +157,19 @@ private final class ActionSpy: WindowActionPerforming {
 
 @MainActor
 private final class HUDSpy: HUDPresenting {
-    private(set) var presented: [WindowGestureAction] = []
+    private(set) var previews: [WindowGestureAction] = []
+    private(set) var confirmations: [WindowGestureAction] = []
+    private(set) var dismissCount = 0
 
-    func show(action: WindowGestureAction, over targetFrame: CGRect) {
-        presented.append(action)
+    func showPreview(action: WindowGestureAction, over targetFrame: CGRect) {
+        previews.append(action)
+    }
+
+    func confirm(action: WindowGestureAction, over targetFrame: CGRect) {
+        confirmations.append(action)
+    }
+
+    func dismiss() {
+        dismissCount += 1
     }
 }

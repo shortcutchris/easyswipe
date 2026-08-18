@@ -3,7 +3,9 @@ import Foundation
 
 @MainActor
 protocol HUDPresenting {
-    func show(action: WindowGestureAction, over targetFrame: CGRect)
+    func showPreview(action: WindowGestureAction, over targetFrame: CGRect)
+    func confirm(action: WindowGestureAction, over targetFrame: CGRect)
+    func dismiss()
 }
 
 @MainActor
@@ -12,6 +14,7 @@ final class HUDPresenter: HUDPresenting {
     private let visualEffectView: NSVisualEffectView
     private let imageView: NSImageView
     private var hideWorkItem: DispatchWorkItem?
+    private var presentationGeneration = 0
 
     init() {
         panel = NSPanel(
@@ -60,9 +63,42 @@ final class HUDPresenter: HUDPresenting {
         ])
     }
 
-    func show(action: WindowGestureAction, over targetFrame: CGRect) {
+    func showPreview(action: WindowGestureAction, over targetFrame: CGRect) {
+        _ = preparePresentation()
+        present(action: action, over: targetFrame)
+    }
+
+    func confirm(action: WindowGestureAction, over targetFrame: CGRect) {
+        let generation = preparePresentation()
+        present(action: action, over: targetFrame)
+
+        let workItem = DispatchWorkItem { [weak self] in
+            MainActor.assumeIsolated {
+                self?.hide(generation: generation)
+            }
+        }
+        hideWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.38, execute: workItem)
+    }
+
+    func dismiss() {
+        presentationGeneration += 1
         hideWorkItem?.cancel()
+        hideWorkItem = nil
+        panel.alphaValue = 0
         panel.orderOut(nil)
+    }
+
+    @discardableResult
+    private func preparePresentation() -> Int {
+        presentationGeneration += 1
+        hideWorkItem?.cancel()
+        hideWorkItem = nil
+        return presentationGeneration
+    }
+
+    private func present(action: WindowGestureAction, over targetFrame: CGRect) {
+        let wasVisible = panel.isVisible
 
         imageView.image = image(for: action)
         updateAccessibilityAppearance()
@@ -73,29 +109,23 @@ final class HUDPresenter: HUDPresenting {
             y: targetFrame.midY - panelSize.height / 2
         )
         panel.setFrameOrigin(origin)
-        panel.alphaValue = 0
         panel.orderFrontRegardless()
 
         let shouldReduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-        if shouldReduceMotion {
+        if shouldReduceMotion || wasVisible {
             panel.alphaValue = 1
         } else {
+            panel.alphaValue = 0
             NSAnimationContext.runAnimationGroup { context in
-                context.duration = 0.08
+                context.duration = 0.06
                 panel.animator().alphaValue = 1
             }
         }
-
-        let workItem = DispatchWorkItem { [weak self] in
-            MainActor.assumeIsolated {
-                self?.hide()
-            }
-        }
-        hideWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.38, execute: workItem)
     }
 
-    private func hide() {
+    private func hide(generation: Int) {
+        guard generation == presentationGeneration else { return }
+
         let duration = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? 0 : 0.14
         NSAnimationContext.runAnimationGroup { context in
             context.duration = duration
@@ -103,7 +133,9 @@ final class HUDPresenter: HUDPresenting {
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
             MainActor.assumeIsolated {
+                guard self?.presentationGeneration == generation else { return }
                 self?.panel.orderOut(nil)
+                self?.hideWorkItem = nil
             }
         }
     }

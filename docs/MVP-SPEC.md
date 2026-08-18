@@ -47,7 +47,7 @@ Auf einem Trackpad entsteht die Eingabe durch die übliche Zwei-Finger-Scrollbew
 - **Aktueller Bildschirm:** Der Bildschirm, der den Mauszeiger beim Start der Geste enthält.
 - **Sichtbarer Bildschirmbereich:** Der von macOS gemeldete `NSScreen.visibleFrame`, also ohne den aktuell von Menüleiste, Dock und Kameraaussparung reservierten Bereich.
 - **Physisches Gestenende:** Der Moment, in dem die Finger vom Trackpad oder von der Magic Mouse genommen werden; nachlaufendes Momentum zählt nicht dazu.
-- **HUD:** Das kurz eingeblendete, nicht aktivierende visuelle Feedback nach einer erfolgreichen Aktion.
+- **HUD:** Das nicht aktivierende visuelle Richtungsfeedback während einer erkannten Geste und kurz nach einer erfolgreichen Aktion.
 
 ## 4. Gesten und Aktionen
 
@@ -61,10 +61,11 @@ Auf einem Trackpad entsteht die Eingabe durch die übliche Zwei-Finger-Scrollbew
 
 - Die Geste erfordert keinen Klick und kein Gedrückthalten.
 - Das Zielfenster wird beim Beginn der Geste festgelegt und während derselben Geste nicht gewechselt.
+- Nach Überschreiten der Totzone zeigt das HUD sofort die aktuell erkannte Richtung; bei einem Richtungswechsel wird das Symbol aktualisiert.
 - Die Aktion wird ausschließlich beim physischen Gestenende ausgeführt.
 - Nachlaufende Momentum-Ereignisse dürfen keine Aktion auslösen oder eine Aktion wiederholen.
 - Ein Swipe in dieselbe Richtung ist idempotent: Ein bereits links angeordnetes Fenster bleibt bei einem erneuten Swipe nach links links angeordnet.
-- Kurze, mehrdeutige, stark diagonale oder umgekehrte Bewegungen führen zu keiner Aktion und zu keinem HUD.
+- Kurze, mehrdeutige, stark diagonale oder umgekehrte Bewegungen führen zu keiner Aktion. Eine bereits sichtbare Vorschau wird beim Abbruch ausgeblendet.
 - EasySwipe unterdrückt normale Scrollereignisse nicht. Stattdessen wird nur in einer gültigen, nicht interaktiven Titelbarregion erkannt.
 
 ### 4.2 Vorläufige Erkennungsparameter
@@ -88,19 +89,21 @@ Die Bewegungsrichtung muss auf die physische Fingerbewegung normalisiert werden,
 1. **idle** – Keine relevante Geste aktiv.
 2. **candidate** – Ein physischer Scroll beginnt; Mausposition, Bildschirm und mögliches Zielfenster werden ermittelt.
 3. **tracking** – Das Ereignis begann über einer gültigen Titelbar; normalisierte Deltas werden gesammelt.
-4. **qualified** – Mindestdistanz und Achsendominanz sind erreicht; die mögliche Zielaktion steht fest, wird aber noch nicht ausgeführt.
-5. **committed** – Die Finger wurden abgehoben und die Aktion wurde erfolgreich ausgeführt.
-6. **cancelled** – Die Geste war ungültig, mehrdeutig, nicht unterstützt oder das Fenster konnte nicht verändert werden.
+4. **previewing** – Totzone und Achsendominanz sind erreicht; das HUD zeigt die mögliche Richtung, ohne das Fenster zu verändern.
+5. **qualified** – Die Mindestdistanz für die Aktion ist erreicht; die Zielaktion steht fest, wird aber noch nicht ausgeführt.
+6. **committed** – Die Finger wurden abgehoben und die Aktion wurde erfolgreich ausgeführt.
+7. **cancelled** – Die Geste war ungültig, mehrdeutig, nicht unterstützt oder das Fenster konnte nicht verändert werden.
 
 ### 5.2 Übergangsregeln
 
 - `idle → candidate` nur bei Beginn einer physischen, kontinuierlichen Scrollsequenz.
 - `candidate → tracking` nur bei gültigem Fenster und gültiger Titelbarregion.
 - `candidate → cancelled` bei interaktivem Kontrollelement, nicht unterstütztem Fenster oder fehlender Berechtigung.
-- `tracking → qualified`, sobald Entfernung und Richtungsdominanz erfüllt sind.
-- Die qualifizierte Richtung darf sich vor dem Loslassen ändern, wenn der Nettovektor deutlich in eine andere unterstützte Richtung wechselt.
-- `tracking/qualified → committed` nur beim physischen Gestenende und nur mit gültiger unterstützter Richtung.
-- `tracking/qualified → cancelled` bei Abbruch, Mehrdeutigkeit oder nicht mehr gültigem AX-Fensterobjekt.
+- `tracking → previewing`, sobald Totzone und Richtungsdominanz erfüllt sind.
+- `previewing → qualified`, sobald die Mindestdistanz für eine Aktion erreicht ist.
+- Die angezeigte Richtung darf sich vor dem Loslassen ändern, wenn der Nettovektor deutlich in eine andere unterstützte Richtung wechselt.
+- `tracking/previewing/qualified → committed` nur beim physischen Gestenende und nur mit gültiger unterstützter Richtung und Mindestdistanz.
+- `tracking/previewing/qualified → cancelled` bei Abbruch, Mehrdeutigkeit oder nicht mehr gültigem AX-Fensterobjekt.
 - Momentum-Ereignisse nach `committed` oder `cancelled` werden verworfen, bis eine neue physische Geste beginnt.
 
 ## 6. Fensterauswahl und Titelbar-Erkennung
@@ -153,7 +156,7 @@ Die Accessibility API und AppKit verwenden unterschiedliche Bildschirmkoordinate
 
 ### 7.3 Größenbeschränkungen einer App
 
-Falls eine Ziel-App eine Mindestgröße erzwingt, darf sie das angeforderte Rechteck begrenzen. EasySwipe liest den resultierenden Rahmen zurück. Das HUD wird nur gezeigt, wenn eine erkennbare Positions-, Größen- oder Minimierungsänderung stattgefunden hat.
+Falls eine Ziel-App eine Mindestgröße erzwingt, darf sie das angeforderte Rechteck begrenzen. EasySwipe liest den resultierenden Rahmen zurück. Die Vorschau erscheint während der Geste; als Bestätigung bleibt das HUD nur sichtbar, wenn eine erkennbare Positions-, Größen- oder Minimierungsänderung stattgefunden hat.
 
 ## 8. Visuelles Feedback
 
@@ -165,17 +168,17 @@ Falls eine Ziel-App eine Mindestgröße erzwingt, darf sie das angeforderte Rech
 - Hintergrund: macOS-Material mit 14 Punkten Eckenradius.
 - Symbol: monochromes SF Symbol beziehungsweise systemnahes Symbol mit hohem Kontrast.
 - Kein Text im normalen HUD.
-- Position Links/Rechts: mittig im resultierenden Fensterrahmen.
-- Position Minimieren: mittig im letzten Fensterrahmen vor der Minimierung.
+- Position während der Geste: mittig im ursprünglichen Fensterrahmen.
+- Position nach Links/Rechts: mittig im resultierenden Fensterrahmen.
+- Position nach Minimieren: mittig im letzten Fensterrahmen vor der Minimierung.
 
 ### 8.2 Timing
 
-- Aktion und HUD starten innerhalb von 100 ms nach dem physischen Gestenende.
-- Einblenden: ungefähr 80 ms.
-- Sichtbar: ungefähr 300 ms.
-- Ausblenden: ungefähr 140 ms.
-- Gesamtdauer: ungefähr 520 ms.
-- Eine neue Aktion ersetzt ein noch sichtbares HUD, statt mehrere HUDs zu stapeln.
+- Die HUD-Vorschau startet innerhalb von 100 ms nach Überschreiten der Totzone.
+- Einblenden: ungefähr 60 ms; danach bleibt die Vorschau bis zum Gestenende sichtbar.
+- Die Fensteraktion startet innerhalb von 100 ms nach dem physischen Gestenende.
+- Erfolgsbestätigung nach dem Loslassen: ungefähr 380 ms, anschließend ungefähr 140 ms Ausblenden.
+- Eine neue Richtung oder Aktion ersetzt ein noch sichtbares HUD, statt mehrere HUDs zu stapeln.
 
 ### 8.3 Bedienungshilfen
 
@@ -374,7 +377,7 @@ Der tatsächliche Login-Item- und Berechtigungsstatus wird stets vom System gele
 - Leerlauf-CPU im Normalbetrieb: im Mittel unter 0,5 % auf Apple Silicon.
 - Keine merkbare Verschlechterung des normalen Trackpad- oder Magic-Mouse-Scrollens.
 - Event-Tap-Callback: Zielwert unter 2 ms; keine AX-Abfragen direkt im Callback.
-- Erfolgreiche Aktion und HUD-Beginn: unter 100 ms nach Fingerfreigabe.
+- HUD-Beginn: unter 100 ms nach Überschreiten der Totzone; erfolgreiche Aktion unter 100 ms nach Fingerfreigabe.
 - Keine Aktivierung von EasySwipe und kein Verlust des Fokus der Ziel-App.
 - Kein mehrfaches Auslösen durch Momentum.
 - Speicherziel im Leerlauf: unter 60 MB.
@@ -432,7 +435,7 @@ Der MVP gilt als funktionsfähig, wenn alle folgenden Kriterien erfüllt sind:
 5. Kurze, diagonale und nach oben gerichtete Bewegungen verändern kein Fenster.
 6. Momentum löst keine zweite Aktion aus.
 7. Scrollen in Fensterinhalten und interaktiven Toolbars bleibt unbeeinträchtigt.
-8. Jede erfolgreiche Aktion zeigt genau ein kurzes, nicht fokussierendes HUD.
+8. Jede erkannte Richtung zeigt während der Geste ein nicht fokussierendes HUD; eine erfolgreiche Aktion bestätigt sie kurz nach dem Loslassen.
 9. Snapping respektiert Menüleiste, Dock, Kameraaussparung und den aktuellen Bildschirm.
 10. Die App arbeitet ausschließlich aus der Menüleiste und erscheint nicht regulär im Dock.
 11. Das Menü ist vollständig auf Deutsch und Englisch verfügbar und folgt der macOS-App-Sprache.
@@ -447,7 +450,7 @@ Der MVP gilt als funktionsfähig, wenn alle folgenden Kriterien erfüllt sind:
 - Developer-ID-Team, Notarisierungsprofil und Sparkle-EdDSA-Schlüsselpaar.
 - Exakte Titelbar-Fallback-Höhe nach breiten Hardware- und App-Kompatibilitätstests.
 - Finale Erkennungsschwellen getrennt nach Trackpad und Magic Mouse, falls Hardwaretests einen relevanten Unterschied zeigen.
-- Finale App-Icon-Gestaltung sowie HUD-Feintiming nach visuellem und praktischem Hardwaretest.
+- HUD-Feintiming nach visuellem und praktischem Hardwaretest.
 
 ## 22. Referenzen
 
