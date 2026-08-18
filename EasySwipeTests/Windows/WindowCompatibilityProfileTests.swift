@@ -3,23 +3,20 @@ import XCTest
 @testable import EasySwipe
 
 final class WindowCompatibilityProfileTests: XCTestCase {
-    private let blockingControlRoles: Set<String> = [
-        "AXButton", "AXCheckBox", "AXComboBox", "AXLink", "AXPopUpButton", "AXRadioButton",
-        "AXSlider", "AXTab", "AXTextArea", "AXTextField",
-    ]
+    private let policy = WindowHitRegionPolicy()
 
     func testWarpAllowsItsCustomTitlebarTextAreaButStillRejectsControls() {
         let profile = WindowCompatibilityProfile(bundleIdentifier: "dev.warp.Warp-Stable")
 
         XCTAssertEqual(profile.minimumTitlebarHeight, 64)
-        XCTAssertEqual(profile.maximumAncestorDepth, 40)
+        XCTAssertEqual(profile.maximumAncestorDepth, 48)
         XCTAssertFalse(
-            profile.rejects(role: "AXTextArea", blockingControlRoles: blockingControlRoles)
+            policy.rejects(role: "AXTextArea", actionNames: [], compatibility: profile)
         )
-        XCTAssertTrue(profile.rejects(role: "AXButton", blockingControlRoles: blockingControlRoles))
-        XCTAssertTrue(profile.rejects(role: "AXTab", blockingControlRoles: blockingControlRoles))
+        XCTAssertTrue(policy.rejects(role: "AXButton", actionNames: [], compatibility: profile))
+        XCTAssertTrue(policy.rejects(role: "AXTab", actionNames: [], compatibility: profile))
         XCTAssertTrue(
-            profile.rejects(role: "AXTextField", blockingControlRoles: blockingControlRoles)
+            policy.rejects(role: "AXTextField", actionNames: [], compatibility: profile)
         )
     }
 
@@ -53,7 +50,7 @@ final class WindowCompatibilityProfileTests: XCTestCase {
             let profile = WindowCompatibilityProfile(bundleIdentifier: bundleIdentifier)
             for role in containerRoles {
                 XCTAssertFalse(
-                    profile.rejects(role: role, blockingControlRoles: blockingControlRoles),
+                    policy.rejects(role: role, actionNames: [], compatibility: profile),
                     "\(bundleIdentifier) must allow the \(role) titlebar container"
                 )
             }
@@ -65,15 +62,92 @@ final class WindowCompatibilityProfileTests: XCTestCase {
 
         XCTAssertTrue(profile.allowedTopRegionRoles.isEmpty)
         XCTAssertEqual(profile.minimumTitlebarHeight, 38)
-        XCTAssertEqual(profile.maximumAncestorDepth, 20)
-        XCTAssertTrue(profile.rejects(role: "AXButton", blockingControlRoles: blockingControlRoles))
-        XCTAssertTrue(profile.rejects(role: "AXTab", blockingControlRoles: blockingControlRoles))
+        XCTAssertEqual(profile.maximumAncestorDepth, 48)
+        XCTAssertTrue(policy.rejects(role: "AXButton", actionNames: [], compatibility: profile))
+        XCTAssertTrue(policy.rejects(role: "AXTab", actionNames: [], compatibility: profile))
         XCTAssertTrue(
-            profile.rejects(role: "AXTextArea", blockingControlRoles: blockingControlRoles)
+            policy.rejects(role: "AXTextArea", actionNames: [], compatibility: profile)
         )
         XCTAssertTrue(
-            profile.rejects(role: "AXTextField", blockingControlRoles: blockingControlRoles)
+            policy.rejects(role: "AXTextField", actionNames: [], compatibility: profile)
         )
-        XCTAssertTrue(profile.rejects(role: "AXLink", blockingControlRoles: blockingControlRoles))
+        XCTAssertTrue(policy.rejects(role: "AXLink", actionNames: [], compatibility: profile))
+    }
+
+    func testTransientSurfacesAndSelectableContentRemainBlocked() {
+        let profile = WindowCompatibilityProfile(bundleIdentifier: "com.example.NativeApp")
+
+        for role in ["AXSheet", "AXPopover", "AXMenu", "AXHelpTag", "AXRow", "AXCell"] {
+            XCTAssertTrue(
+                policy.rejects(role: role, actionNames: [], compatibility: profile),
+                "\(role) must not start a window gesture"
+            )
+        }
+    }
+
+    func testCustomInteractiveElementsAreBlockedByActivationActions() {
+        let profile = WindowCompatibilityProfile(bundleIdentifier: "com.example.CustomChrome")
+
+        for action in ["AXPress", "AXPick", "AXIncrement", "AXConfirm"] {
+            XCTAssertTrue(
+                policy.rejects(role: "AXGroup", actionNames: [action], compatibility: profile),
+                "Custom element exposing \(action) must not start a window gesture"
+            )
+        }
+
+        XCTAssertFalse(
+            policy.rejects(
+                role: "AXGroup",
+                actionNames: ["AXShowMenu", "AXScrollToVisible"],
+                compatibility: profile
+            )
+        )
+    }
+
+    func testWindowEligibilitySeparatesTitlebarWindowsFromOverlays() {
+        let policy = WindowEligibilityPolicy()
+
+        XCTAssertTrue(
+            policy.accepts(
+                subrole: "AXStandardWindow",
+                isModal: false,
+                hasTitlebarEvidence: false
+            )
+        )
+        XCTAssertTrue(
+            policy.accepts(
+                subrole: "AXFloatingWindow",
+                isModal: false,
+                hasTitlebarEvidence: true
+            )
+        )
+        XCTAssertTrue(
+            policy.accepts(
+                subrole: "AXDialog",
+                isModal: false,
+                hasTitlebarEvidence: true
+            )
+        )
+        XCTAssertFalse(
+            policy.accepts(
+                subrole: "AXDialog",
+                isModal: true,
+                hasTitlebarEvidence: true
+            )
+        )
+        XCTAssertFalse(
+            policy.accepts(
+                subrole: "AXSystemDialog",
+                isModal: false,
+                hasTitlebarEvidence: true
+            )
+        )
+        XCTAssertFalse(
+            policy.accepts(
+                subrole: nil,
+                isModal: false,
+                hasTitlebarEvidence: false
+            )
+        )
     }
 }

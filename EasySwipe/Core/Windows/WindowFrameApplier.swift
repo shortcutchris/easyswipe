@@ -112,6 +112,7 @@ final class AccessibilityWindowFrameApplier: WindowFrameApplying {
             }
         }
 
+        let initialFrame = accessibility.frame(target.element)
         var observedFrame: CGRect?
 
         for attempt in 1...maximumAttempts {
@@ -147,6 +148,16 @@ final class AccessibilityWindowFrameApplier: WindowFrameApplying {
             logger.debug(
                 "Window frame correction \(attempt, privacy: .public)/\(self.maximumAttempts, privacy: .public); requested=\(String(describing: requestedFrame), privacy: .public), observed=\(String(describing: observedFrame), privacy: .public)"
             )
+        }
+
+        // Some apps enforce minimum, maximum, or fixed sizes. Respect that
+        // constraint while still reporting a successful action when the app
+        // accepted a meaningful position or size change.
+        if let initialFrame, let observedFrame, !matches(observedFrame, initialFrame) {
+            logger.info(
+                "Window accepted an app-constrained frame; requested=\(String(describing: requestedFrame), privacy: .public), observed=\(String(describing: observedFrame), privacy: .public)"
+            )
+            return observedFrame
         }
 
         logger.error(
