@@ -46,6 +46,16 @@ final class AppCoordinator {
 
     func start() {
         NSApp.setActivationPolicy(.accessory)
+
+        // The release runner uses this short-lived path to prove that dyld can
+        // load every embedded framework under the staged code signature.
+        if ProcessInfo.processInfo.environment["EASYSWIPE_STARTUP_PROBE"] == "1" {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                NSApp.terminate(nil)
+            }
+            return
+        }
+
         permissions.refresh()
         permissions.startPolling()
         loginItem.refresh()

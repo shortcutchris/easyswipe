@@ -100,7 +100,8 @@ release_project() {
         -derivedDataPath '${RELEASE_DERIVED_DATA}' \
         ARCHS='arm64 x86_64' \
         ONLY_ACTIVE_ARCH=NO \
-        CLANG_ENABLE_CODE_COVERAGE=NO
+        CLANG_ENABLE_CODE_COVERAGE=NO \
+        CODE_SIGN_ENTITLEMENTS=Config/EasySwipeDevelopment.entitlements
     /bin/cp -R '${RELEASE_DERIVED_DATA}/Build/Products/Release/EasySwipe.app' '${STAGED_APP}'
     /usr/bin/codesign --verify --deep --strict --verbose=2 '${STAGED_APP}'
     /usr/bin/codesign -d --verbose=4 '${STAGED_APP}' 2>&1 | /usr/bin/grep -q 'flags=.*runtime'
@@ -119,8 +120,12 @@ release_project() {
     esac
     /bin/test \"\$(/usr/bin/plutil -extract LSUIElement raw -o - '${STAGED_APP}/Contents/Info.plist')\" = true
     /bin/test \"\$(/usr/bin/plutil -extract CFBundleShortVersionString raw -o - '${STAGED_APP}/Contents/Info.plist')\" = 0.1.0
+    /bin/test \"\$(/usr/bin/plutil -extract CFBundleVersion raw -o - '${STAGED_APP}/Contents/Info.plist')\" = 2
+    /bin/test \"\$(/usr/bin/plutil -extract CFBundleIconFile raw -o - '${STAGED_APP}/Contents/Info.plist')\" = AppIcon
+    /bin/test -f '${STAGED_APP}/Contents/Resources/AppIcon.icns'
+    EASYSWIPE_STARTUP_PROBE=1 '${STAGED_APP}/Contents/MacOS/EasySwipe'
     /usr/bin/ditto -c -k --sequesterRsrc --keepParent '${STAGED_APP}' '${STAGED_ZIP}'
-    /usr/bin/printf 'Release architectures: %s\\n' \"\${architectures}\""
+    /usr/bin/printf 'Release architectures: %s; startup probe: passed\\n' \"\${architectures}\""
 }
 
 test_project() {
@@ -194,9 +199,12 @@ manifest = {
     'bundleIdentifier': info['CFBundleIdentifier'],
     'version': info['CFBundleShortVersionString'],
     'build': info['CFBundleVersion'],
+    'appIcon': info.get('CFBundleIconFile') == 'AppIcon',
     'menuBarOnly': bool(info['LSUIElement']),
     'hardenedRuntime': True,
+    'libraryValidationDisabledForAdHocBuild': True,
     'coverageInstrumented': False,
+    'startupProbe': 'Passed',
     'codeSigning': 'ad-hoc development',
     'result': summary.get('result'),
     'passedTests': int(summary.get('passedTests', 0)),

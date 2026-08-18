@@ -16,6 +16,7 @@ Version `0.1.0` implements the complete source-level MVP:
 - left/right window snapping based on `NSScreen.visibleFrame`;
 - window minimization;
 - brief nonactivating HUD feedback;
+- a dedicated macOS application icon;
 - menu bar controls and first-run permission onboarding;
 - launch-at-login support through `SMAppService`;
 - English and German String Catalog localizations;
@@ -51,7 +52,7 @@ scripts/remote-studio.sh verify
 scripts/remote-studio.sh fetch
 ```
 
-`verify` runs all unit tests, produces an ad-hoc-signed Release app, verifies its nested code signatures, asserts `LSUIElement`, and requires both `arm64` and `x86_64` architectures. `fetch` copies the app, development ZIP, and verification manifest into the ignored local `artifacts/` directory.
+`verify` runs all unit tests, produces an ad-hoc-signed Release app, verifies its nested code signatures, launches a short-lived startup probe, asserts `LSUIElement`, and requires both `arm64` and `x86_64` architectures. The ad-hoc artifact uses a development-only entitlement so Hardened Runtime can load the separately signed Sparkle framework. Production archives retain Library Validation and use Developer ID signing. `fetch` copies the app, development ZIP, and verification manifest into the ignored local `artifacts/` directory.
 
 ## Updates and distribution
 

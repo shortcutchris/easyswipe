@@ -11,6 +11,8 @@ The repository can produce a verified Universal 2 development build without secr
 
 Only the Sparkle public key and appcast URL belong in the compiled app. Never commit private keys, certificate exports, Apple API keys, passwords, or notarization profiles.
 
+The remote development artifact overrides `CODE_SIGN_ENTITLEMENTS` with `Config/EasySwipeDevelopment.entitlements` because an ad-hoc host cannot pass Library Validation for Sparkle's separately signed framework. Do not use that entitlement for production. The production `Release` configuration uses `Config/EasySwipe.entitlements` and a Developer ID signature.
+
 ## Versioning
 
 Update `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in `project.yml`, then regenerate `EasySwipe.xcodeproj`. The build number must increase for every published build.
