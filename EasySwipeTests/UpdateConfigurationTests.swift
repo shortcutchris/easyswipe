@@ -32,11 +32,11 @@ final class UpdateConfigurationTests: XCTestCase {
         )
         XCTAssertEqual(
             Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
-            "0.1.1"
+            "0.1.2"
         )
         XCTAssertEqual(
             Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String,
-            "9"
+            "10"
         )
         let configuration = UpdateConfiguration.from(bundle: .main)
         XCTAssertEqual(
