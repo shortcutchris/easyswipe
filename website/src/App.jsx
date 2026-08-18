@@ -21,7 +21,7 @@ import {
 } from "@phosphor-icons/react";
 
 const DOWNLOAD_URL =
-  "https://github.com/shortcutchris/easyswipe-releases/releases/download/v0.1.0/EasySwipe-0.1.0-8.zip";
+  "https://github.com/shortcutchris/easyswipe-releases/releases/download/v0.1.1/EasySwipe-0.1.1-9.zip";
 const SOURCE_URL = "https://github.com/shortcutchris/easyswipe";
 const RELEASES_URL = "https://github.com/shortcutchris/easyswipe-releases/releases";
 
@@ -61,8 +61,8 @@ const trustItems = [
   {
     icon: CheckCircle,
     tone: "blue",
-    title: "Version 0.1.0",
-    copy: "Universal for Apple Silicon and Intel, with signed Sparkle updates.",
+    title: "Version 0.1.1",
+    copy: "More reliable multi-display snapping, with signed Sparkle updates.",
   },
 ];
 
@@ -80,7 +80,7 @@ function DownloadButton({ variant = "primary", compact = false }) {
     <a
       className={`button button--${variant}${compact ? " button--compact" : ""}`}
       href={DOWNLOAD_URL}
-      aria-label="Download EasySwipe 0.1.0 for macOS"
+      aria-label="Download EasySwipe 0.1.1 for macOS"
     >
       <DownloadSimple weight="bold" aria-hidden="true" />
       <span>{compact ? "Download" : "Download for macOS"}</span>
