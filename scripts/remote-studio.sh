@@ -138,7 +138,8 @@ release_project() {
 
 test_project() {
   generate_project
-  remote "/bin/mkdir -p '${ARTIFACTS_ROOT}'
+  remote "set -eu
+    /bin/mkdir -p '${ARTIFACTS_ROOT}'
     /bin/rm -rf '${RESULT_BUNDLE}'
     cd '${REMOTE_ROOT}'
     DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
@@ -189,6 +190,12 @@ import sys
 
 with open(sys.argv[1], encoding='utf-8') as handle:
     summary = json.load(handle)
+
+result = summary.get('result')
+failed = int(summary.get('failedTests', 0))
+if result != 'Passed' or failed != 0:
+    raise SystemExit(f'Verification refused: result={result!r}, failedTests={failed}')
+
 with open(sys.argv[2], encoding='utf-8') as handle:
     revision = handle.read().strip()
 app_path = sys.argv[3]
@@ -214,10 +221,10 @@ manifest = {
     'coverageInstrumented': False,
     'startupProbe': 'Passed',
     'codeSigning': 'ad-hoc development',
-    'result': summary.get('result'),
+    'result': result,
     'passedTests': int(summary.get('passedTests', 0)),
     'skippedTests': int(summary.get('skippedTests', 0)),
-    'failedTests': int(summary.get('failedTests', 0)),
+    'failedTests': failed,
     'totalTestCount': int(summary.get('totalTestCount', 0)),
 }
 

@@ -45,7 +45,9 @@ final class AppCoordinator {
     }
 
     func start() {
-        NSApp.setActivationPolicy(.accessory)
+        let environment = ProcessInfo.processInfo.environment
+        let isUpdateProbe = environment["EASYSWIPE_UPDATE_PROBE"] == "1"
+        NSApp.setActivationPolicy(isUpdateProbe ? .regular : .accessory)
 
         // The release runner uses this short-lived path to prove that dyld can
         // load every embedded framework under the staged code signature.
@@ -54,6 +56,13 @@ final class AppCoordinator {
                 NSApp.terminate(nil)
             }
             return
+        }
+
+        if isUpdateProbe {
+            NSApp.activate(ignoringOtherApps: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) { [weak self] in
+                self?.updateController.checkForUpdates()
+            }
         }
 
         permissions.refresh()
