@@ -17,22 +17,15 @@ struct WindowCompatibilityProfile: Equatable, Sendable {
         allowedTopRegionRoles =
             isWarp
             ? [
-                "AXBrowser",
-                "AXList",
-                "AXOutline",
-                kAXScrollAreaRole as String,
-                kAXTabGroupRole as String,
-                "AXTable",
                 kAXTextAreaRole as String,
-                "AXToolbar",
             ]
             : []
         minimumTitlebarHeight = isWarp ? 64 : 38
         maximumAncestorDepth = isWarp ? 40 : 20
     }
 
-    func rejects(role: String, interactiveRoles: Set<String>) -> Bool {
-        guard interactiveRoles.contains(role) else { return false }
+    func rejects(role: String, blockingControlRoles: Set<String>) -> Bool {
+        guard blockingControlRoles.contains(role) else { return false }
         return !allowedTopRegionRoles.contains(role)
     }
 }
@@ -43,27 +36,25 @@ final class WindowResolver: WindowResolving {
     private let geometry: ScreenGeometryService
     private let ownProcessIdentifier: pid_t
 
-    private let interactiveRoles: Set<String> = [
+    // Only direct controls block a gesture. Container roles such as AXToolbar,
+    // AXScrollArea, AXTabGroup, and AXWebArea are frequently used as the
+    // accessibility surface for custom title bars in Electron, Chromium,
+    // Catalyst, and unified-toolbar AppKit windows. Rejecting those ancestors
+    // prevents the resolver from ever reaching their containing AXWindow.
+    private let blockingControlRoles: Set<String> = [
         kAXButtonRole as String,
         kAXCheckBoxRole as String,
         kAXComboBoxRole as String,
-        "AXBrowser",
         "AXDisclosureTriangle",
         "AXIncrementor",
         "AXLink",
-        "AXList",
         "AXMenuButton",
-        "AXOutline",
         kAXPopUpButtonRole as String,
         kAXRadioButtonRole as String,
-        kAXScrollAreaRole as String,
         kAXSliderRole as String,
         "AXTab",
-        kAXTabGroupRole as String,
-        "AXTable",
         kAXTextAreaRole as String,
         kAXTextFieldRole as String,
-        "AXToolbar",
     ]
 
     init(
@@ -152,7 +143,9 @@ final class WindowResolver: WindowResolving {
             guard let candidate = current else { return nil }
             let role = AXBridge.string(candidate, attribute: kAXRoleAttribute as CFString)
 
-            if let role, compatibility.rejects(role: role, interactiveRoles: interactiveRoles) {
+            if let role,
+                compatibility.rejects(role: role, blockingControlRoles: blockingControlRoles)
+            {
                 return nil
             }
 
