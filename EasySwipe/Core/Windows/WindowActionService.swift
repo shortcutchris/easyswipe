@@ -14,9 +14,14 @@ protocol WindowActionPerforming {
 @MainActor
 final class WindowActionService: WindowActionPerforming {
     private let geometry: ScreenGeometryService
+    private let frameApplier: any WindowFrameApplying
 
-    init(geometry: ScreenGeometryService) {
+    init(
+        geometry: ScreenGeometryService,
+        frameApplier: (any WindowFrameApplying)? = nil
+    ) {
         self.geometry = geometry
+        self.frameApplier = frameApplier ?? AccessibilityWindowFrameApplier()
     }
 
     func perform(_ action: WindowGestureAction, on target: AXWindowTarget) -> WindowActionResult? {
@@ -37,40 +42,8 @@ final class WindowActionService: WindowActionPerforming {
         target: AXWindowTarget,
         to requestedFrame: CGRect
     ) -> WindowActionResult? {
-        guard AXBridge.isSettable(target.element, attribute: kAXPositionAttribute as CFString),
-            AXBridge.isSettable(target.element, attribute: kAXSizeAttribute as CFString)
-        else {
-            return nil
-        }
-
         let requestedAXFrame = geometry.axRect(fromAppKit: requestedFrame)
-
-        let positionResult = AXBridge.setPoint(
-            requestedAXFrame.origin,
-            on: target.element,
-            attribute: kAXPositionAttribute as CFString
-        )
-        let sizeResult = AXBridge.setSize(
-            requestedAXFrame.size,
-            on: target.element,
-            attribute: kAXSizeAttribute as CFString
-        )
-        // Some applications change their origin while applying size constraints.
-        let finalPositionResult = AXBridge.setPoint(
-            requestedAXFrame.origin,
-            on: target.element,
-            attribute: kAXPositionAttribute as CFString
-        )
-
-        guard positionResult == .success || finalPositionResult == .success,
-            sizeResult == .success,
-            let resultingAXFrame = AXBridge.frame(target.element)
-        else {
-            return nil
-        }
-
-        let resultingFrame = geometry.appKitRect(fromAX: resultingAXFrame)
-        guard frameChanged(from: target.initialAppKitFrame, to: resultingFrame) else {
+        guard frameApplier.apply(requestedAXFrame, to: target) != nil else {
             return nil
         }
 
@@ -89,13 +62,5 @@ final class WindowActionService: WindowActionPerforming {
         }
 
         return WindowActionResult(action: .minimize)
-    }
-
-    private func frameChanged(from oldFrame: CGRect, to newFrame: CGRect) -> Bool {
-        let tolerance: CGFloat = 1
-        return abs(oldFrame.minX - newFrame.minX) > tolerance
-            || abs(oldFrame.minY - newFrame.minY) > tolerance
-            || abs(oldFrame.width - newFrame.width) > tolerance
-            || abs(oldFrame.height - newFrame.height) > tolerance
     }
 }
