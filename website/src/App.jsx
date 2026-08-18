@@ -22,7 +22,8 @@ import {
 
 const DOWNLOAD_URL =
   "https://github.com/shortcutchris/easyswipe-releases/releases/download/v0.1.0/EasySwipe-0.1.0-8.zip";
-const RELEASES_URL = "https://github.com/shortcutchris/easyswipe-releases";
+const SOURCE_URL = "https://github.com/shortcutchris/easyswipe";
+const RELEASES_URL = "https://github.com/shortcutchris/easyswipe-releases/releases";
 
 const gestureDirections = [
   { id: "up", eyebrow: "Up", label: "Maximize", icon: ArrowUp },
@@ -54,8 +55,8 @@ const trustItems = [
   {
     icon: Cube,
     tone: "coral",
-    title: "Open source soon",
-    copy: "Source publication is being prepared. Public releases live on GitHub today.",
+    title: "Open source · MIT",
+    copy: "Source code, issues, and contributions are public on GitHub under the MIT License.",
   },
   {
     icon: CheckCircle,
@@ -173,7 +174,7 @@ export function App() {
         <Brand />
         <nav aria-label="Primary navigation">
           <a className="nav-link nav-link--desktop" href="#gestures">Gestures</a>
-          <a className="nav-link nav-link--desktop" href={RELEASES_URL}>GitHub</a>
+          <a className="nav-link nav-link--desktop" href={SOURCE_URL}>Source Code</a>
           <DownloadButton compact />
         </nav>
       </header>
@@ -184,8 +185,8 @@ export function App() {
           <h1 id="hero-title">Swipe. Snap. Done.</h1>
           <p>Window management for people who hate window managers.</p>
           <DownloadButton />
-          <a className="text-link" href={RELEASES_URL}>
-            GitHub <ArrowRight weight="bold" aria-hidden="true" />
+          <a className="text-link" href={SOURCE_URL}>
+            Source Code <ArrowRight weight="bold" aria-hidden="true" />
           </a>
         </section>
 
@@ -252,7 +253,8 @@ export function App() {
         <p>© 2026 EasySwipe</p>
         <div>
           <a href="#gestures">Gestures</a>
-          <a href={RELEASES_URL}>GitHub</a>
+          <a href={SOURCE_URL}>Source Code</a>
+          <a href={RELEASES_URL}>Releases</a>
           <a href={DOWNLOAD_URL}>Download</a>
         </div>
       </footer>

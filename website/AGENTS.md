@@ -14,6 +14,6 @@ When implementing from a selected generated mock, treat that image as the source
 - Left and right gesture regions stay exact visual mirrors representing equal 50% window halves.
 - The centered Finder-like window keeps two round blue finger-contact dots fully inside its title bar; the dots visibly demonstrate the selected two-finger swipe, pause at the directional endpoint, then reset for a repeat.
 - Desktop and mobile preserve the same hierarchy; mobile may stack supporting rows but cannot hide the primary download or gesture explanation.
-- The public GitHub destination is the release repository until the private source repository is explicitly made public.
+- Primary “Source Code” links point to the public `shortcutchris/easyswipe` repository; release and download links remain separate and point to `shortcutchris/easyswipe-releases`.
 
 Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts/prepare-sites-build.mjs`, and `tests/sites-worker.test.mjs` intact so the same local prototype can be handed to Sites. Before a Sites handoff, run `npm run build` and `npm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.
