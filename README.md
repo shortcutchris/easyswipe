@@ -13,7 +13,7 @@ The gesture uses two fingers on a MacBook or Magic Trackpad and the continuous t
 
 ## Current release
 
-Version `0.1.0` implements the complete source-level MVP:
+Version `0.1.1` implements the complete source-level MVP:
 
 - title-bar targeting through the macOS Accessibility API;
 - left/right window snapping and normal-window maximization based on `NSScreen.visibleFrame`;
