@@ -123,6 +123,8 @@ Priorität der Erkennung:
 
 Die Fallback-Zone darf nicht dazu führen, dass horizontales Scrollen in Safari-Tabs, Browser-Tabstrips oder anderen interaktiven Toolbars Fensterbewegungen auslöst.
 
+Warp verwendet auf macOS eine eigene Titelleisten- und Tab-Oberfläche. Für Bundle-IDs unter `dev.warp.Warp…` darf deshalb der leere `AXToolbar`-Container als Titelbarregion gelten und die konservative obere Rahmenzone 56 Punkte hoch sein. Darin enthaltene Buttons, Tabs, Textfelder und andere interaktive Elemente bleiben ausgeschlossen. Für andere Apps bleibt die strengere Standardregel unverändert.
+
 ### 6.3 Nicht unterstützte Fenster
 
 Folgende Fenster werden im MVP ohne Aktion und ohne HUD ignoriert:

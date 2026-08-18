@@ -17,6 +17,7 @@ Version `0.1.0` implements the complete source-level MVP:
 - left/right window snapping and normal-window maximization based on `NSScreen.visibleFrame`;
 - window minimization;
 - immediate cursor-adjacent HUD direction previews with brief action confirmation;
+- compatibility handling for Warp's custom macOS title-bar toolbar;
 - a dedicated macOS application icon;
 - menu bar controls and first-run permission onboarding;
 - launch-at-login support through `SMAppService`;

@@ -35,6 +35,7 @@
 		BE143CE79EADEE96907DE8D7 /* HUDPlacementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51C32C14CB6112FBAE8CB5B /* HUDPlacementTests.swift */; };
 		C2FE7CFF0E8DBB28651E37A2 /* WindowActionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B3B64CB09436AAC0A50297 /* WindowActionService.swift */; };
 		C47692AF90933A62DAA12E62 /* ScrollSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F87AAEB8AFD6698248875C /* ScrollSample.swift */; };
+		C7CEF2A041A92C0C115002B3 /* WindowCompatibilityProfileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5E832F809223499BA2A016 /* WindowCompatibilityProfileTests.swift */; };
 		D2D064339A960D5492C5A1BC /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 922B64731AC6D49C82D6B130 /* OnboardingView.swift */; };
 		D5F51372B8C22E0EB05E8F07 /* GestureCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0790D9A964AB1A5229F1FD01 /* GestureCoordinatorTests.swift */; };
 		DFD6204CD3CEE221DEB3DDB8 /* SwipeGestureRecognizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6F7E1743DA794690069270 /* SwipeGestureRecognizerTests.swift */; };
@@ -81,6 +82,7 @@
 		AB0ADCB2A1BE453237EFF00C /* ScrollDeltaNormalizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollDeltaNormalizerTests.swift; sourceTree = "<group>"; };
 		C5C8CEF21CDD8118E2B3B3FA /* AXWindowTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXWindowTarget.swift; sourceTree = "<group>"; };
 		C9A530A28D42AF59BB4B6C51 /* UpdateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateController.swift; sourceTree = "<group>"; };
+		CC5E832F809223499BA2A016 /* WindowCompatibilityProfileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowCompatibilityProfileTests.swift; sourceTree = "<group>"; };
 		E51C32C14CB6112FBAE8CB5B /* HUDPlacementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDPlacementTests.swift; sourceTree = "<group>"; };
 		E5F87AAEB8AFD6698248875C /* ScrollSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollSample.swift; sourceTree = "<group>"; };
 		E9268527CEBB562E4C34CB9B /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 			isa = PBXGroup;
 			children = (
 				14BE95BBF838AD12C14A5937 /* ScreenGeometryTests.swift */,
+				CC5E832F809223499BA2A016 /* WindowCompatibilityProfileTests.swift */,
 			);
 			path = Windows;
 			sourceTree = "<group>";
@@ -399,6 +402,7 @@
 				F0F0501DF6A199C0FA7F2B91 /* ScrollDeltaNormalizerTests.swift in Sources */,
 				DFD6204CD3CEE221DEB3DDB8 /* SwipeGestureRecognizerTests.swift in Sources */,
 				8044BDE698C8EEC59A59E299 /* UpdateConfigurationTests.swift in Sources */,
+				C7CEF2A041A92C0C115002B3 /* WindowCompatibilityProfileTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,7 +486,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Config/EasySwipe.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				EASYSWIPE_FEED_URL = "";
 				EASYSWIPE_SPARKLE_PUBLIC_KEY = "";
 				ENABLE_APP_SANDBOX = NO;
@@ -506,7 +510,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Config/EasySwipe.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				EASYSWIPE_FEED_URL = "";
 				EASYSWIPE_SPARKLE_PUBLIC_KEY = "";
 				ENABLE_APP_SANDBOX = NO;

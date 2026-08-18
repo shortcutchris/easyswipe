@@ -7,6 +7,22 @@ protocol WindowResolving {
     func resolveTarget(at appKitPoint: CGPoint) -> AXWindowTarget?
 }
 
+struct WindowCompatibilityProfile: Equatable, Sendable {
+    let allowsToolbarContainer: Bool
+    let minimumTitlebarHeight: CGFloat
+
+    init(bundleIdentifier: String?) {
+        let isWarp = bundleIdentifier?.hasPrefix("dev.warp.Warp") == true
+        allowsToolbarContainer = isWarp
+        minimumTitlebarHeight = isWarp ? 56 : 38
+    }
+
+    func rejects(role: String, interactiveRoles: Set<String>) -> Bool {
+        guard interactiveRoles.contains(role) else { return false }
+        return !(allowsToolbarContainer && role == "AXToolbar")
+    }
+}
+
 @MainActor
 final class WindowResolver: WindowResolving {
     private let systemWideElement = AXUIElementCreateSystemWide()
@@ -56,7 +72,19 @@ final class WindowResolver: WindowResolving {
         )
 
         guard error == .success, let hitElement else { return nil }
-        guard let window = enclosingNonInteractiveWindow(for: hitElement) else { return nil }
+
+        var hitProcessIdentifier: pid_t = 0
+        _ = AXUIElementGetPid(hitElement, &hitProcessIdentifier)
+        let bundleIdentifier =
+            NSRunningApplication(processIdentifier: hitProcessIdentifier)?.bundleIdentifier
+        let compatibility = WindowCompatibilityProfile(bundleIdentifier: bundleIdentifier)
+
+        guard
+            let window = enclosingNonInteractiveWindow(
+                for: hitElement,
+                compatibility: compatibility
+            )
+        else { return nil }
 
         var processIdentifier: pid_t = 0
         guard AXUIElementGetPid(window, &processIdentifier) == .success,
@@ -76,7 +104,11 @@ final class WindowResolver: WindowResolving {
             return nil
         }
 
-        let titlebarHeight = estimatedTitlebarHeight(for: window, windowFrame: axFrame)
+        let titlebarHeight = estimatedTitlebarHeight(
+            for: window,
+            windowFrame: axFrame,
+            minimumHeight: compatibility.minimumTitlebarHeight
+        )
         let titlebarFrame = CGRect(
             x: axFrame.minX,
             y: axFrame.minY,
@@ -94,14 +126,17 @@ final class WindowResolver: WindowResolving {
         )
     }
 
-    private func enclosingNonInteractiveWindow(for element: AXUIElement) -> AXUIElement? {
+    private func enclosingNonInteractiveWindow(
+        for element: AXUIElement,
+        compatibility: WindowCompatibilityProfile
+    ) -> AXUIElement? {
         var current: AXUIElement? = element
 
         for _ in 0..<20 {
             guard let candidate = current else { return nil }
             let role = AXBridge.string(candidate, attribute: kAXRoleAttribute as CFString)
 
-            if let role, interactiveRoles.contains(role) {
+            if let role, compatibility.rejects(role: role, interactiveRoles: interactiveRoles) {
                 return nil
             }
 
@@ -122,8 +157,12 @@ final class WindowResolver: WindowResolving {
         return nil
     }
 
-    private func estimatedTitlebarHeight(for window: AXUIElement, windowFrame: CGRect) -> CGFloat {
-        var height: CGFloat = 38
+    private func estimatedTitlebarHeight(
+        for window: AXUIElement,
+        windowFrame: CGRect,
+        minimumHeight: CGFloat
+    ) -> CGFloat {
+        var height = minimumHeight
 
         if let closeButton = AXBridge.element(window, attribute: kAXCloseButtonAttribute as CFString),
             let buttonFrame = AXBridge.frame(closeButton)
