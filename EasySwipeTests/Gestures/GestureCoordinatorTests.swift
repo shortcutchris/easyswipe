@@ -12,11 +12,13 @@ final class GestureCoordinatorTests: XCTestCase {
         harness.coordinator.handle(sample(deltaX: 20, phase: .changed))
         XCTAssertTrue(harness.actions.performed.isEmpty)
         XCTAssertEqual(harness.hud.previews, [.snapLeft])
+        XCTAssertEqual(harness.hud.previewLocations, [CGPoint(x: 100, y: 100)])
 
         harness.coordinator.handle(sample(phase: .ended))
 
         XCTAssertEqual(harness.actions.performed, [.snapLeft])
         XCTAssertEqual(harness.hud.confirmations, [.snapLeft])
+        XCTAssertEqual(harness.hud.confirmationLocations, [CGPoint(x: 100, y: 100)])
     }
 
     func testMomentumNeverCommitsTrackedGesture() {
@@ -151,7 +153,7 @@ private final class ActionSpy: WindowActionPerforming {
 
     func perform(_ action: WindowGestureAction, on target: AXWindowTarget) -> WindowActionResult? {
         performed.append(action)
-        return WindowActionResult(action: action, hudFrame: target.initialAppKitFrame)
+        return WindowActionResult(action: action)
     }
 }
 
@@ -159,14 +161,18 @@ private final class ActionSpy: WindowActionPerforming {
 private final class HUDSpy: HUDPresenting {
     private(set) var previews: [WindowGestureAction] = []
     private(set) var confirmations: [WindowGestureAction] = []
+    private(set) var previewLocations: [CGPoint] = []
+    private(set) var confirmationLocations: [CGPoint] = []
     private(set) var dismissCount = 0
 
-    func showPreview(action: WindowGestureAction, over targetFrame: CGRect) {
+    func showPreview(action: WindowGestureAction, near pointerLocation: CGPoint) {
         previews.append(action)
+        previewLocations.append(pointerLocation)
     }
 
-    func confirm(action: WindowGestureAction, over targetFrame: CGRect) {
+    func confirm(action: WindowGestureAction, near pointerLocation: CGPoint) {
         confirmations.append(action)
+        confirmationLocations.append(pointerLocation)
     }
 
     func dismiss() {

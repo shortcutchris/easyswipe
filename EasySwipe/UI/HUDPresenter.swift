@@ -3,9 +3,35 @@ import Foundation
 
 @MainActor
 protocol HUDPresenting {
-    func showPreview(action: WindowGestureAction, over targetFrame: CGRect)
-    func confirm(action: WindowGestureAction, over targetFrame: CGRect)
+    func showPreview(action: WindowGestureAction, near pointerLocation: CGPoint)
+    func confirm(action: WindowGestureAction, near pointerLocation: CGPoint)
     func dismiss()
+}
+
+enum HUDPlacement {
+    static func origin(
+        near pointerLocation: CGPoint,
+        panelSize: CGSize,
+        visibleFrame: CGRect,
+        gap: CGFloat = 12
+    ) -> CGPoint {
+        var x = pointerLocation.x + gap
+        if x + panelSize.width > visibleFrame.maxX {
+            x = pointerLocation.x - gap - panelSize.width
+        }
+
+        var y = pointerLocation.y - gap - panelSize.height
+        if y < visibleFrame.minY {
+            y = pointerLocation.y + gap
+        }
+
+        let maximumX = max(visibleFrame.minX, visibleFrame.maxX - panelSize.width)
+        let maximumY = max(visibleFrame.minY, visibleFrame.maxY - panelSize.height)
+        return CGPoint(
+            x: min(max(x, visibleFrame.minX), maximumX),
+            y: min(max(y, visibleFrame.minY), maximumY)
+        )
+    }
 }
 
 @MainActor
@@ -63,14 +89,14 @@ final class HUDPresenter: HUDPresenting {
         ])
     }
 
-    func showPreview(action: WindowGestureAction, over targetFrame: CGRect) {
+    func showPreview(action: WindowGestureAction, near pointerLocation: CGPoint) {
         _ = preparePresentation()
-        present(action: action, over: targetFrame)
+        present(action: action, near: pointerLocation)
     }
 
-    func confirm(action: WindowGestureAction, over targetFrame: CGRect) {
+    func confirm(action: WindowGestureAction, near pointerLocation: CGPoint) {
         let generation = preparePresentation()
-        present(action: action, over: targetFrame)
+        present(action: action, near: pointerLocation)
 
         let workItem = DispatchWorkItem { [weak self] in
             MainActor.assumeIsolated {
@@ -97,16 +123,21 @@ final class HUDPresenter: HUDPresenting {
         return presentationGeneration
     }
 
-    private func present(action: WindowGestureAction, over targetFrame: CGRect) {
+    private func present(action: WindowGestureAction, near pointerLocation: CGPoint) {
         let wasVisible = panel.isVisible
 
         imageView.image = image(for: action)
         updateAccessibilityAppearance()
 
         let panelSize = panel.frame.size
-        let origin = CGPoint(
-            x: targetFrame.midX - panelSize.width / 2,
-            y: targetFrame.midY - panelSize.height / 2
+        let visibleFrame =
+            NSScreen.screens.first(where: { $0.frame.contains(pointerLocation) })?.visibleFrame
+            ?? NSScreen.main?.visibleFrame
+            ?? CGRect(origin: pointerLocation, size: panelSize)
+        let origin = HUDPlacement.origin(
+            near: pointerLocation,
+            panelSize: panelSize,
+            visibleFrame: visibleFrame
         )
         panel.setFrameOrigin(origin)
         panel.orderFrontRegardless()

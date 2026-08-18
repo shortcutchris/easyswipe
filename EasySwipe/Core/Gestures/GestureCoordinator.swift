@@ -17,6 +17,7 @@ final class GestureCoordinator {
     private var state: SessionState = .idle
     private var fallbackEndTimer: Timer?
     private var previewedAction: WindowGestureAction?
+    private var pointerLocation: CGPoint?
 
     init(
         resolver: any WindowResolving,
@@ -80,6 +81,7 @@ final class GestureCoordinator {
         recognizer.cancel()
         state = .idle
         previewedAction = nil
+        pointerLocation = nil
         hudPresenter.dismiss()
     }
 
@@ -99,21 +101,22 @@ final class GestureCoordinator {
     }
 
     private func update(with sample: ScrollSample) {
-        guard case .tracking(let target) = state else { return }
+        guard case .tracking = state else { return }
+        pointerLocation = sample.location
         recognizer.update(
             deltaX: sample.physicalDeltaX,
             deltaY: sample.physicalDeltaY
         )
-        updatePreview(over: target)
+        updatePreview(near: sample.location)
     }
 
-    private func updatePreview(over target: AXWindowTarget) {
+    private func updatePreview(near pointerLocation: CGPoint) {
         let action = recognizer.previewAction
         guard action != previewedAction else { return }
 
         previewedAction = action
         if let action {
-            hudPresenter.showPreview(action: action, over: target.initialAppKitFrame)
+            hudPresenter.showPreview(action: action, near: pointerLocation)
         } else {
             hudPresenter.dismiss()
         }
@@ -126,12 +129,18 @@ final class GestureCoordinator {
         guard case .tracking(let target) = state else {
             state = .idle
             recognizer.cancel()
+            pointerLocation = nil
+            hudPresenter.dismiss()
             return
         }
 
         let action = recognizer.finish()
+        let pointerLocation =
+            self.pointerLocation
+            ?? CGPoint(x: target.initialAppKitFrame.midX, y: target.initialAppKitFrame.midY)
         state = .idle
         previewedAction = nil
+        self.pointerLocation = nil
 
         guard let action,
             let result = actionService.perform(action, on: target)
@@ -140,7 +149,7 @@ final class GestureCoordinator {
             return
         }
 
-        hudPresenter.confirm(action: result.action, over: result.hudFrame)
+        hudPresenter.confirm(action: result.action, near: pointerLocation)
     }
 
     private func scheduleFallbackEnd() {

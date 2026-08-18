@@ -168,9 +168,8 @@ Falls eine Ziel-App eine Mindestgröße erzwingt, darf sie das angeforderte Rech
 - Hintergrund: macOS-Material mit 14 Punkten Eckenradius.
 - Symbol: monochromes SF Symbol beziehungsweise systemnahes Symbol mit hohem Kontrast.
 - Kein Text im normalen HUD.
-- Position während der Geste: mittig im ursprünglichen Fensterrahmen.
-- Position nach Links/Rechts: mittig im resultierenden Fensterrahmen.
-- Position nach Minimieren: mittig im letzten Fensterrahmen vor der Minimierung.
+- Position während der Geste und nach dem Loslassen: unmittelbar neben dem Mauszeiger, ohne ihn zu verdecken.
+- An Bildschirmrändern weicht das HUD automatisch auf die gegenüberliegende Cursorseite aus und bleibt vollständig im sichtbaren Bildschirmbereich.
 
 ### 8.2 Timing
 

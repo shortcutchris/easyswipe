@@ -32,6 +32,7 @@
 		8D69FA45DEBCD18FEA5BD274 /* ScreenGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14BE95BBF838AD12C14A5937 /* ScreenGeometryTests.swift */; };
 		9C4973B6888C71BC2258ABD8 /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435C1F8CD1BCDDA0B2A3EC48 /* StatusMenuController.swift */; };
 		A7E1CCF3AD232439C898FA1C /* LoginItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F969AE7461E97F90A4DD5B /* LoginItemController.swift */; };
+		BE143CE79EADEE96907DE8D7 /* HUDPlacementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51C32C14CB6112FBAE8CB5B /* HUDPlacementTests.swift */; };
 		C2FE7CFF0E8DBB28651E37A2 /* WindowActionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B3B64CB09436AAC0A50297 /* WindowActionService.swift */; };
 		C47692AF90933A62DAA12E62 /* ScrollSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F87AAEB8AFD6698248875C /* ScrollSample.swift */; };
 		D2D064339A960D5492C5A1BC /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 922B64731AC6D49C82D6B130 /* OnboardingView.swift */; };
@@ -80,6 +81,7 @@
 		AB0ADCB2A1BE453237EFF00C /* ScrollDeltaNormalizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollDeltaNormalizerTests.swift; sourceTree = "<group>"; };
 		C5C8CEF21CDD8118E2B3B3FA /* AXWindowTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXWindowTarget.swift; sourceTree = "<group>"; };
 		C9A530A28D42AF59BB4B6C51 /* UpdateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateController.swift; sourceTree = "<group>"; };
+		E51C32C14CB6112FBAE8CB5B /* HUDPlacementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDPlacementTests.swift; sourceTree = "<group>"; };
 		E5F87AAEB8AFD6698248875C /* ScrollSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollSample.swift; sourceTree = "<group>"; };
 		E9268527CEBB562E4C34CB9B /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
 		EC90E0893722792752738E5F /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
@@ -99,6 +101,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0ED490CAACF1763BC8A825E6 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				E51C32C14CB6112FBAE8CB5B /* HUDPlacementTests.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
 		100C9CE758BD0C0269096B1D /* Gestures */ = {
 			isa = PBXGroup;
 			children = (
@@ -237,6 +247,7 @@
 				68E447BD0B7E94EE63A7DDC1 /* LocalizationTests.swift */,
 				1BC27652E89B7D91B8FFB8EE /* UpdateConfigurationTests.swift */,
 				100C9CE758BD0C0269096B1D /* Gestures */,
+				0ED490CAACF1763BC8A825E6 /* UI */,
 				367573FDCC9E8ACE844615DC /* Windows */,
 			);
 			path = EasySwipeTests;
@@ -382,6 +393,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D5F51372B8C22E0EB05E8F07 /* GestureCoordinatorTests.swift in Sources */,
+				BE143CE79EADEE96907DE8D7 /* HUDPlacementTests.swift in Sources */,
 				26E9807422EDA5941D1F1109 /* LocalizationTests.swift in Sources */,
 				8D69FA45DEBCD18FEA5BD274 /* ScreenGeometryTests.swift in Sources */,
 				F0F0501DF6A199C0FA7F2B91 /* ScrollDeltaNormalizerTests.swift in Sources */,
@@ -470,7 +482,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Config/EasySwipe.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				EASYSWIPE_FEED_URL = "";
 				EASYSWIPE_SPARKLE_PUBLIC_KEY = "";
 				ENABLE_APP_SANDBOX = NO;
@@ -494,7 +506,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Config/EasySwipe.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				EASYSWIPE_FEED_URL = "";
 				EASYSWIPE_SPARKLE_PUBLIC_KEY = "";
 				ENABLE_APP_SANDBOX = NO;

@@ -4,7 +4,6 @@ import Foundation
 
 struct WindowActionResult: Equatable, Sendable {
     let action: WindowGestureAction
-    let hudFrame: CGRect
 }
 
 @MainActor
@@ -69,7 +68,7 @@ final class WindowActionService: WindowActionPerforming {
             return nil
         }
 
-        return WindowActionResult(action: action, hudFrame: resultingFrame)
+        return WindowActionResult(action: action)
     }
 
     private func minimize(_ target: AXWindowTarget) -> WindowActionResult? {
@@ -83,7 +82,7 @@ final class WindowActionService: WindowActionPerforming {
             return nil
         }
 
-        return WindowActionResult(action: .minimize, hudFrame: target.initialAppKitFrame)
+        return WindowActionResult(action: .minimize)
     }
 
     private func frameChanged(from oldFrame: CGRect, to newFrame: CGRect) -> Bool {
