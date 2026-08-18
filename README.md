@@ -2,7 +2,7 @@
 
 EasySwipe is a small native macOS menu bar app for arranging a window directly from its title bar.
 
-[Website](https://easyswipe.shortcutchris.chatgpt.site) · [Download the latest release](https://github.com/shortcutchris/easyswipe-releases/releases/latest) · [Release repository](https://github.com/shortcutchris/easyswipe-releases)
+[Website](https://easyswipe.shortcutchris.chatgpt.site) · [Download the latest release](https://github.com/shortcutchris/easyswipe-releases/releases/latest/download/EasySwipe.zip) · [Release repository](https://github.com/shortcutchris/easyswipe-releases)
 
 - Swipe left to fill the left half of the current display.
 - Swipe right to fill the right half.

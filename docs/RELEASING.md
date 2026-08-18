@@ -19,6 +19,7 @@ Ad-hoc signatures have a code-hash-bound designated requirement, so macOS privac
 
 - Appcast: <https://raw.githubusercontent.com/shortcutchris/easyswipe-releases/main/appcast.xml>
 - Release assets: <https://github.com/shortcutchris/easyswipe-releases/releases>
+- Stable latest download: <https://github.com/shortcutchris/easyswipe-releases/releases/latest/download/EasySwipe.zip>
 - Sparkle Keychain account: `com.shortcutchris.EasySwipe.updates`
 - Public EdDSA key: `a5+ZLh811liNfhGI69w0MTTkEr1OfVJOGer3M8FhMGA=`
 
@@ -36,7 +37,7 @@ Set the name of a `notarytool` Keychain profile and run:
 EASYSWIPE_NOTARY_PROFILE='EasySwipe' scripts/release.sh
 ```
 
-The script refuses to publish unless the source and release repositories are clean, the source commit is on `origin/main`, the full Mac Studio verification succeeds, the fetched Universal 2 app is Developer-ID-signed, Apple accepts the notarization, Gatekeeper accepts the stapled app, and Sparkle generates a valid EdDSA signature. It uploads the archive before committing the new appcast, so the public feed never points at a missing download.
+The script refuses to publish unless the source and release repositories are clean, the source commit is on `origin/main`, the full Mac Studio verification succeeds, the fetched Universal 2 app is Developer-ID-signed, Apple accepts the notarization, Gatekeeper accepts the stapled app, and Sparkle generates a valid EdDSA signature. It uploads both the versioned Sparkle archive and a byte-identical `EasySwipe.zip` alias before committing the new appcast. The appcast keeps its immutable versioned URL, while the website can permanently use GitHub's `releases/latest/download/EasySwipe.zip` redirect.
 
 ## Manual production archive
 
@@ -87,4 +88,4 @@ The in-app update controller starts only when both the HTTPS feed URL and public
 4. Notarize, staple, and run Gatekeeper assessment.
 5. Generate and validate the signed Sparkle appcast.
 6. Test first launch, Accessibility onboarding, login item, all four gestures, both languages, and update installation on clean supported Macs.
-7. Publish the archive and appcast, then create the GitHub release.
+7. Publish the versioned archive, the stable `EasySwipe.zip` alias, and the appcast, then verify both public download URLs.
