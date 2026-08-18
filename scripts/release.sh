@@ -114,6 +114,7 @@ preflight() {
 verify_and_sign() {
   "${SCRIPT_DIR}/remote-studio.sh" verify
   "${SCRIPT_DIR}/remote-studio.sh" fetch
+  validate_verification_manifest
   [[ -x "${SPARKLE_TOOLS}/generate_appcast" ]] \
     || fail "Pinned Sparkle generate_appcast tool was not fetched."
   [[ -x "${SPARKLE_TOOLS}/sign_update" ]] \
@@ -121,6 +122,40 @@ verify_and_sign() {
 
   EASYSWIPE_CODE_SIGN_IDENTITY="${SIGNING_IDENTITY}" \
     "${SCRIPT_DIR}/remote-studio.sh" local-sign
+}
+
+validate_verification_manifest() {
+  local manifest="${REPOSITORY_ROOT}/artifacts/verification.json"
+  local source_revision="$(git -C "${REPOSITORY_ROOT}" rev-parse HEAD)"
+
+  [[ -f "${manifest}" ]] || fail "Verification manifest is missing: ${manifest}"
+  /usr/bin/python3 - "${manifest}" "${VERSION}" "${BUILD}" "${source_revision}" <<'PY'
+import json
+import sys
+
+manifest_path, version, build, source_revision = sys.argv[1:]
+with open(manifest_path, encoding="utf-8") as handle:
+    manifest = json.load(handle)
+
+checks = {
+    "result": manifest.get("result") == "Passed",
+    "failedTests": int(manifest.get("failedTests", -1)) == 0,
+    "totalTestCount": int(manifest.get("totalTestCount", 0)) > 0,
+    "version": manifest.get("version") == version,
+    "build": str(manifest.get("build")) == build,
+    "sourceRevision": manifest.get("sourceRevision") == source_revision,
+    "startupProbe": manifest.get("startupProbe") == "Passed",
+}
+failed = [name for name, passed in checks.items() if not passed]
+if failed:
+    raise SystemExit(
+        "Release verification manifest failed: " + ", ".join(failed)
+    )
+print(
+    "Verified release manifest: "
+    f"{manifest['passedTests']} tests passed for {version} ({build})."
+)
+PY
 }
 
 stage_and_notarize() {
