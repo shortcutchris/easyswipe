@@ -1,0 +1,37 @@
+# macOS
+.DS_Store
+
+# Xcode
+DerivedData/
+build/
+*.xcresult
+*.xcarchive
+*.ipa
+*.dSYM
+*.dSYM.zip
+xcuserdata/
+*.xcuserstate
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Project generators
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# Local artifacts and configuration
+artifacts/
+*.log
+.env
+.env.*
+!.env.example
+
+# Signing, notarization, and Sparkle secrets
+*.p8
+*.p12
+*.cer
+*.provisionprofile
+sparkle_private_key*
+notarytool-profile*
+
