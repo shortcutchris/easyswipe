@@ -8,18 +8,32 @@ protocol WindowResolving {
 }
 
 struct WindowCompatibilityProfile: Equatable, Sendable {
-    let allowsToolbarContainer: Bool
+    let allowedTopRegionRoles: Set<String>
     let minimumTitlebarHeight: CGFloat
+    let maximumAncestorDepth: Int
 
     init(bundleIdentifier: String?) {
         let isWarp = bundleIdentifier?.hasPrefix("dev.warp.Warp") == true
-        allowsToolbarContainer = isWarp
-        minimumTitlebarHeight = isWarp ? 56 : 38
+        allowedTopRegionRoles =
+            isWarp
+            ? [
+                "AXBrowser",
+                "AXList",
+                "AXOutline",
+                kAXScrollAreaRole as String,
+                kAXTabGroupRole as String,
+                "AXTable",
+                kAXTextAreaRole as String,
+                "AXToolbar",
+            ]
+            : []
+        minimumTitlebarHeight = isWarp ? 64 : 38
+        maximumAncestorDepth = isWarp ? 40 : 20
     }
 
     func rejects(role: String, interactiveRoles: Set<String>) -> Bool {
         guard interactiveRoles.contains(role) else { return false }
-        return !(allowsToolbarContainer && role == "AXToolbar")
+        return !allowedTopRegionRoles.contains(role)
     }
 }
 
@@ -44,6 +58,7 @@ final class WindowResolver: WindowResolving {
         kAXRadioButtonRole as String,
         kAXScrollAreaRole as String,
         kAXSliderRole as String,
+        "AXTab",
         kAXTabGroupRole as String,
         "AXTable",
         kAXTextAreaRole as String,
@@ -131,8 +146,9 @@ final class WindowResolver: WindowResolving {
         compatibility: WindowCompatibilityProfile
     ) -> AXUIElement? {
         var current: AXUIElement? = element
+        let directWindow = AXBridge.element(element, attribute: kAXWindowAttribute as CFString)
 
-        for _ in 0..<20 {
+        for _ in 0..<compatibility.maximumAncestorDepth {
             guard let candidate = current else { return nil }
             let role = AXBridge.string(candidate, attribute: kAXRoleAttribute as CFString)
 
@@ -151,10 +167,12 @@ final class WindowResolver: WindowResolving {
 
             // Some third-party accessibility trees omit parents but still
             // expose their containing window directly.
-            return AXBridge.element(candidate, attribute: kAXWindowAttribute as CFString)
+            return directWindow
         }
 
-        return nil
+        // Deep custom accessibility trees can exceed the conservative ancestor
+        // walk even though the hit element exposes its window directly.
+        return directWindow
     }
 
     private func estimatedTitlebarHeight(
