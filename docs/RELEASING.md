@@ -1,13 +1,13 @@
 # Releasing EasySwipe
 
-The repository can produce a verified Universal 2 development build without secrets. Public releases require release-owner credentials and an HTTPS update host.
+The repository can produce a verified Universal 2 development build without secrets. Public releases are published through the separate public repository at <https://github.com/shortcutchris/easyswipe-releases>.
 
 ## Required private configuration
 
 - an Apple Developer team with a `Developer ID Application` certificate;
 - notarization credentials stored in a Keychain profile;
 - a Sparkle EdDSA private key stored outside the repository;
-- an HTTPS location for the appcast and update archive.
+- access to the public `shortcutchris/easyswipe-releases` repository.
 
 Only the Sparkle public key and appcast URL belong in the compiled app. Never commit private keys, certificate exports, Apple API keys, passwords, or notarization profiles.
 
@@ -15,11 +15,30 @@ The remote development artifact overrides `CODE_SIGN_ENTITLEMENTS` with `Config/
 
 Ad-hoc signatures have a code-hash-bound designated requirement, so macOS privacy permissions do not persist across rebuilt binaries. For repeated local hardware checks, fetch the verified artifact and run `scripts/remote-studio.sh local-sign` with `EASYSWIPE_CODE_SIGN_IDENTITY` set to the intended Developer ID identity. After switching from ad-hoc to Developer ID signing, remove the stale Accessibility entry and grant the signed app once. Subsequent builds signed by the same Developer ID and using the same bundle identifier retain that code identity.
 
+## Configured update channel
+
+- Appcast: <https://raw.githubusercontent.com/shortcutchris/easyswipe-releases/main/appcast.xml>
+- Release assets: <https://github.com/shortcutchris/easyswipe-releases/releases>
+- Sparkle Keychain account: `com.shortcutchris.EasySwipe.updates`
+- Public EdDSA key: `a5+ZLh811liNfhGI69w0MTTkEr1OfVJOGer3M8FhMGA=`
+
+The private EdDSA key exists only in the release owner's login Keychain.
+
 ## Versioning
 
 Update `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in `project.yml`, then regenerate `EasySwipe.xcodeproj`. The build number must increase for every published build.
 
-## Production archive
+## Guarded release command
+
+Set the name of a `notarytool` Keychain profile and run:
+
+```sh
+EASYSWIPE_NOTARY_PROFILE='EasySwipe' scripts/release.sh
+```
+
+The script refuses to publish unless the source and release repositories are clean, the source commit is on `origin/main`, the full Mac Studio verification succeeds, the fetched Universal 2 app is Developer-ID-signed, Apple accepts the notarization, Gatekeeper accepts the stapled app, and Sparkle generates a valid EdDSA signature. It uploads the archive before committing the new appcast, so the public feed never points at a missing download.
+
+## Manual production archive
 
 Pass production values as command-line build settings or through a private Xcode configuration:
 
@@ -35,8 +54,8 @@ xcodebuild archive \
   CODE_SIGN_STYLE=Manual \
   CODE_SIGN_IDENTITY='Developer ID Application: YOUR NAME (TEAMID)' \
   DEVELOPMENT_TEAM=TEAMID \
-  EASYSWIPE_FEED_URL='https://updates.example.com/easyswipe/appcast.xml' \
-  EASYSWIPE_SPARKLE_PUBLIC_KEY='YOUR_SPARKLE_PUBLIC_KEY'
+  EASYSWIPE_FEED_URL='https://raw.githubusercontent.com/shortcutchris/easyswipe-releases/main/appcast.xml' \
+  EASYSWIPE_SPARKLE_PUBLIC_KEY='a5+ZLh811liNfhGI69w0MTTkEr1OfVJOGer3M8FhMGA='
 ```
 
 Before distribution, verify the archive product:
@@ -67,5 +86,5 @@ The in-app update controller starts only when both the HTTPS feed URL and public
 3. Verify signatures, Hardened Runtime, version, build number, and both architectures.
 4. Notarize, staple, and run Gatekeeper assessment.
 5. Generate and validate the signed Sparkle appcast.
-6. Test first launch, Accessibility onboarding, login item, all three gestures, both languages, and update installation on clean supported Macs.
+6. Test first launch, Accessibility onboarding, login item, all four gestures, both languages, and update installation on clean supported Macs.
 7. Publish the archive and appcast, then create the GitHub release.

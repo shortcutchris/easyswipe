@@ -25,7 +25,7 @@ final class UpdateConfigurationTests: XCTestCase {
         )
     }
 
-    func testDevelopmentAppMetadataIsMenuBarOnlyAndSafelyUnconfigured() {
+    func testAppMetadataContainsProductionUpdateConfiguration() {
         XCTAssertEqual(
             (Bundle.main.object(forInfoDictionaryKey: "LSUIElement") as? NSNumber)?.boolValue,
             true
@@ -34,6 +34,15 @@ final class UpdateConfigurationTests: XCTestCase {
             Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
             "0.1.0"
         )
-        XCTAssertFalse(UpdateConfiguration.from(bundle: .main).isConfigured)
+        let configuration = UpdateConfiguration.from(bundle: .main)
+        XCTAssertEqual(
+            configuration.feedURL?.absoluteString,
+            "https://raw.githubusercontent.com/shortcutchris/easyswipe-releases/main/appcast.xml"
+        )
+        XCTAssertEqual(
+            configuration.publicKey,
+            "a5+ZLh811liNfhGI69w0MTTkEr1OfVJOGer3M8FhMGA="
+        )
+        XCTAssertTrue(configuration.isConfigured)
     }
 }

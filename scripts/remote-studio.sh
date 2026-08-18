@@ -4,6 +4,8 @@ set -euo pipefail
 
 readonly SCRIPT_DIR="${0:A:h}"
 readonly REPOSITORY_ROOT="${SCRIPT_DIR:h}"
+readonly PROJECT_VERSION="$(/usr/bin/awk '$1 == "MARKETING_VERSION:" { gsub(/\"/, "", $2); print $2; exit }' "${REPOSITORY_ROOT}/project.yml")"
+readonly PROJECT_BUILD="$(/usr/bin/awk '$1 == "CURRENT_PROJECT_VERSION:" { gsub(/\"/, "", $2); print $2; exit }' "${REPOSITORY_ROOT}/project.yml")"
 readonly REMOTE_HOST="${EASYSWIPE_REMOTE_HOST:-chris@mac-studio-von-chris-56.tailf17cde.ts.net}"
 readonly REMOTE_ROOT="${EASYSWIPE_REMOTE_ROOT:-/Users/chris/Developer/easyswipe}"
 readonly DERIVED_DATA="${EASYSWIPE_DERIVED_DATA:-/Users/chris/Developer/DerivedData/EasySwipe}"
@@ -12,8 +14,10 @@ readonly ARTIFACTS_ROOT="${EASYSWIPE_ARTIFACTS_ROOT:-/Users/chris/Developer/Easy
 readonly RESULT_BUNDLE="${ARTIFACTS_ROOT}/EasySwipeTests.xcresult"
 readonly SUMMARY_FILE="${ARTIFACTS_ROOT}/EasySwipeTests-summary.json"
 readonly STAGED_APP="${ARTIFACTS_ROOT}/EasySwipe.app"
-readonly STAGED_ZIP="${ARTIFACTS_ROOT}/EasySwipe-0.1.0-development.zip"
+readonly REMOTE_SPARKLE_TOOLS="${RELEASE_DERIVED_DATA}/SourcePackages/artifacts/sparkle/Sparkle/bin"
+readonly STAGED_ZIP="${ARTIFACTS_ROOT}/EasySwipe-${PROJECT_VERSION}-development.zip"
 readonly LOCAL_APP="${REPOSITORY_ROOT}/artifacts/EasySwipe.app"
+readonly LOCAL_SPARKLE_TOOLS="${REPOSITORY_ROOT}/artifacts/sparkle-tools"
 readonly LOCAL_SIGNING_MANIFEST="${REPOSITORY_ROOT}/artifacts/signing-verification.json"
 readonly SSH_OPTIONS=(-o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes)
 
@@ -121,8 +125,10 @@ release_project() {
       *) /usr/bin/printf 'Missing x86_64 architecture: %s\\n' \"\${architectures}\" >&2; exit 3 ;;
     esac
     /bin/test \"\$(/usr/bin/plutil -extract LSUIElement raw -o - '${STAGED_APP}/Contents/Info.plist')\" = true
-    /bin/test \"\$(/usr/bin/plutil -extract CFBundleShortVersionString raw -o - '${STAGED_APP}/Contents/Info.plist')\" = 0.1.0
-    /bin/test \"\$(/usr/bin/plutil -extract CFBundleVersion raw -o - '${STAGED_APP}/Contents/Info.plist')\" = 7
+    /bin/test \"\$(/usr/bin/plutil -extract CFBundleShortVersionString raw -o - '${STAGED_APP}/Contents/Info.plist')\" = '${PROJECT_VERSION}'
+    /bin/test \"\$(/usr/bin/plutil -extract CFBundleVersion raw -o - '${STAGED_APP}/Contents/Info.plist')\" = '${PROJECT_BUILD}'
+    /bin/test \"\$(/usr/bin/plutil -extract SUFeedURL raw -o - '${STAGED_APP}/Contents/Info.plist')\" = 'https://raw.githubusercontent.com/shortcutchris/easyswipe-releases/main/appcast.xml'
+    /bin/test \"\$(/usr/bin/plutil -extract SUPublicEDKey raw -o - '${STAGED_APP}/Contents/Info.plist')\" = 'a5+ZLh811liNfhGI69w0MTTkEr1OfVJOGer3M8FhMGA='
     /bin/test \"\$(/usr/bin/plutil -extract CFBundleIconFile raw -o - '${STAGED_APP}/Contents/Info.plist')\" = AppIcon
     /bin/test -f '${STAGED_APP}/Contents/Resources/AppIcon.icns'
     EASYSWIPE_STARTUP_PROBE=1 '${STAGED_APP}/Contents/MacOS/EasySwipe'
@@ -227,6 +233,8 @@ fetch_artifact() {
   rsync -az "${REMOTE_HOST}:${STAGED_APP}" "${REPOSITORY_ROOT}/artifacts/"
   rsync -az "${REMOTE_HOST}:${STAGED_ZIP}" "${REPOSITORY_ROOT}/artifacts/"
   rsync -az "${REMOTE_HOST}:${ARTIFACTS_ROOT}/verification.json" "${REPOSITORY_ROOT}/artifacts/"
+  mkdir -p "${LOCAL_SPARKLE_TOOLS}"
+  rsync -az --delete "${REMOTE_HOST}:${REMOTE_SPARKLE_TOOLS}/" "${LOCAL_SPARKLE_TOOLS}/"
 }
 
 sign_local_artifact() {

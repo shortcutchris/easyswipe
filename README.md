@@ -22,7 +22,7 @@ Version `0.1.0` implements the complete source-level MVP:
 - menu bar controls and first-run permission onboarding;
 - launch-at-login support through `SMAppService`;
 - English and German String Catalog localizations;
-- Sparkle 2.9.6 update integration with release-time feed/key configuration;
+- Sparkle 2.9.6 update integration with a public signed update feed;
 - Universal 2 release builds for Apple Silicon and Intel.
 
 EasySwipe requires macOS 14 or newer and Accessibility permission. It has no telemetry and does not store window titles, app names, pointer paths, or gesture history.
@@ -62,12 +62,15 @@ EASYSWIPE_CODE_SIGN_IDENTITY='Developer ID Application: NAME (TEAMID)' \
 
 ## Updates and distribution
 
-Sparkle is integrated but development builds deliberately contain no update host or signing key. A production build must provide both build settings:
+Sparkle is integrated and every current build contains these public update settings:
 
-- `EASYSWIPE_FEED_URL` — an HTTPS appcast URL;
-- `EASYSWIPE_SPARKLE_PUBLIC_KEY` — the Sparkle EdDSA public key.
+- Feed: `https://raw.githubusercontent.com/shortcutchris/easyswipe-releases/main/appcast.xml`
+- Releases: `https://github.com/shortcutchris/easyswipe-releases/releases`
+- Sparkle EdDSA public key in `SUPublicEDKey`
 
-The private Sparkle key, Developer ID credentials, and notarization credentials must never be committed. See [docs/RELEASING.md](docs/RELEASING.md) for the production signing and update workflow.
+The matching private Sparkle key remains in the local macOS Keychain. Developer ID and notarization credentials are also kept outside both repositories. See [docs/RELEASING.md](docs/RELEASING.md) for the guarded publication workflow.
+
+After storing Apple notarization credentials in a local `notarytool` Keychain profile, the complete verified release is published with `EASYSWIPE_NOTARY_PROFILE='EasySwipe' scripts/release.sh`.
 
 ## Documentation
 
