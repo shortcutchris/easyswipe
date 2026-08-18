@@ -5,6 +5,7 @@ EasySwipe is a small native macOS menu bar app for arranging a window directly f
 - Swipe left to fill the left half of the current display.
 - Swipe right to fill the right half.
 - Swipe down to minimize.
+- Swipe up to maximize within the usable desktop area.
 
 The gesture uses two fingers on a MacBook or Magic Trackpad and the continuous touch surface of an Apple Magic Mouse. EasySwipe normalizes the physical direction independently of the macOS natural-scrolling setting, ignores momentum, and leaves ordinary scrolling untouched.
 
@@ -13,7 +14,7 @@ The gesture uses two fingers on a MacBook or Magic Trackpad and the continuous t
 Version `0.1.0` implements the complete source-level MVP:
 
 - title-bar targeting through the macOS Accessibility API;
-- left/right window snapping based on `NSScreen.visibleFrame`;
+- left/right window snapping and normal-window maximization based on `NSScreen.visibleFrame`;
 - window minimization;
 - immediate cursor-adjacent HUD direction previews with brief action confirmation;
 - a dedicated macOS application icon;

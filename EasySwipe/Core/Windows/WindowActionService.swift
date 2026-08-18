@@ -22,21 +22,27 @@ final class WindowActionService: WindowActionPerforming {
     func perform(_ action: WindowGestureAction, on target: AXWindowTarget) -> WindowActionResult? {
         switch action {
         case .snapLeft, .snapRight:
-            return snap(action, target: target)
+            let halves = ScreenFrameCalculator.halves(of: target.visibleScreenFrame)
+            let requestedFrame = action == .snapLeft ? halves.left : halves.right
+            return resize(action, target: target, to: requestedFrame)
         case .minimize:
             return minimize(target)
+        case .maximize:
+            return resize(action, target: target, to: target.visibleScreenFrame)
         }
     }
 
-    private func snap(_ action: WindowGestureAction, target: AXWindowTarget) -> WindowActionResult? {
+    private func resize(
+        _ action: WindowGestureAction,
+        target: AXWindowTarget,
+        to requestedFrame: CGRect
+    ) -> WindowActionResult? {
         guard AXBridge.isSettable(target.element, attribute: kAXPositionAttribute as CFString),
             AXBridge.isSettable(target.element, attribute: kAXSizeAttribute as CFString)
         else {
             return nil
         }
 
-        let halves = ScreenFrameCalculator.halves(of: target.visibleScreenFrame)
-        let requestedFrame = action == .snapLeft ? halves.left : halves.right
         let requestedAXFrame = geometry.axRect(fromAppKit: requestedFrame)
 
         let positionResult = AXBridge.setPoint(

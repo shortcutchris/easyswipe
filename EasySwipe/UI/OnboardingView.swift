@@ -19,6 +19,7 @@ struct OnboardingView: View {
                 GestureRow(symbol: "arrow.left", text: L10n.gestureLeft)
                 GestureRow(symbol: "arrow.right", text: L10n.gestureRight)
                 GestureRow(symbol: "arrow.down", text: L10n.gestureDown)
+                GestureRow(symbol: "arrow.up", text: L10n.gestureUp)
             }
 
             Text(L10n.deviceHint)

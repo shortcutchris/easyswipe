@@ -62,6 +62,19 @@ final class GestureCoordinatorTests: XCTestCase {
         XCTAssertEqual(harness.hud.confirmations, [.minimize])
     }
 
+    func testUpSwipePreviewsAndMaximizes() {
+        let harness = Harness()
+
+        harness.coordinator.handle(sample(deltaY: 18, phase: .began))
+        XCTAssertEqual(harness.hud.previews, [.maximize])
+        XCTAssertTrue(harness.actions.performed.isEmpty)
+
+        harness.coordinator.handle(sample(deltaY: 30, phase: .ended))
+
+        XCTAssertEqual(harness.actions.performed, [.maximize])
+        XCTAssertEqual(harness.hud.confirmations, [.maximize])
+    }
+
     func testShortGestureDismissesPreviewWithoutPerformingAction() {
         let harness = Harness()
 

@@ -16,6 +16,7 @@ enum L10n {
     static var gestureLeft: String { text("gesture.left", "Swipe left to fill the left half") }
     static var gestureRight: String { text("gesture.right", "Swipe right to fill the right half") }
     static var gestureDown: String { text("gesture.down", "Swipe down to minimize") }
+    static var gestureUp: String { text("gesture.up", "Swipe up to maximize") }
     static var deviceHint: String {
         text(
             "onboarding.deviceHint",
@@ -65,6 +66,7 @@ enum L10n {
     static var hudLeftAnnouncement: String { text("hud.left", "Window arranged left") }
     static var hudRightAnnouncement: String { text("hud.right", "Window arranged right") }
     static var hudMinimizeAnnouncement: String { text("hud.minimize", "Window minimized") }
+    static var hudMaximizeAnnouncement: String { text("hud.maximize", "Window maximized") }
 
     private static func text(_ key: String, _ fallback: String) -> String {
         NSLocalizedString(key, tableName: nil, bundle: .main, value: fallback, comment: "")

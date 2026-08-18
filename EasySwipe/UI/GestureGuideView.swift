@@ -12,6 +12,7 @@ struct GestureGuideView: View {
                 GuideRow(symbol: "arrow.left", title: L10n.gestureLeft)
                 GuideRow(symbol: "arrow.right", title: L10n.gestureRight)
                 GuideRow(symbol: "arrow.down", title: L10n.gestureDown)
+                GuideRow(symbol: "arrow.up", title: L10n.gestureUp)
             }
 
             Text(L10n.guideFooter)

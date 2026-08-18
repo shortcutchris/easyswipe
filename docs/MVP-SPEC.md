@@ -8,7 +8,7 @@
 
 ## 1. Produktidee
 
-EasySwipe ist ein bewusst reduzierter, gestenbasierter Fenstermanager für macOS. Die App macht die Titelbar eines Fensters zur Gestenfläche und unterstützt im MVP genau drei Aktionen: Fenster links anordnen, Fenster rechts anordnen und Fenster minimieren.
+EasySwipe ist ein bewusst reduzierter, gestenbasierter Fenstermanager für macOS. Die App macht die Titelbar eines Fensters zur Gestenfläche und unterstützt im MVP vier Aktionen: Fenster links anordnen, Fenster rechts anordnen, Fenster minimieren und Fenster im sichtbaren Bildschirmbereich maximieren.
 
 Die Anwendung läuft als Menüleisten-App ohne reguläres Dock-Icon. Sie unterstützt:
 
@@ -24,6 +24,7 @@ Auf einem Trackpad entsteht die Eingabe durch die übliche Zwei-Finger-Scrollbew
 
 - Ein Fenster ohne Ziehen, Tastenkürzel oder Klick auf eine Bildschirmhälfte verschieben.
 - Ein Fenster mit einer Abwärtsgeste minimieren.
+- Ein Fenster mit einer Aufwärtsgeste auf den größten normalen Fensterrahmen maximieren.
 - Jede erfolgreiche Aktion unmittelbar, aber unaufdringlich bestätigen.
 - Nach der Ersteinrichtung ohne dauerhaft sichtbare Oberfläche arbeiten.
 - Trackpad und Magic Mouse gleichwertig unterstützen.
@@ -33,7 +34,7 @@ Auf einem Trackpad entsteht die Eingabe durch die übliche Zwei-Finger-Scrollbew
 ### 2.2 Nicht-Ziele des MVP
 
 - Drittel-, Viertel- oder frei konfigurierbare Fensterlayouts.
-- Vollbild-, Schließen-, Verstecken- oder Wiederherstellen-Gesten.
+- macOS-Vollbild-, Schließen-, Verstecken- oder Wiederherstellen-Gesten.
 - Verschieben auf andere Monitore oder Spaces.
 - Tastaturkürzel.
 - Live-Vorschau der späteren Fensterposition.
@@ -56,6 +57,7 @@ Auf einem Trackpad entsteht die Eingabe durch die übliche Zwei-Finger-Scrollbew
 | Nach links wischen | Fenster nimmt die linke Hälfte des aktuellen Bildschirms ein | links gefülltes Rechteck |
 | Nach rechts wischen | Fenster nimmt die rechte Hälfte des aktuellen Bildschirms ein | rechts gefülltes Rechteck |
 | Nach unten wischen | Fenster wird in den Dock minimiert | Minuszeichen |
+| Nach oben wischen | Fenster füllt den sichtbaren Bildschirmbereich, ohne in den macOS-Vollbildmodus zu wechseln | diagonal auseinanderzeigende Pfeile |
 
 ### 4.1 Grundregeln
 
@@ -75,8 +77,7 @@ Diese Werte sind Startwerte für Hardwaretests und keine unveränderlichen Produ
 - Totzone ab Gestenbeginn: 10 Punkte.
 - Mindest-Nettoentfernung für eine Aktion: 44 Punkte.
 - Achsendominanz: dominante Achse mindestens Faktor 1,35 gegenüber der anderen Achse.
-- Zulässige Richtungen im MVP: links, rechts und unten.
-- Swipe nach oben: immer ohne Aktion.
+- Zulässige Richtungen im MVP: links, rechts, unten und oben.
 - Momentum: vollständig ignorieren.
 - Kontinuierliche Scrollereignisse: erforderlich; klassische Mausräder lösen keine EasySwipe-Geste aus.
 
@@ -129,6 +130,7 @@ Folgende Fenster werden im MVP ohne Aktion und ohne HUD ignoriert:
 - Vollbildfenster,
 - borderless Fenster ohne belastbare Titelbar,
 - Fenster ohne setzbare Positions- oder Größenattribute bei Links/Rechts,
+- Fenster ohne setzbare Positions- oder Größenattribute bei Swipe nach oben,
 - Fenster ohne setzbares Minimierungsattribut bei Swipe nach unten,
 - Popovers, Menüs, Tooltips und temporäre Panels,
 - Fenster, die während der Geste geschlossen oder ungültig werden,
@@ -152,9 +154,13 @@ Ausgangspunkt ist der aktuelle `visibleFrame` des Bildschirms. Der Wert wird bei
 - Dock-Position, automatisch ausgeblendetes Dock, Menüleiste und Kameraaussparung werden durch `visibleFrame` berücksichtigt.
 - Es werden keine eigenen Ränder oder Lücken hinzugefügt.
 
+### 7.3 Maximierung
+
+Beim Swipe nach oben wird das Fenster auf den vollständigen aktuellen `visibleFrame` gesetzt. Das ist bewusst eine normale Fenstergrößenänderung: EasySwipe setzt weder `AXFullScreen` noch löst es den grünen Vollbildmodus aus, und es wird kein eigener Space angelegt. Menüleiste, Dock und Kameraaussparung bleiben berücksichtigt.
+
 Die Accessibility API und AppKit verwenden unterschiedliche Bildschirmkoordinaten. Die Umrechnung wird zentral implementiert und mit Multi-Monitor-Anordnungen oberhalb, unterhalb, links und rechts des Hauptbildschirms getestet.
 
-### 7.3 Größenbeschränkungen einer App
+### 7.4 Größenbeschränkungen einer App
 
 Falls eine Ziel-App eine Mindestgröße erzwingt, darf sie das angeforderte Rechteck begrenzen. EasySwipe liest den resultierenden Rahmen zurück. Die Vorschau erscheint während der Geste; als Bestätigung bleibt das HUD nur sichtbar, wenn eine erkennbare Positions-, Größen- oder Minimierungsänderung stattgefunden hat.
 
@@ -164,8 +170,9 @@ Falls eine Ziel-App eine Mindestgröße erzwingt, darf sie das angeforderte Rech
 
 - Nicht aktivierendes, rahmenloses `NSPanel`.
 - Kein Wechsel der aktiven App und kein Tastaturfokus.
-- Größe: vorläufig 56 × 56 Punkte.
-- Hintergrund: macOS-Material mit 14 Punkten Eckenradius.
+- Größe: 36 × 36 Punkte.
+- Hintergrund: macOS-Material mit 10 Punkten Eckenradius.
+- Symbolgröße: 16 × 16 Punkte.
 - Symbol: monochromes SF Symbol beziehungsweise systemnahes Symbol mit hohem Kontrast.
 - Kein Text im normalen HUD.
 - Position während der Geste und nach dem Loslassen: unmittelbar neben dem Mauszeiger, ohne ihn zu verdecken.
@@ -215,7 +222,7 @@ Zwischen Funktionsschaltern, Hilfe/Update und Beenden werden Trenner verwendet. 
 
 Beim ersten Start erscheint ein kleines lokalisiertes Setup-Fenster:
 
-1. **Willkommen:** Nutzen und die drei Gesten erklären.
+1. **Willkommen:** Nutzen und die vier Gesten erklären.
 2. **Bedienungshilfen:** Accessibility-Zugriff anfordern und Status live prüfen.
 3. **Eingabeüberwachung:** Nur anzeigen, wenn die gewählte Event-Tap-Implementierung diese Berechtigung auf dem laufenden macOS tatsächlich benötigt.
 4. **Beim Anmelden starten:** standardmäßig angeboten, aber nicht ohne ausdrückliche Benutzeraktion aktivieren.
@@ -236,12 +243,12 @@ Das Fenster darf erst „Bereit“ melden, wenn die zwingenden Berechtigungen ak
 ### 11.1 Trackpad
 
 - Unterstützt integriertes MacBook-Trackpad und Apple Magic Trackpad.
-- Benutzerformulierung: Zwei Finger über der Titelbar nach links, rechts oder unten bewegen.
+- Benutzerformulierung: Zwei Finger über der Titelbar nach links, rechts, unten oder oben bewegen.
 - Force Click, Drei-Finger-Ziehen und andere macOS-Gesten dürfen nicht benötigt werden.
 
 ### 11.2 Magic Mouse
 
-- Benutzerformulierung: Über der Titelbar auf der Touch-Oberfläche nach links, rechts oder unten wischen.
+- Benutzerformulierung: Über der Titelbar auf der Touch-Oberfläche nach links, rechts, unten oder oben wischen.
 - Die Kernlogik wertet kontinuierliche Scroll-Deltas aus und verlangt keine künstliche Zwei-Finger-Erkennung auf der Magic Mouse.
 - Systemgesten zum Wechseln von Vollbild-Apps oder Spaces dürfen nicht bewusst abgefangen oder ersetzt werden.
 - Die Schwellenwerte dürfen für Magic Mouse und Trackpad intern getrennt konfigurierbar sein, falls Hardwaretests deutliche Unterschiede zeigen. Im MVP gibt es dafür keine Benutzeroberfläche.
@@ -430,18 +437,19 @@ Der MVP gilt als funktionsfähig, wenn alle folgenden Kriterien erfüllt sind:
 1. Ein Zwei-Finger-Swipe nach links über einer gültigen Titelbar auf einem Trackpad ordnet das Fenster nach dem Loslassen links an.
 2. Ein entsprechender Swipe nach rechts ordnet es rechts an.
 3. Ein Swipe nach unten minimiert genau dieses Fenster.
-4. Dieselben drei Aktionen funktionieren über die Touch-Oberfläche einer Apple Magic Mouse.
-5. Kurze, diagonale und nach oben gerichtete Bewegungen verändern kein Fenster.
-6. Momentum löst keine zweite Aktion aus.
-7. Scrollen in Fensterinhalten und interaktiven Toolbars bleibt unbeeinträchtigt.
-8. Jede erkannte Richtung zeigt während der Geste ein nicht fokussierendes HUD; eine erfolgreiche Aktion bestätigt sie kurz nach dem Loslassen.
-9. Snapping respektiert Menüleiste, Dock, Kameraaussparung und den aktuellen Bildschirm.
-10. Die App arbeitet ausschließlich aus der Menüleiste und erscheint nicht regulär im Dock.
-11. Das Menü ist vollständig auf Deutsch und Englisch verfügbar und folgt der macOS-App-Sprache.
-12. „Beim Anmelden starten“ kann aus Menü und Onboarding aktiviert und deaktiviert werden.
-13. Eine manuelle Update-Prüfung über Sparkle ist aus dem Menü möglich.
-14. Ein signiertes, notarisiertes Testupdate kann über den Appcast installiert werden.
-15. Ohne die nötigen Berechtigungen wird keine teilweise oder unvorhersehbare Fensteraktion ausgeführt.
+4. Ein Swipe nach oben maximiert genau dieses Fenster innerhalb des sichtbaren Bildschirmbereichs, ohne den macOS-Vollbildmodus zu aktivieren.
+5. Dieselben vier Aktionen funktionieren über die Touch-Oberfläche einer Apple Magic Mouse.
+6. Kurze und diagonale Bewegungen verändern kein Fenster.
+7. Momentum löst keine zweite Aktion aus.
+8. Scrollen in Fensterinhalten und interaktiven Toolbars bleibt unbeeinträchtigt.
+9. Jede erkannte Richtung zeigt während der Geste ein nicht fokussierendes HUD; eine erfolgreiche Aktion bestätigt sie kurz nach dem Loslassen.
+10. Snapping und Maximieren respektieren Menüleiste, Dock, Kameraaussparung und den aktuellen Bildschirm.
+11. Die App arbeitet ausschließlich aus der Menüleiste und erscheint nicht regulär im Dock.
+12. Das Menü ist vollständig auf Deutsch und Englisch verfügbar und folgt der macOS-App-Sprache.
+13. „Beim Anmelden starten“ kann aus Menü und Onboarding aktiviert und deaktiviert werden.
+14. Eine manuelle Update-Prüfung über Sparkle ist aus dem Menü möglich.
+15. Ein signiertes, notarisiertes Testupdate kann über den Appcast installiert werden.
+16. Ohne die nötigen Berechtigungen wird keine teilweise oder unvorhersehbare Fensteraktion ausgeführt.
 
 ## 21. Offene Entscheidungen vor öffentlicher Distribution
 

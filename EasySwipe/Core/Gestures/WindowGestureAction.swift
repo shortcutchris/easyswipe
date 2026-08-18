@@ -4,6 +4,7 @@ enum WindowGestureAction: String, CaseIterable, Equatable, Sendable {
     case snapLeft
     case snapRight
     case minimize
+    case maximize
 }
 
 struct GestureConfiguration: Equatable, Sendable {

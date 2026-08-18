@@ -4,7 +4,7 @@ import XCTest
 
 final class HUDPlacementTests: XCTestCase {
     private let screen = CGRect(x: 0, y: 0, width: 1000, height: 800)
-    private let panelSize = CGSize(width: 56, height: 56)
+    private let panelSize = CGSize(width: 36, height: 36)
 
     func testPlacesHUDRightAndBelowPointerByDefault() {
         XCTAssertEqual(
@@ -13,7 +13,7 @@ final class HUDPlacementTests: XCTestCase {
                 panelSize: panelSize,
                 visibleFrame: screen
             ),
-            CGPoint(x: 512, y: 432)
+            CGPoint(x: 508, y: 456)
         )
     }
 
@@ -24,7 +24,7 @@ final class HUDPlacementTests: XCTestCase {
                 panelSize: panelSize,
                 visibleFrame: screen
             ),
-            CGPoint(x: 922, y: 22)
+            CGPoint(x: 946, y: 18)
         )
     }
 
@@ -37,7 +37,7 @@ final class HUDPlacementTests: XCTestCase {
                 panelSize: panelSize,
                 visibleFrame: visibleFrame
             ),
-            CGPoint(x: -70, y: 570)
+            CGPoint(x: -46, y: 594)
         )
     }
 }

@@ -54,12 +54,10 @@ struct SwipeGestureRecognizer: Sendable {
             return accumulatedX > 0 ? .snapLeft : .snapRight
         }
 
-        if absoluteY >= absoluteX * configuration.dominanceRatio,
-            accumulatedY < 0
-        {
-            // Device-relative AppKit deltas use negative Y for fingers-down.
-            // Up is intentionally unsupported.
-            return .minimize
+        if absoluteY >= absoluteX * configuration.dominanceRatio {
+            // Device-relative AppKit deltas use negative Y for fingers-down
+            // and positive Y for fingers-up.
+            return accumulatedY < 0 ? .minimize : .maximize
         }
 
         return nil

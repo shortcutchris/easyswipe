@@ -13,7 +13,7 @@ enum HUDPlacement {
         near pointerLocation: CGPoint,
         panelSize: CGSize,
         visibleFrame: CGRect,
-        gap: CGFloat = 12
+        gap: CGFloat = 8
     ) -> CGPoint {
         var x = pointerLocation.x + gap
         if x + panelSize.width > visibleFrame.maxX {
@@ -44,7 +44,7 @@ final class HUDPresenter: HUDPresenting {
 
     init() {
         panel = NSPanel(
-            contentRect: CGRect(x: 0, y: 0, width: 56, height: 56),
+            contentRect: CGRect(x: 0, y: 0, width: 36, height: 36),
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: true
@@ -64,7 +64,7 @@ final class HUDPresenter: HUDPresenting {
         visualEffectView.blendingMode = .behindWindow
         visualEffectView.state = .active
         visualEffectView.wantsLayer = true
-        visualEffectView.layer?.cornerRadius = 14
+        visualEffectView.layer?.cornerRadius = 10
         visualEffectView.layer?.masksToBounds = true
         visualEffectView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -84,8 +84,8 @@ final class HUDPresenter: HUDPresenting {
             visualEffectView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             imageView.centerXAnchor.constraint(equalTo: visualEffectView.centerXAnchor),
             imageView.centerYAnchor.constraint(equalTo: visualEffectView.centerYAnchor),
-            imageView.widthAnchor.constraint(equalToConstant: 28),
-            imageView.heightAnchor.constraint(equalToConstant: 28),
+            imageView.widthAnchor.constraint(equalToConstant: 16),
+            imageView.heightAnchor.constraint(equalToConstant: 16),
         ])
     }
 
@@ -195,6 +195,9 @@ final class HUDPresenter: HUDPresenting {
         case .minimize:
             preferredName = "minus"
             fallbackName = "minus.circle"
+        case .maximize:
+            preferredName = "arrow.up.left.and.arrow.down.right"
+            fallbackName = "rectangle"
         }
 
         return NSImage(systemSymbolName: preferredName, accessibilityDescription: announcement(for: action))
@@ -206,6 +209,7 @@ final class HUDPresenter: HUDPresenting {
         case .snapLeft: L10n.hudLeftAnnouncement
         case .snapRight: L10n.hudRightAnnouncement
         case .minimize: L10n.hudMinimizeAnnouncement
+        case .maximize: L10n.hudMaximizeAnnouncement
         }
     }
 }

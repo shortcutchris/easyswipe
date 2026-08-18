@@ -28,12 +28,12 @@ final class SwipeGestureRecognizerTests: XCTestCase {
         XCTAssertEqual(recognizer.finish(), .minimize)
     }
 
-    func testRejectsSwipeUp() {
+    func testRecognizesPhysicalSwipeUp() {
         var recognizer = SwipeGestureRecognizer()
         recognizer.begin()
         recognizer.update(deltaX: 0, deltaY: 80)
 
-        XCTAssertNil(recognizer.finish())
+        XCTAssertEqual(recognizer.finish(), .maximize)
     }
 
     func testRejectsShortGesture() {

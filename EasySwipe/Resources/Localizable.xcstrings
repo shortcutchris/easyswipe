@@ -31,6 +31,12 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Swipe right to fill the right half" } }
       }
     },
+    "gesture.up" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nach oben wischen, um zu maximieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Swipe up to maximize" } }
+      }
+    },
     "guide.footer" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Bewege den Mauszeiger über eine Fenstertitelbar, wische und hebe dann die Finger an." } },
@@ -47,6 +53,12 @@
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Fenster links angeordnet" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Window arranged left" } }
+      }
+    },
+    "hud.maximize" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fenster maximiert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Window maximized" } }
       }
     },
     "hud.minimize" : {
