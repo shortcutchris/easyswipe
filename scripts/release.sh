@@ -180,9 +180,15 @@ for item in root.findall("./channel/item"):
     enclosure = item.find("enclosure")
     if enclosure is None:
         continue
-    if enclosure.get(f"{{{sparkle}}}version") != build:
+    item_version = item.findtext(f"{{{sparkle}}}version") or enclosure.get(
+        f"{{{sparkle}}}version"
+    )
+    short_version = item.findtext(
+        f"{{{sparkle}}}shortVersionString"
+    ) or enclosure.get(f"{{{sparkle}}}shortVersionString")
+    if item_version != build:
         continue
-    if enclosure.get(f"{{{sparkle}}}shortVersionString") != version:
+    if short_version != version:
         raise SystemExit("Generated appcast has the wrong short version.")
     if enclosure.get("url") != expected_url:
         raise SystemExit("Generated appcast has the wrong archive URL.")
@@ -195,7 +201,9 @@ else:
     raise SystemExit("Generated appcast has no matching release item.")
 PY
 )"
-  "${SPARKLE_TOOLS}/sign_update" --verify "${RELEASE_ARCHIVE}" "${signature}"
+  "${SPARKLE_TOOLS}/sign_update" \
+    --account "${SPARKLE_ACCOUNT}" \
+    --verify "${RELEASE_ARCHIVE}" "${signature}"
   /usr/bin/shasum -a 256 "${RELEASE_ARCHIVE}" > "${RELEASE_ARCHIVE}.sha256"
 }
 
