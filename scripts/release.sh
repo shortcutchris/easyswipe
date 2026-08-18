@@ -23,6 +23,7 @@ readonly RELEASE_RUN_ID="$(/bin/date -u +%Y%m%dT%H%M%SZ)"
 readonly RELEASE_WORKSPACE="${RELEASES_ROOT}/${VERSION}-${BUILD}-${RELEASE_RUN_ID}"
 readonly RELEASE_APP="${RELEASE_WORKSPACE}/EasySwipe.app"
 readonly RELEASE_ARCHIVE="${RELEASE_WORKSPACE}/${ARCHIVE_NAME}"
+readonly NOTARY_ARCHIVE="${RELEASES_ROOT}/EasySwipe-${VERSION}-${BUILD}-${RELEASE_RUN_ID}-notarization.zip"
 readonly NOTARY_RESULT="${RELEASE_WORKSPACE}/notarization.json"
 readonly GENERATED_FEED="${RELEASE_WORKSPACE}/appcast.xml"
 readonly GENERATED_NOTES="${RELEASE_WORKSPACE}/${ARCHIVE_NAME:r}.md"
@@ -129,9 +130,9 @@ stage_and_notarize() {
 
   /usr/bin/ditto "${LOCAL_APP}" "${RELEASE_APP}"
   /usr/bin/codesign --verify --deep --strict --verbose=2 "${RELEASE_APP}"
-  /usr/bin/ditto -c -k --sequesterRsrc --keepParent "${RELEASE_APP}" "${RELEASE_ARCHIVE}"
+  /usr/bin/ditto -c -k --sequesterRsrc --keepParent "${RELEASE_APP}" "${NOTARY_ARCHIVE}"
 
-  xcrun notarytool submit "${RELEASE_ARCHIVE}" \
+  xcrun notarytool submit "${NOTARY_ARCHIVE}" \
     --keychain-profile "${NOTARY_PROFILE}" \
     --wait \
     --output-format json > "${NOTARY_RESULT}"
@@ -151,7 +152,6 @@ PY
   xcrun stapler validate "${RELEASE_APP}"
   /usr/sbin/spctl --assess --type execute --verbose=2 "${RELEASE_APP}"
 
-  /bin/rm -f "${RELEASE_ARCHIVE}"
   /usr/bin/ditto -c -k --sequesterRsrc --keepParent "${RELEASE_APP}" "${RELEASE_ARCHIVE}"
   /usr/bin/codesign --verify --deep --strict --verbose=2 "${RELEASE_APP}"
 }
