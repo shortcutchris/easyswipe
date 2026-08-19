@@ -266,10 +266,18 @@ publish_release() {
     "${RELEASE_URL_PREFIX}${ARCHIVE_NAME}" >/dev/null
   /usr/bin/curl --fail --silent --show-error --location \
     "https://github.com/${RELEASE_REPOSITORY}/releases/latest/download/Swindoo.zip" >/dev/null
-  gh api -H "Accept: application/vnd.github.raw+json" \
-    "repos/${RELEASE_REPOSITORY}/contents/appcast.xml?ref=main" \
-    | /usr/bin/grep -Fq "${RELEASE_URL_PREFIX}${ARCHIVE_NAME}" \
-    || fail "Published feed does not reference the release archive."
+  local attempt
+  local feed_ready=0
+  for attempt in {1..12}; do
+    if gh api -H "Accept: application/vnd.github.raw+json" \
+      "repos/${RELEASE_REPOSITORY}/contents/appcast.xml?ref=main" \
+      | /usr/bin/grep -Fq "${RELEASE_URL_PREFIX}${ARCHIVE_NAME}"; then
+      feed_ready=1
+      break
+    fi
+    /bin/sleep 2
+  done
+  (( feed_ready == 1 )) || fail "Published feed does not reference the release archive."
 }
 
 main() {
