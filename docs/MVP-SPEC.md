@@ -1,4 +1,4 @@
-# EasySwipe – MVP-Spezifikation
+# Swindoo – MVP-Spezifikation
 
 - Status: Implementierungsbasis 0.1.0
 - Datum: 18. August 2026
@@ -8,7 +8,7 @@
 
 ## 1. Produktidee
 
-EasySwipe ist ein bewusst reduzierter, gestenbasierter Fenstermanager für macOS. Die App macht die Titelbar eines Fensters zur Gestenfläche und unterstützt im MVP vier Aktionen: Fenster links anordnen, Fenster rechts anordnen, Fenster minimieren und Fenster im sichtbaren Bildschirmbereich maximieren.
+Swindoo ist ein bewusst reduzierter, gestenbasierter Fenstermanager für macOS. Die App macht die Titelbar eines Fensters zur Gestenfläche und unterstützt im MVP vier Aktionen: Fenster links anordnen, Fenster rechts anordnen, Fenster minimieren und Fenster im sichtbaren Bildschirmbereich maximieren.
 
 Die Anwendung läuft als Menüleisten-App ohne reguläres Dock-Icon. Sie unterstützt:
 
@@ -16,7 +16,7 @@ Die Anwendung läuft als Menüleisten-App ohne reguläres Dock-Icon. Sie unterst
 - Apple Magic Trackpad,
 - Apple Magic Mouse.
 
-Auf einem Trackpad entsteht die Eingabe durch die übliche Zwei-Finger-Scrollbewegung. Auf der Magic Mouse wird die entsprechende Oberflächen-Scrollbewegung verwendet. EasySwipe wertet die von macOS gelieferten kontinuierlichen Scrollereignisse aus und muss den Gerätetyp für die Kernfunktion nicht separat erkennen.
+Auf einem Trackpad entsteht die Eingabe durch die übliche Zwei-Finger-Scrollbewegung. Auf der Magic Mouse wird die entsprechende Oberflächen-Scrollbewegung verwendet. Swindoo wertet die von macOS gelieferten kontinuierlichen Scrollereignisse aus und muss den Gerätetyp für die Kernfunktion nicht separat erkennen.
 
 ## 2. Produktziele
 
@@ -68,7 +68,7 @@ Auf einem Trackpad entsteht die Eingabe durch die übliche Zwei-Finger-Scrollbew
 - Nachlaufende Momentum-Ereignisse dürfen keine Aktion auslösen oder eine Aktion wiederholen.
 - Ein Swipe in dieselbe Richtung ist idempotent: Ein bereits links angeordnetes Fenster bleibt bei einem erneuten Swipe nach links links angeordnet.
 - Kurze, mehrdeutige, stark diagonale oder umgekehrte Bewegungen führen zu keiner Aktion. Eine bereits sichtbare Vorschau wird beim Abbruch ausgeblendet.
-- EasySwipe unterdrückt normale Scrollereignisse nicht. Stattdessen wird nur in einer gültigen, nicht interaktiven Titelbarregion erkannt.
+- Swindoo unterdrückt normale Scrollereignisse nicht. Stattdessen wird nur in einer gültigen, nicht interaktiven Titelbarregion erkannt.
 
 ### 4.2 Vorläufige Erkennungsparameter
 
@@ -79,7 +79,7 @@ Diese Werte sind Startwerte für Hardwaretests und keine unveränderlichen Produ
 - Achsendominanz: dominante Achse mindestens Faktor 1,35 gegenüber der anderen Achse.
 - Zulässige Richtungen im MVP: links, rechts, unten und oben.
 - Momentum: vollständig ignorieren.
-- Kontinuierliche Scrollereignisse: erforderlich; klassische Mausräder lösen keine EasySwipe-Geste aus.
+- Kontinuierliche Scrollereignisse: erforderlich; klassische Mausräder lösen keine Swindoo-Geste aus.
 
 Die Bewegungsrichtung muss auf die physische Fingerbewegung normalisiert werden, unabhängig von der macOS-Einstellung „Scrollrichtung: Natürlich“.
 
@@ -111,7 +111,7 @@ Die Bewegungsrichtung muss auf die physische Fingerbewegung normalisiert werden,
 
 ### 6.1 Zielfenster
 
-EasySwipe fragt über die macOS Accessibility API das Element unter der Mausposition ab und steigt zu dessen zugehörigem Fenster auf. Es wird nicht pauschal das fokussierte oder vorderste Fenster verwendet. Dadurch kann ein sichtbares Hintergrundfenster direkt über seine Titelbar angeordnet werden.
+Swindoo fragt über die macOS Accessibility API das Element unter der Mausposition ab und steigt zu dessen zugehörigem Fenster auf. Es wird nicht pauschal das fokussierte oder vorderste Fenster verwendet. Dadurch kann ein sichtbares Hintergrundfenster direkt über seine Titelbar angeordnet werden.
 
 ### 6.2 Gültige Titelbarregion
 
@@ -138,7 +138,7 @@ Folgende Fenster werden im MVP ohne Aktion und ohne HUD ignoriert:
 - Fenster ohne setzbares Minimierungsattribut bei Swipe nach unten,
 - Sheets, Popovers, Menüs, Tooltips, Systemdialoge und rahmenlose temporäre Panels,
 - Fenster, die während der Geste geschlossen oder ungültig werden,
-- eigene EasySwipe-Fenster und HUDs.
+- eigene Swindoo-Fenster und HUDs.
 
 ## 7. Fenstergeometrie
 
@@ -146,7 +146,7 @@ Folgende Fenster werden im MVP ohne Aktion und ohne HUD ignoriert:
 
 - Maßgeblich ist der Bildschirm unter dem Mauszeiger beim Gestenbeginn.
 - Die Aktion bleibt auf diesem Bildschirm.
-- EasySwipe wechselt weder Monitor noch Space.
+- Swindoo wechselt weder Monitor noch Space.
 
 ### 7.2 Halbierung
 
@@ -160,13 +160,13 @@ Ausgangspunkt ist der aktuelle `visibleFrame` des Bildschirms. Der Wert wird bei
 
 ### 7.3 Maximierung
 
-Beim Swipe nach oben wird das Fenster auf den vollständigen aktuellen `visibleFrame` gesetzt. Das ist bewusst eine normale Fenstergrößenänderung: EasySwipe setzt weder `AXFullScreen` noch löst es den grünen Vollbildmodus aus, und es wird kein eigener Space angelegt. Menüleiste, Dock und Kameraaussparung bleiben berücksichtigt.
+Beim Swipe nach oben wird das Fenster auf den vollständigen aktuellen `visibleFrame` gesetzt. Das ist bewusst eine normale Fenstergrößenänderung: Swindoo setzt weder `AXFullScreen` noch löst es den grünen Vollbildmodus aus, und es wird kein eigener Space angelegt. Menüleiste, Dock und Kameraaussparung bleiben berücksichtigt.
 
 Die Accessibility API und AppKit verwenden unterschiedliche Bildschirmkoordinaten. Die Umrechnung wird zentral implementiert und mit Multi-Monitor-Anordnungen oberhalb, unterhalb, links und rechts des Hauptbildschirms getestet.
 
 ### 7.4 Größenbeschränkungen einer App
 
-Falls eine Ziel-App eine Mindestgröße erzwingt, darf sie das angeforderte Rechteck begrenzen. EasySwipe liest den resultierenden Rahmen zurück. Die Vorschau erscheint während der Geste; als Bestätigung bleibt das HUD nur sichtbar, wenn eine erkennbare Positions-, Größen- oder Minimierungsänderung stattgefunden hat.
+Falls eine Ziel-App eine Mindestgröße erzwingt, darf sie das angeforderte Rechteck begrenzen. Swindoo liest den resultierenden Rahmen zurück. Die Vorschau erscheint während der Geste; als Bestätigung bleibt das HUD nur sichtbar, wenn eine erkennbare Positions-, Größen- oder Minimierungsänderung stattgefunden hat.
 
 ## 8. Visuelles Feedback
 
@@ -210,13 +210,13 @@ Falls eine Ziel-App eine Mindestgröße erzwingt, darf sie das angeforderte Rech
 
 | Schlüssel | Deutsch | Englisch | Verhalten |
 | --- | --- | --- | --- |
-| `menu.enabled` | EasySwipe aktiv | EasySwipe Enabled | globaler Ein/Aus-Schalter |
+| `menu.enabled` | Swindoo aktiv | Swindoo Enabled | globaler Ein/Aus-Schalter |
 | `menu.launchAtLogin` | Beim Anmelden starten | Launch at Login | Login-Item umschalten |
 | `menu.gestureGuide` | Gestenübersicht… | Gesture Guide… | kompakte Anleitung öffnen |
 | `menu.permissions` | Berechtigungen… | Permissions… | Status und Systemeinstellungen öffnen |
 | `menu.checkForUpdates` | Nach Updates suchen… | Check for Updates… | manuelle Sparkle-Prüfung |
-| `menu.about` | Über EasySwipe | About EasySwipe | Version, Build und Links |
-| `menu.quit` | EasySwipe beenden | Quit EasySwipe | App beenden |
+| `menu.about` | Über Swindoo | About Swindoo | Version, Build und Links |
+| `menu.quit` | Swindoo beenden | Quit Swindoo | App beenden |
 
 Zwischen Funktionsschaltern, Hilfe/Update und Beenden werden Trenner verwendet. Das Menü muss vollständig per Tastatur und VoiceOver bedienbar sein.
 
@@ -232,7 +232,7 @@ Beim ersten Start erscheint ein kleines lokalisiertes Setup-Fenster:
 4. **Beim Anmelden starten:** standardmäßig angeboten, aber nicht ohne ausdrückliche Benutzeraktion aktivieren.
 5. **Bereit:** kurze gerätespezifische Formulierung für Trackpad und Magic Mouse.
 
-Das Fenster darf erst „Bereit“ melden, wenn die zwingenden Berechtigungen aktiv sind. Der Benutzer kann das Onboarding schließen; EasySwipe bleibt dann installiert, aber die Gestenerkennung deaktiviert und das Menü zeigt den fehlenden Status.
+Das Fenster darf erst „Bereit“ melden, wenn die zwingenden Berechtigungen aktiv sind. Der Benutzer kann das Onboarding schließen; Swindoo bleibt dann installiert, aber die Gestenerkennung deaktiviert und das Menü zeigt den fehlenden Status.
 
 ### 10.2 Berechtigungsprinzip
 
@@ -282,7 +282,7 @@ Diskrete Mausradereignisse sind nicht Teil des MVP. Eine klassische Scrollrad-Ma
 - Layout verwendet leading/trailing und bleibt für spätere Rechts-nach-links-Sprachen geeignet.
 - Beide Startsprachen werden automatisiert auf fehlende Übersetzungen geprüft.
 
-Sparkles Standardoberfläche wird in der zum System passenden, von Sparkle angebotenen Lokalisierung angezeigt. EasySwipe-eigene Menüpunkte und Texte bleiben im eigenen String Catalog.
+Sparkles Standardoberfläche wird in der zum System passenden, von Sparkle angebotenen Lokalisierung angezeigt. Swindoo-eigene Menüpunkte und Texte bleiben im eigenen String Catalog.
 
 ## 13. Start bei Anmeldung
 
@@ -290,7 +290,7 @@ Sparkles Standardoberfläche wird in der zum System passenden, von Sparkle angeb
 - Aktivierung nur nach bewusster Benutzeraktion im Menü oder Onboarding.
 - Status im Menü entspricht dem tatsächlichen `SMAppService`-Status, nicht nur einem gespeicherten Boolean.
 - Fehler oder verweigerte Systemfreigabe werden lokalisiert erklärt.
-- Beim Login startet EasySwipe im Hintergrund ohne Onboarding- oder About-Fenster.
+- Beim Login startet Swindoo im Hintergrund ohne Onboarding- oder About-Fenster.
 
 ## 14. Sparkle-Updates
 
@@ -348,14 +348,14 @@ Sparkles Standardoberfläche wird in der zum System passenden, von Sparkle angeb
 - Der globale Event-Monitor-Callback bleibt extrem kurz und reicht ausschließlich normalisierte, sendbare Scrollmetadaten weiter.
 - Deltas werden aus dem Callback als sendbare Werte auf den seriell arbeitenden Main Actor übergeben.
 - AppKit-, AX-Schreib- und HUD-Aktionen werden kontrolliert auf dem Main Actor beziehungsweise geeigneten seriellen Kontext ausgeführt.
-- Langsame oder nicht antwortende AX-Ziel-Apps erhalten ein kurzes Timeout; EasySwipe blockiert nicht global.
+- Langsame oder nicht antwortende AX-Ziel-Apps erhalten ein kurzes Timeout; Swindoo blockiert nicht global.
 
 ### 15.3 Zustandsdaten
 
 In `UserDefaults` gespeichert werden nur:
 
 - Onboarding abgeschlossen,
-- EasySwipe aktiviert/deaktiviert,
+- Swindoo aktiviert/deaktiviert,
 - optional intern kalibrierte Standardparameter beziehungsweise Feature Flags,
 - Sparkle-eigene Einstellungen über Sparkles APIs.
 
@@ -388,7 +388,7 @@ Der tatsächliche Login-Item- und Berechtigungsstatus wird stets vom System gele
 - Keine merkbare Verschlechterung des normalen Trackpad- oder Magic-Mouse-Scrollens.
 - Event-Tap-Callback: Zielwert unter 2 ms; keine AX-Abfragen direkt im Callback.
 - HUD-Beginn: unter 100 ms nach Überschreiten der Totzone; erfolgreiche Aktion unter 100 ms nach Fingerfreigabe.
-- Keine Aktivierung von EasySwipe und kein Verlust des Fokus der Ziel-App.
+- Keine Aktivierung von Swindoo und kein Verlust des Fokus der Ziel-App.
 - Kein mehrfaches Auslösen durch Momentum.
 - Speicherziel im Leerlauf: unter 60 MB.
 

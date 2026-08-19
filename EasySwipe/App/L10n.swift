@@ -1,15 +1,15 @@
 import Foundation
 
 enum L10n {
-    static var menuEnabled: String { text("menu.enabled", "EasySwipe Enabled") }
+    static var menuEnabled: String { text("menu.enabled", "Swindoo Enabled") }
     static var menuLaunchAtLogin: String { text("menu.launchAtLogin", "Launch at Login") }
     static var menuGestureGuide: String { text("menu.gestureGuide", "Gesture Guide…") }
     static var menuPermissions: String { text("menu.permissions", "Permissions…") }
     static var menuCheckForUpdates: String { text("menu.checkForUpdates", "Check for Updates…") }
-    static var menuAbout: String { text("menu.about", "About EasySwipe") }
-    static var menuQuit: String { text("menu.quit", "Quit EasySwipe") }
+    static var menuAbout: String { text("menu.about", "About Swindoo") }
+    static var menuQuit: String { text("menu.quit", "Quit Swindoo") }
 
-    static var onboardingTitle: String { text("onboarding.title", "Welcome to EasySwipe") }
+    static var onboardingTitle: String { text("onboarding.title", "Welcome to Swindoo") }
     static var onboardingSubtitle: String {
         text("onboarding.subtitle", "Arrange windows directly from their title bars.")
     }
@@ -27,7 +27,7 @@ enum L10n {
     static var permissionExplanation: String {
         text(
             "permission.explanation",
-            "EasySwipe uses Accessibility to identify and arrange the window below your pointer. It never reads window contents."
+            "Swindoo uses Accessibility to identify and arrange the window below your pointer. It never reads window contents."
         )
     }
     static var permissionGranted: String { text("permission.granted", "Permission granted") }
@@ -38,7 +38,7 @@ enum L10n {
     static var close: String { text("common.close", "Close") }
     static var ok: String { text("common.ok", "OK") }
 
-    static var guideTitle: String { text("guide.title", "EasySwipe Gestures") }
+    static var guideTitle: String { text("guide.title", "Swindoo Gestures") }
     static var guideFooter: String {
         text("guide.footer", "Place the pointer over a window title bar, swipe, then lift your fingers.")
     }
@@ -59,7 +59,7 @@ enum L10n {
     static var loginItemRequiresApproval: String {
         text(
             "login.requiresApproval",
-            "Allow EasySwipe in System Settings > General > Login Items to finish enabling launch at login."
+            "Allow Swindoo in System Settings > General > Login Items to finish enabling launch at login."
         )
     }
 

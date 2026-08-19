@@ -32,12 +32,21 @@ final class UpdateConfigurationTests: XCTestCase {
         )
         XCTAssertEqual(
             Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
-            "0.1.2"
+            "0.1.3"
         )
         XCTAssertEqual(
             Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String,
-            "10"
+            "11"
         )
+        XCTAssertEqual(
+            Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String,
+            "Swindoo"
+        )
+        XCTAssertEqual(
+            Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String,
+            "Swindoo"
+        )
+        XCTAssertEqual(Bundle.main.bundleIdentifier, "com.shortcutchris.EasySwipe")
         let configuration = UpdateConfiguration.from(bundle: .main)
         XCTAssertEqual(
             configuration.feedURL?.absoluteString,

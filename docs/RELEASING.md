@@ -1,4 +1,4 @@
-# Releasing EasySwipe
+# Releasing Swindoo
 
 The repository can produce a verified Universal 2 development build without secrets. Public releases are published through the separate public repository at <https://github.com/shortcutchris/easyswipe-releases>.
 
@@ -19,6 +19,7 @@ Ad-hoc signatures have a code-hash-bound designated requirement, so macOS privac
 
 - Appcast: <https://raw.githubusercontent.com/shortcutchris/easyswipe-releases/main/appcast.xml>
 - Release assets: <https://github.com/shortcutchris/easyswipe-releases/releases>
+- Stable website download: <https://github.com/shortcutchris/easyswipe-releases/releases/latest/download/Swindoo.zip>
 - Sparkle Keychain account: `com.shortcutchris.EasySwipe.updates`
 - Public EdDSA key: `a5+ZLh811liNfhGI69w0MTTkEr1OfVJOGer3M8FhMGA=`
 

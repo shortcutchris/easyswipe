@@ -40,17 +40,21 @@ targets:
     platform: macOS
     sources:
       - path: EasySwipe
+      - path: LICENSE
+        buildPhase: resources
+      - path: website/public/licenses/sparkle.txt
+        buildPhase: resources
     dependencies:
       - package: Sparkle
     info:
       path: Config/Info.plist
       properties:
         CFBundleDevelopmentRegion: $(DEVELOPMENT_LANGUAGE)
-        CFBundleDisplayName: EasySwipe
+        CFBundleDisplayName: Swindoo
         CFBundleExecutable: $(EXECUTABLE_NAME)
         CFBundleIdentifier: $(PRODUCT_BUNDLE_IDENTIFIER)
         CFBundleInfoDictionaryVersion: "6.0"
-        CFBundleName: $(PRODUCT_NAME)
+        CFBundleName: Swindoo
         CFBundlePackageType: APPL
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
@@ -66,8 +70,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.shortcutchris.EasySwipe
         PRODUCT_NAME: EasySwipe
         PRODUCT_MODULE_NAME: EasySwipe
-        MARKETING_VERSION: 0.1.2
-        CURRENT_PROJECT_VERSION: 10
+        MARKETING_VERSION: 0.1.3
+        CURRENT_PROJECT_VERSION: 11
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: Config/Info.plist
         ENABLE_APP_SANDBOX: NO

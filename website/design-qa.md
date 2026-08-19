@@ -1,4 +1,4 @@
-# EasySwipe design QA
+# Swindoo design QA
 
 Reference: `public/assets/design-reference.png`  
 Desktop comparison: `qa/comparison-round-2.png`  
@@ -50,7 +50,7 @@ Mobile checks: `qa/mobile-viewport.png`, `qa/mobile-clip-2.png`, `qa/mobile-clip
 
 - Typography: Existing system font, weights, hierarchy, and title/device copy are preserved; compact preview labels remain readable at desktop and mobile sizes.
 - Spacing and layout: The new composition stays inside the original gesture slot, preserves the centered device row, and scales without overflow at 895 px and 390 px.
-- Colors and tokens: Coral, mint, cobalt, amber, warm page background, borders, and shadows remain aligned with the selected EasySwipe palette.
+- Colors and tokens: Coral, mint, cobalt, amber, warm page background, borders, and shadows remain aligned with the selected Swindoo palette.
 - Image quality: The criticized raster gesture graphic was removed from the rendered page. The replacement uses crisp HTML UI, CSS effects, and Phosphor icons at every density.
 - Copy and content: Up/Maximize, Left/Half screen, Right/Half screen, Down/Minimize, title-bar instruction, and input-device labels remain intact.
 
@@ -86,7 +86,7 @@ final result: passed
 - Fonts and typography: No type styles, wrapping, hierarchy, or optical weights changed; direction labels and status copy remain identical to the approved implementation.
 - Spacing and layout rhythm: The Finder frame, title bar, controls, radii, shadows, and page rhythm are unchanged. Motion is contained within the existing title-bar track without clipping or horizontal overflow.
 - Colors and visual tokens: Contact-point blue, white rings, glow, cobalt/coral/mint/amber direction colors, and warm page background remain unchanged.
-- Image quality and asset fidelity: The supplied EasySwipe icon remains the real source asset. The existing HTML contact points and Phosphor interface icons stay crisp at both tested densities; no new placeholder or approximate asset was introduced.
+- Image quality and asset fidelity: The supplied Swindoo icon remains the real source asset. The existing HTML contact points and Phosphor interface icons stay crisp at both tested densities; no new placeholder or approximate asset was introduced.
 - Copy and content: All Up/Maximize, Left/Half screen, Right/Half screen, Down/Minimize, device, and title-bar copy is preserved.
 
 ### Interaction and browser verification

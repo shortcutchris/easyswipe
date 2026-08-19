@@ -23,6 +23,8 @@ readonly RELEASE_RUN_ID="$(/bin/date -u +%Y%m%dT%H%M%SZ)"
 readonly RELEASE_WORKSPACE="${RELEASES_ROOT}/${VERSION}-${BUILD}-${RELEASE_RUN_ID}"
 readonly RELEASE_APP="${RELEASE_WORKSPACE}/EasySwipe.app"
 readonly RELEASE_ARCHIVE="${RELEASE_WORKSPACE}/${ARCHIVE_NAME}"
+readonly BRANDED_ARCHIVE="${RELEASE_WORKSPACE}/Swindoo.zip"
+readonly BRANDED_CHECKSUM="${BRANDED_ARCHIVE}.sha256"
 readonly NOTARY_ARCHIVE="${RELEASES_ROOT}/EasySwipe-${VERSION}-${BUILD}-${RELEASE_RUN_ID}-notarization.zip"
 readonly NOTARY_RESULT="${RELEASE_WORKSPACE}/notarization.json"
 readonly GENERATED_FEED="${RELEASE_WORKSPACE}/appcast.xml"
@@ -107,7 +109,7 @@ preflight() {
     || fail "Notarization profile could not authenticate: ${NOTARY_PROFILE}"
 
   SIGNING_IDENTITY="$(resolve_signing_identity)"
-  print "Preflight passed for EasySwipe ${VERSION} (${BUILD})."
+  print "Preflight passed for Swindoo ${VERSION} (${BUILD})."
   print "Developer ID: ${SIGNING_IDENTITY}"
 }
 
@@ -243,20 +245,27 @@ PY
 }
 
 publish_release() {
-  gh release create "${TAG}" "${RELEASE_ARCHIVE}" "${RELEASE_ARCHIVE}.sha256" \
+  /bin/cp "${RELEASE_ARCHIVE}" "${BRANDED_ARCHIVE}"
+  /usr/bin/shasum -a 256 "${BRANDED_ARCHIVE}" > "${BRANDED_CHECKSUM}"
+
+  gh release create "${TAG}" \
+    "${RELEASE_ARCHIVE}" "${RELEASE_ARCHIVE}.sha256" \
+    "${BRANDED_ARCHIVE}" "${BRANDED_CHECKSUM}" \
     --repo "${RELEASE_REPOSITORY}" \
-    --title "EasySwipe ${VERSION}" \
+    --title "Swindoo ${VERSION}" \
     --notes-file "${RELEASE_NOTES}"
 
   /bin/cp "${GENERATED_FEED}" "${RELEASE_CHECKOUT}/appcast.xml"
   /bin/mkdir -p "${RELEASE_CHECKOUT}/release-notes"
   /bin/cp "${RELEASE_NOTES}" "${RELEASE_CHECKOUT}/release-notes/${VERSION}.md"
   git -C "${RELEASE_CHECKOUT}" add appcast.xml "release-notes/${VERSION}.md"
-  git -C "${RELEASE_CHECKOUT}" commit -m "Publish EasySwipe ${VERSION} (${BUILD})"
+  git -C "${RELEASE_CHECKOUT}" commit -m "Publish Swindoo ${VERSION} (${BUILD})"
   git -C "${RELEASE_CHECKOUT}" push origin main
 
   /usr/bin/curl --fail --silent --show-error --location \
     "${RELEASE_URL_PREFIX}${ARCHIVE_NAME}" >/dev/null
+  /usr/bin/curl --fail --silent --show-error --location \
+    "https://github.com/${RELEASE_REPOSITORY}/releases/latest/download/Swindoo.zip" >/dev/null
   gh api -H "Accept: application/vnd.github.raw+json" \
     "repos/${RELEASE_REPOSITORY}/contents/appcast.xml?ref=main" \
     | /usr/bin/grep -Fq "${RELEASE_URL_PREFIX}${ARCHIVE_NAME}" \
@@ -275,7 +284,7 @@ main() {
   stage_and_notarize
   generate_and_validate_feed
   publish_release
-  print "EasySwipe ${VERSION} (${BUILD}) is published and live in the Sparkle feed."
+  print "Swindoo ${VERSION} (${BUILD}) is published and live in the Sparkle feed."
 }
 
 main "$@"

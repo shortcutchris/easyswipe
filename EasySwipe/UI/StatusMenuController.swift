@@ -44,7 +44,7 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
     }
 
     private func configureStatusItem() {
-        statusItem.button?.toolTip = "EasySwipe"
+        statusItem.button?.toolTip = "Swindoo"
         statusItem.menu = menu
         refreshStatusImage()
     }
@@ -116,8 +116,8 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         let symbolName = hasPermission ? "rectangle.split.2x1" : "exclamationmark.triangle.fill"
         let fallbackName = hasPermission ? "rectangle" : "exclamationmark.triangle"
         let image =
-            NSImage(systemSymbolName: symbolName, accessibilityDescription: "EasySwipe")
-            ?? NSImage(systemSymbolName: fallbackName, accessibilityDescription: "EasySwipe")
+            NSImage(systemSymbolName: symbolName, accessibilityDescription: "Swindoo")
+            ?? NSImage(systemSymbolName: fallbackName, accessibilityDescription: "Swindoo")
         image?.isTemplate = true
         statusItem.button?.image = image
         statusItem.button?.appearsDisabled = !enabled

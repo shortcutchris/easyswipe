@@ -45,8 +45,8 @@
     },
     "guide.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe-Gesten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe Gestures" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Swindoo-Gesten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Swindoo Gestures" } }
       }
     },
     "hud.left" : {
@@ -81,14 +81,14 @@
     },
     "login.requiresApproval" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erlaube EasySwipe unter Systemeinstellungen > Allgemein > Anmeldeobjekte, um den Start beim Anmelden zu aktivieren." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Allow EasySwipe in System Settings > General > Login Items to finish enabling launch at login." } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erlaube Swindoo unter Systemeinstellungen > Allgemein > Anmeldeobjekte, um den Start beim Anmelden zu aktivieren." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Allow Swindoo in System Settings > General > Login Items to finish enabling launch at login." } }
       }
     },
     "menu.about" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Über EasySwipe" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "About EasySwipe" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Über Swindoo" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "About Swindoo" } }
       }
     },
     "menu.checkForUpdates" : {
@@ -99,8 +99,8 @@
     },
     "menu.enabled" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe aktiv" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe Enabled" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Swindoo aktiv" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Swindoo Enabled" } }
       }
     },
     "menu.gestureGuide" : {
@@ -123,8 +123,8 @@
     },
     "menu.quit" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe beenden" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Quit EasySwipe" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Swindoo beenden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Quit Swindoo" } }
       }
     },
     "onboarding.deviceHint" : {
@@ -147,14 +147,14 @@
     },
     "onboarding.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Willkommen bei EasySwipe" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Welcome to EasySwipe" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Willkommen bei Swindoo" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Welcome to Swindoo" } }
       }
     },
     "permission.explanation" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe verwendet Bedienungshilfen, um das Fenster unter dem Mauszeiger zu erkennen und anzuordnen. Fensterinhalte werden nie gelesen." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "EasySwipe uses Accessibility to identify and arrange the window below your pointer. It never reads window contents." } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Swindoo verwendet Bedienungshilfen, um das Fenster unter dem Mauszeiger zu erkennen und anzuordnen. Fensterinhalte werden nie gelesen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Swindoo uses Accessibility to identify and arrange the window below your pointer. It never reads window contents." } }
       }
     },
     "permission.granted" : {

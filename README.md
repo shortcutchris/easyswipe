@@ -1,6 +1,6 @@
-# EasySwipe
+# Swindoo
 
-EasySwipe is a small native macOS menu bar app for arranging a window directly from its title bar.
+Swindoo (formerly EasySwipe) is a small native macOS menu bar app for arranging a window directly from its title bar.
 
 [Website](https://easyswipe.shortcutchris.chatgpt.site) · [Download the latest release](https://github.com/shortcutchris/easyswipe-releases/releases/latest) · [Release repository](https://github.com/shortcutchris/easyswipe-releases)
 
@@ -9,11 +9,11 @@ EasySwipe is a small native macOS menu bar app for arranging a window directly f
 - Swipe down to minimize.
 - Swipe up to maximize within the usable desktop area.
 
-The gesture uses two fingers on a MacBook or Magic Trackpad and the continuous touch surface of an Apple Magic Mouse. EasySwipe normalizes the physical direction independently of the macOS natural-scrolling setting, ignores momentum, and leaves ordinary scrolling untouched.
+The gesture uses two fingers on a MacBook or Magic Trackpad and the continuous touch surface of an Apple Magic Mouse. Swindoo normalizes the physical direction independently of the macOS natural-scrolling setting, ignores momentum, and leaves ordinary scrolling untouched.
 
 ## Current release
 
-Version `0.1.2` implements the complete source-level MVP:
+Version `0.1.3` implements the complete source-level MVP:
 
 - title-bar targeting through the macOS Accessibility API;
 - left/right window snapping and normal-window maximization based on `NSScreen.visibleFrame`;
@@ -29,7 +29,7 @@ Version `0.1.2` implements the complete source-level MVP:
 - Sparkle 2.9.6 update integration with a public signed update feed;
 - Universal 2 release builds for Apple Silicon and Intel.
 
-EasySwipe requires macOS 14 or newer and Accessibility permission. It has no telemetry and does not store window titles, app names, pointer paths, or gesture history.
+Swindoo requires macOS 14 or newer and Accessibility permission. It has no telemetry and does not store window titles, app names, pointer paths, or gesture history.
 
 ## Build
 
@@ -84,4 +84,4 @@ After storing Apple notarization credentials in a local `notarytool` Keychain pr
 
 ## License
 
-EasySwipe is open source under the [MIT License](LICENSE).
+Swindoo is open source under the [MIT License](LICENSE).

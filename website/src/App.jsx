@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowDown,
   ArrowLeft,
@@ -18,105 +18,107 @@ import {
   Monitor,
   Mouse,
   Rectangle,
+  Translate,
 } from "@phosphor-icons/react";
+import { ImprintPage, LicensesPage, PrivacyPage } from "./LegalPages.jsx";
+import {
+  copyFor,
+  localeNames,
+  resolveRoute,
+  routeFor,
+  supportedLocales,
+} from "./i18n.js";
+import { siteConfig } from "./siteConfig.js";
 
-const DOWNLOAD_URL =
-  "https://github.com/shortcutchris/easyswipe-releases/releases/download/v0.1.2/EasySwipe-0.1.2-10.zip";
-const SOURCE_URL = "https://github.com/shortcutchris/easyswipe";
-const RELEASES_URL = "https://github.com/shortcutchris/easyswipe-releases/releases";
-
-const gestureDirections = [
-  { id: "up", eyebrow: "Up", label: "Maximize", icon: ArrowUp },
-  { id: "left", eyebrow: "Left", label: "Half screen", icon: ArrowLeft },
-  { id: "right", eyebrow: "Right", label: "Half screen", icon: ArrowRight },
-  { id: "down", eyebrow: "Down", label: "Minimize", icon: ArrowDown },
+const directionMeta = [
+  { id: "up", icon: ArrowUp },
+  { id: "left", icon: ArrowLeft },
+  { id: "right", icon: ArrowRight },
+  { id: "down", icon: ArrowDown },
 ];
 
-const finderLocations = [
-  { label: "Desktop", icon: Desktop },
-  { label: "Documents", icon: File },
-  { label: "Downloads", icon: DownloadSimple },
-  { label: "Projects", icon: FolderSimple },
+const finderIcons = [Desktop, File, DownloadSimple, FolderSimple];
+const stepIcons = [HandTap, ArrowsOutCardinal, Browsers];
+const trustMeta = [
+  { icon: LockSimple, tone: "mint" },
+  { icon: Cube, tone: "coral" },
+  { icon: CheckCircle, tone: "blue" },
 ];
 
-const steps = [
-  { number: "1", icon: HandTap, title: "Place two fingers on the title bar.", copy: "Anywhere on the bar." },
-  { number: "2", icon: ArrowsOutCardinal, title: "Swipe in a direction.", copy: "Up, down, left, or right." },
-  { number: "3", icon: Browsers, title: "Done.", copy: "Your window snaps instantly." },
-];
-
-const trustItems = [
-  {
-    icon: LockSimple,
-    tone: "mint",
-    title: "Free · Native · No telemetry",
-    copy: "Built for macOS using native APIs. No analytics. No data collection.",
-  },
-  {
-    icon: Cube,
-    tone: "coral",
-    title: "Open source · MIT",
-    copy: "Source code, issues, and contributions are public on GitHub under the MIT License.",
-  },
-  {
-    icon: CheckCircle,
-    tone: "blue",
-    title: "Version 0.1.2",
-    copy: "Broader title-bar compatibility for Notion and other custom macOS windows.",
-  },
-];
-
-function Brand() {
+function Brand({ href, copy }) {
   return (
-    <a className="brand" href="#top" aria-label="EasySwipe home">
-      <img src="/assets/easyswipe-icon.png" alt="" />
-      <span>EasySwipe</span>
+    <a className="brand" href={href} aria-label={`${siteConfig.name} ${copy.navigation.home}`}>
+      <img src="/assets/swindoo-icon.png" alt="" />
+      <span>{siteConfig.name}</span>
     </a>
   );
 }
 
-function DownloadButton({ variant = "primary", compact = false }) {
+function DownloadButton({ copy, variant = "primary", compact = false }) {
   return (
     <a
       className={`button button--${variant}${compact ? " button--compact" : ""}`}
-      href={DOWNLOAD_URL}
-      aria-label="Download EasySwipe 0.1.2 for macOS"
+      href={siteConfig.downloadUrl}
+      aria-label={`${copy.navigation.downloadLong}: ${siteConfig.name} ${siteConfig.version}`}
     >
       <DownloadSimple weight="bold" aria-hidden="true" />
-      <span>{compact ? "Download" : "Download for macOS"}</span>
+      <span>{compact ? copy.navigation.download : copy.navigation.downloadLong}</span>
     </a>
   );
 }
 
-function GestureDemo() {
+function LanguageSwitcher({ locale, page, copy }) {
+  return (
+    <nav className="language-switcher" aria-label={copy.navigation.language}>
+      <Translate className="language-switcher__icon" weight="bold" aria-hidden="true" />
+      {supportedLocales.map((candidate) => (
+        <a
+          key={candidate}
+          href={routeFor(candidate, page)}
+          hrefLang={candidate}
+          lang={candidate}
+          aria-current={candidate === locale ? "page" : undefined}
+          aria-label={localeNames[candidate]}
+        >
+          <span>{candidate.toUpperCase()}</span>
+        </a>
+      ))}
+    </nav>
+  );
+}
+
+function GestureDemo({ copy }) {
   const [activeGesture, setActiveGesture] = useState("right");
-  const active = gestureDirections.find(({ id }) => id === activeGesture);
+  const active = copy.gesture.directions[activeGesture];
 
   return (
     <div className={`gesture-demo gesture-demo--${activeGesture}`}>
       <div className="gesture-demo__label">
         <span aria-hidden="true" />
-        Interactive preview
+        {copy.gesture.preview}
       </div>
 
-      {gestureDirections.map(({ id, eyebrow, label, icon: Icon }) => (
-        <button
-          className={`gesture-target gesture-target--${id}`}
-          type="button"
-          key={id}
-          aria-label={`${eyebrow}: ${label}`}
-          aria-pressed={activeGesture === id}
-          onClick={() => setActiveGesture(id)}
-          onFocus={() => setActiveGesture(id)}
-          onMouseEnter={() => setActiveGesture(id)}
-        >
-          <Icon weight="bold" aria-hidden="true" />
-          <span className="gesture-target__copy">
-            <strong>{eyebrow}</strong>
-            <span>{label}</span>
-          </span>
-        </button>
-      ))}
+      {directionMeta.map(({ id, icon: Icon }) => {
+        const direction = copy.gesture.directions[id];
+        return (
+          <button
+            className={`gesture-target gesture-target--${id}`}
+            type="button"
+            key={id}
+            aria-label={`${direction.eyebrow}: ${direction.label}`}
+            aria-pressed={activeGesture === id}
+            onClick={() => setActiveGesture(id)}
+            onFocus={() => setActiveGesture(id)}
+            onMouseEnter={() => setActiveGesture(id)}
+          >
+            <Icon weight="bold" aria-hidden="true" />
+            <span className="gesture-target__copy">
+              <strong>{direction.eyebrow}</strong>
+              <span>{direction.label}</span>
+            </span>
+          </button>
+        );
+      })}
 
       <div className="finder-demo" aria-hidden="true">
         <div className="finder-demo__titlebar">
@@ -132,16 +134,19 @@ function GestureDemo() {
         </div>
         <div className="finder-demo__body">
           <div className="finder-demo__sidebar">
-            {finderLocations.map(({ label, icon: Icon }) => (
-              <div key={label}>
-                <Icon weight="regular" />
-                <span>{label}</span>
-              </div>
-            ))}
+            {copy.finder.map((label, index) => {
+              const Icon = finderIcons[index];
+              return (
+                <div key={label}>
+                  <Icon weight="regular" />
+                  <span>{label}</span>
+                </div>
+              );
+            })}
           </div>
           <div className="finder-demo__content">
             <div className="finder-demo__folders">
-              {["Desktop", "Documents", "Downloads", "Projects"].map((label) => (
+              {copy.finder.map((label) => (
                 <div key={label}>
                   <FolderSimple weight="fill" />
                   <span>{label}</span>
@@ -161,40 +166,72 @@ function GestureDemo() {
         <span>{active.eyebrow} · {active.label}</span>
       </div>
       <p className="sr-only" aria-live="polite">
-        Previewing swipe {active.eyebrow.toLowerCase()}: {active.label}.
+        {copy.gesture.live(active.eyebrow, active.label)}
       </p>
     </div>
   );
 }
 
-export function App() {
+function SiteHeader({ locale, page, copy }) {
+  const isHome = page === "landing";
+  const landing = routeFor(locale, "landing");
+  const gestureHref = isHome ? "#gestures" : `${landing}#gestures`;
+
+  return (
+    <header className="site-header" data-testid="site-header">
+      <Brand href={isHome ? "#top" : landing} copy={copy} />
+      <div className="site-header__actions">
+        <nav className="primary-nav" aria-label={copy.navigation.primary}>
+          <a className="nav-link nav-link--desktop" href={gestureHref}>{copy.navigation.gestures}</a>
+          <a className="nav-link nav-link--desktop" href={siteConfig.sourceUrl}>{copy.navigation.source}</a>
+        </nav>
+        <LanguageSwitcher locale={locale} page={page} copy={copy} />
+        <DownloadButton compact copy={copy} />
+      </div>
+    </header>
+  );
+}
+
+function SiteFooter({ locale, page, copy }) {
+  const isHome = page === "landing";
+  const landing = routeFor(locale, "landing");
+
+  return (
+    <footer className="footer">
+      <Brand href={isHome ? "#top" : landing} copy={copy} />
+      <p>© 2026 {siteConfig.name}</p>
+      <div>
+        <a href={isHome ? "#gestures" : `${landing}#gestures`}>{copy.navigation.gestures}</a>
+        <a href={siteConfig.sourceUrl}>{copy.navigation.source}</a>
+        <a href={routeFor(locale, "imprint")}>{copy.navigation.imprint}</a>
+        <a href={routeFor(locale, "privacy")}>{copy.navigation.privacy}</a>
+        <a href={routeFor(locale, "licenses")}>{copy.navigation.licenses}</a>
+      </div>
+    </footer>
+  );
+}
+
+function LandingPage({ locale, copy }) {
   return (
     <div className="site-shell" id="top">
-      <header className="site-header" data-testid="site-header">
-        <Brand />
-        <nav aria-label="Primary navigation">
-          <a className="nav-link nav-link--desktop" href="#gestures">Gestures</a>
-          <a className="nav-link nav-link--desktop" href={SOURCE_URL}>Source Code</a>
-          <DownloadButton compact />
-        </nav>
-      </header>
+      <SiteHeader locale={locale} page="landing" copy={copy} />
 
       <main>
         <section className="hero" aria-labelledby="hero-title">
-          <img className="hero__icon" src="/assets/easyswipe-icon.png" alt="EasySwipe app icon" />
-          <h1 id="hero-title">Swipe. Snap. Done.</h1>
-          <p>Window management for people who hate window managers.</p>
-          <DownloadButton />
-          <a className="text-link" href={SOURCE_URL}>
-            Source Code <ArrowRight weight="bold" aria-hidden="true" />
+          <img className="hero__icon" src="/assets/swindoo-icon.png" alt={copy.hero.iconAlt} />
+          <h1 id="hero-title">{copy.hero.tagline}</h1>
+          <p>{copy.hero.description}</p>
+          <DownloadButton copy={copy} />
+          <a className="text-link" href={siteConfig.sourceUrl}>
+            {copy.navigation.source} <ArrowRight weight="bold" aria-hidden="true" />
           </a>
         </section>
 
         <section className="gestures" id="gestures" data-testid="gesture-section">
-          <h2 className="sr-only">Four title-bar gestures</h2>
-          <GestureDemo />
-          <h3>Title bar + two fingers</h3>
-          <div className="device-row" aria-label="Supported input devices">
+          <h2 className="sr-only">{copy.gesture.sectionLabel}</h2>
+          <GestureDemo copy={copy} />
+          <h3>{copy.gesture.title}</h3>
+          <div className="device-row" aria-label={copy.gesture.devices}>
             <div className="device-pill">
               <Rectangle weight="light" aria-hidden="true" />
               <span>Magic Trackpad</span>
@@ -206,58 +243,92 @@ export function App() {
           </div>
         </section>
 
-        <section className="steps" aria-label="How EasySwipe works">
-          {steps.map(({ number, icon: Icon, title, copy }) => (
-            <article className="step" key={number}>
-              <span className="step__number" aria-hidden="true">{number}</span>
-              <div className="step__icon"><Icon weight="light" aria-hidden="true" /></div>
-              <h2>{title}</h2>
-              <p>{copy}</p>
-            </article>
-          ))}
+        <section className="steps" aria-label={copy.stepsLabel}>
+          {copy.steps.map(({ title, copy: stepCopy }, index) => {
+            const Icon = stepIcons[index];
+            return (
+              <article className="step" key={title}>
+                <span className="step__number" aria-hidden="true">{index + 1}</span>
+                <div className="step__icon"><Icon weight="light" aria-hidden="true" /></div>
+                <h2>{title}</h2>
+                <p>{stepCopy}</p>
+              </article>
+            );
+          })}
         </section>
 
-        <section className="trust" aria-label="EasySwipe product details">
-          {trustItems.map(({ icon: Icon, tone, title, copy }) => (
-            <article className="trust-item" key={title}>
-              <div className={`trust-item__icon trust-item__icon--${tone}`}>
-                <Icon weight="bold" aria-hidden="true" />
-              </div>
-              <div>
-                <h2>{title}</h2>
-                <p>{copy}</p>
-              </div>
-            </article>
-          ))}
+        <section className="trust" aria-label={copy.productDetails}>
+          {copy.trust.map(({ title, copy: trustCopy }, index) => {
+            const { icon: Icon, tone } = trustMeta[index];
+            return (
+              <article className="trust-item" key={title}>
+                <div className={`trust-item__icon trust-item__icon--${tone}`}>
+                  <Icon weight="bold" aria-hidden="true" />
+                </div>
+                <div>
+                  <h2>{title}</h2>
+                  <p>{trustCopy}</p>
+                </div>
+              </article>
+            );
+          })}
         </section>
 
         <section className="download-panel" aria-labelledby="download-title">
           <div>
-            <h2 id="download-title">EasySwipe</h2>
-            <p className="download-panel__tagline">Swipe. Snap. Done.</p>
-            <p>Window management for people who hate window managers.</p>
+            <h2 id="download-title">{siteConfig.name}</h2>
+            <p className="download-panel__tagline">{copy.hero.tagline}</p>
+            <p>{copy.hero.description}</p>
           </div>
           <div className="download-panel__actions">
-            <DownloadButton variant="light" />
-            <a className="download-panel__github" href={RELEASES_URL}>
+            <DownloadButton variant="light" copy={copy} />
+            <a className="download-panel__github" href={siteConfig.releasesUrl}>
               <GithubLogo weight="fill" aria-hidden="true" />
-              GitHub Releases
+              {copy.navigation.releases}
               <ArrowRight weight="bold" aria-hidden="true" />
             </a>
           </div>
         </section>
       </main>
 
-      <footer className="footer">
-        <Brand />
-        <p>© 2026 EasySwipe</p>
-        <div>
-          <a href="#gestures">Gestures</a>
-          <a href={SOURCE_URL}>Source Code</a>
-          <a href={RELEASES_URL}>Releases</a>
-          <a href={DOWNLOAD_URL}>Download</a>
-        </div>
-      </footer>
+      <SiteFooter locale={locale} page="landing" copy={copy} />
+    </div>
+  );
+}
+
+const legalComponents = {
+  imprint: ImprintPage,
+  privacy: PrivacyPage,
+  licenses: LicensesPage,
+};
+
+export function App() {
+  const { locale, page } = resolveRoute(window.location.pathname);
+  const copy = copyFor(locale);
+  const LegalPage = legalComponents[page];
+
+  useEffect(() => {
+    const pageTitle = page === "landing" ? copy.hero.tagline : copy.navigation[page];
+    const socialTitle = `${siteConfig.name} — ${pageTitle}`;
+    const socialImage = new URL("/og.png", window.location.origin).href;
+    document.documentElement.lang = locale;
+    document.title = socialTitle;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", copy.metaDescription);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", socialTitle);
+    document.querySelector('meta[property="og:description"]')?.setAttribute("content", copy.metaDescription);
+    document.querySelector('meta[property="og:image"]')?.setAttribute("content", socialImage);
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", socialTitle);
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", copy.metaDescription);
+    document.querySelector('meta[name="twitter:image"]')?.setAttribute("content", socialImage);
+  }, [copy, locale, page]);
+
+  if (!LegalPage) return <LandingPage locale={locale} copy={copy} />;
+
+  return (
+    <div className="site-shell">
+      <SiteHeader locale={locale} page={page} copy={copy} />
+      <LegalPage locale={locale} />
+      <SiteFooter locale={locale} page={page} copy={copy} />
     </div>
   );
 }
