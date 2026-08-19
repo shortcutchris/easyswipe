@@ -144,4 +144,17 @@ test("emits the files required by Sites packaging", async () => {
   await access(new URL("../dist/client/index.html", import.meta.url));
   await access(new URL("../dist/server/index.js", import.meta.url));
   await access(new URL("../dist/.openai/hosting.json", import.meta.url));
+
+  for (const pathname of [
+    "de/index.html",
+    "de/impressum/index.html",
+    "de/datenschutz/index.html",
+    "de/lizenzen/index.html",
+    "en/index.html",
+    "en/imprint/index.html",
+    "en/privacy/index.html",
+    "en/licenses/index.html",
+  ]) {
+    await access(new URL(`../dist/client/${pathname}`, import.meta.url));
+  }
 });
