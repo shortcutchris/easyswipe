@@ -180,12 +180,12 @@ PY"
 }
 
 verify_project() {
-  test_project
+  test_project || return $?
   # Preserve the validated summary on the controlling Mac while the clean
   # Universal 2 build replaces remote staging artifacts.
   /bin/mkdir -p "${REPOSITORY_ROOT}/artifacts"
   rsync -az "${REMOTE_HOST}:${SUMMARY_FILE}" "${LOCAL_VERIFICATION_SUMMARY}"
-  release_project
+  release_project || return $?
   rsync -az "${LOCAL_VERIFICATION_SUMMARY}" "${REMOTE_HOST}:${SUMMARY_FILE}"
   remote "set -eu
     /usr/bin/python3 - '${SUMMARY_FILE}' '${REMOTE_ROOT}/.remote-source-revision' '${STAGED_APP}' '${ARTIFACTS_ROOT}/verification.json' <<'PY'
