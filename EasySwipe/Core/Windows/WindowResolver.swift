@@ -9,18 +9,37 @@ protocol WindowResolving {
 
 struct WindowCompatibilityProfile: Equatable, Sendable {
     let allowedTopRegionRoles: Set<String>
+    let allowedTopRegionIdentifiers: Set<String>
+    let allowedTopRegionActionsByRole: [String: Set<String>]
     let minimumTitlebarHeight: CGFloat
     let maximumAncestorDepth: Int
 
     init(bundleIdentifier: String?) {
         let isWarp = bundleIdentifier?.hasPrefix("dev.warp.Warp") == true
+        let isWhatsApp = bundleIdentifier?.hasPrefix("net.whatsapp.WhatsApp") == true
         allowedTopRegionRoles =
             isWarp
             ? [
-                kAXTextAreaRole as String,
+                kAXTextAreaRole as String
             ]
             : []
-        minimumTitlebarHeight = isWarp ? 64 : 38
+        allowedTopRegionIdentifiers =
+            isWhatsApp
+            ? [
+                "NavigationBar_HeaderViewButton"
+            ]
+            : []
+        allowedTopRegionActionsByRole =
+            isWhatsApp
+            ? [
+                kAXGroupRole as String: [
+                    kAXCancelAction as String,
+                    "AXScrollToVisible",
+                    kAXShowMenuAction as String,
+                ]
+            ]
+            : [:]
+        minimumTitlebarHeight = isWarp || isWhatsApp ? 64 : 38
         maximumAncestorDepth = 48
     }
 }
@@ -74,10 +93,20 @@ struct WindowHitRegionPolicy: Sendable {
 
     func rejects(
         role: String?,
+        identifier: String? = nil,
         actionNames: Set<String>,
         compatibility: WindowCompatibilityProfile
     ) -> Bool {
+        if let identifier, compatibility.allowedTopRegionIdentifiers.contains(identifier) {
+            return false
+        }
         if let role, compatibility.allowedTopRegionRoles.contains(role) {
+            return false
+        }
+        if let role,
+            let allowedActions = compatibility.allowedTopRegionActionsByRole[role],
+            actionNames.isSubset(of: allowedActions)
+        {
             return false
         }
         if let role, blockingRoles.contains(role) {
@@ -207,6 +236,10 @@ final class WindowResolver: WindowResolving {
 
             if hitRegionPolicy.rejects(
                 role: role,
+                identifier: AXBridge.string(
+                    candidate,
+                    attribute: kAXIdentifierAttribute as CFString
+                ),
                 actionNames: AXBridge.actionNames(candidate),
                 compatibility: compatibility
             ) {

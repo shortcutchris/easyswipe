@@ -31,6 +31,52 @@ final class WindowCompatibilityProfileTests: XCTestCase {
         )
     }
 
+    func testWhatsAppAllowsItsHeaderDragSurfaceButStillRejectsCallControls() {
+        let profile = WindowCompatibilityProfile(bundleIdentifier: "net.whatsapp.WhatsApp")
+
+        XCTAssertEqual(profile.minimumTitlebarHeight, 64)
+        XCTAssertTrue(
+            profile.allowedTopRegionIdentifiers.contains("NavigationBar_HeaderViewButton")
+        )
+        XCTAssertFalse(
+            policy.rejects(
+                role: "AXButton",
+                identifier: "NavigationBar_HeaderViewButton",
+                actionNames: ["AXPress", "AXCancel", "AXShowMenu"],
+                compatibility: profile
+            )
+        )
+        XCTAssertFalse(
+            policy.rejects(
+                role: "AXGroup",
+                identifier: "Toolbar",
+                actionNames: ["AXScrollToVisible", "AXCancel", "AXShowMenu"],
+                compatibility: profile
+            )
+        )
+        XCTAssertTrue(
+            policy.rejects(
+                role: "AXButton",
+                identifier: nil,
+                actionNames: ["AXPress", "AXCancel", "AXShowMenu"],
+                compatibility: profile
+            )
+        )
+    }
+
+    func testWhatsAppVariantBundleIdentifiersUseCompatibilityProfile() {
+        for bundleIdentifier in [
+            "net.whatsapp.WhatsApp",
+            "net.whatsapp.WhatsApp.Beta",
+        ] {
+            let profile = WindowCompatibilityProfile(bundleIdentifier: bundleIdentifier)
+            XCTAssertEqual(profile.minimumTitlebarHeight, 64)
+            XCTAssertTrue(
+                profile.allowedTopRegionIdentifiers.contains("NavigationBar_HeaderViewButton")
+            )
+        }
+    }
+
     func testCommonCustomTitlebarContainersRemainEligibleAcrossAppFrameworks() {
         let containerRoles: Set<String> = [
             "AXBrowser", "AXGroup", "AXList", "AXOutline", "AXScrollArea", "AXTabGroup",
@@ -99,6 +145,13 @@ final class WindowCompatibilityProfileTests: XCTestCase {
             policy.rejects(
                 role: "AXGroup",
                 actionNames: ["AXShowMenu", "AXScrollToVisible"],
+                compatibility: profile
+            )
+        )
+        XCTAssertTrue(
+            policy.rejects(
+                role: "AXGroup",
+                actionNames: ["AXCancel", "AXShowMenu", "AXScrollToVisible"],
                 compatibility: profile
             )
         )

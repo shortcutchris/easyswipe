@@ -127,6 +127,8 @@ Die Fallback-Zone darf nicht dazu führen, dass horizontales Scrollen in Safari-
 
 Electron-, Chromium-, Catalyst-, SwiftUI- und andere benutzerdefinierte Oberflächen verwenden häufig tief verschachtelte Container als Accessibility-Oberfläche ihrer Titelleiste. Diese Container dürfen den Weg zum umgebenden Fenster nicht blockieren; darin enthaltene echte Steuerelemente bleiben ausgeschlossen. Warp verwendet zusätzlich eine fensterweite `AXTextArea` und eine 64 Punkte hohe eigene Titelleistenoberfläche, die über sein Kompatibilitätsprofil zugelassen wird.
 
+Die native WhatsApp-App verwendet eine Catalyst-Navigationsleiste, deren breite Kontaktkopf-Fläche als aktivierender `AXButton` mit dem Identifier `NavigationBar_HeaderViewButton` erscheint. Das WhatsApp-Kompatibilitätsprofil lässt nur diese Kopf-Fläche und nicht die danebenliegenden Anruf-, Video- oder Menübuttons als Gestenfläche zu. Die zugehörige 64 Punkte hohe obere Rahmenzone bleibt durch die normale geometrische Titelbarprüfung begrenzt.
+
 ### 6.3 Nicht unterstützte Fenster
 
 Folgende Fenster werden im MVP ohne Aktion und ohne HUD ignoriert:
