@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "Swindoo",
   previousName: "EasySwipe",
-  version: "0.1.3",
+  version: "0.1.4",
   tagline: "Swipe. Snap. Done.",
   description: "Window management for people who hate window managers.",
   downloadUrl:

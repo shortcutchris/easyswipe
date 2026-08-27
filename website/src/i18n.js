@@ -104,8 +104,8 @@ export const translations = {
         copy: "Source code, issues, and contributions are public on GitHub under the MIT License.",
       },
       {
-        title: "Version 0.1.3",
-        copy: "Broader title-bar compatibility for Notion and other custom macOS windows.",
+        title: "Version 0.1.4",
+        copy: "Expanded title-bar compatibility for WhatsApp, Notion, and other custom macOS windows.",
       },
     ],
   },
@@ -161,8 +161,8 @@ export const translations = {
         copy: "Quellcode, Fehlerberichte und Beiträge sind unter der MIT-Lizenz auf GitHub öffentlich.",
       },
       {
-        title: "Version 0.1.3",
-        copy: "Bessere Titelbar-Kompatibilität für Notion und andere eigene macOS-Fenster.",
+        title: "Version 0.1.4",
+        copy: "Bessere Titelbar-Kompatibilität für WhatsApp, Notion und andere eigene macOS-Fenster.",
       },
     ],
   },
@@ -218,8 +218,8 @@ export const translations = {
         copy: "Le code source, les problèmes et les contributions sont publics sur GitHub sous licence MIT.",
       },
       {
-        title: "Version 0.1.3",
-        copy: "Meilleure compatibilité avec Notion et les fenêtres macOS personnalisées.",
+        title: "Version 0.1.4",
+        copy: "Meilleure compatibilité avec WhatsApp, Notion et les fenêtres macOS personnalisées.",
       },
     ],
   },
