@@ -60,6 +60,13 @@ resolve_signing_identity() {
   local identities=()
 
   if [[ -n "${configured_identity}" ]]; then
+    if [[ "${configured_identity}" =~ '^[0-9A-Fa-f]{40}$' ]]; then
+      /usr/bin/security find-identity -v -p codesigning \
+        | /usr/bin/grep -Fq " ${configured_identity:u} " \
+        || fail "Configured Developer ID fingerprint is unavailable: ${configured_identity}"
+      print -r -- "${configured_identity:u}"
+      return
+    fi
     /usr/bin/security find-identity -v -p codesigning \
       | /usr/bin/grep -Fq "\"${configured_identity}\"" \
       || fail "Configured Developer ID identity is unavailable: ${configured_identity}"
