@@ -13,12 +13,12 @@ readonly RELEASE_DERIVED_DATA="${EASYSWIPE_RELEASE_DERIVED_DATA:-/Users/chris/De
 readonly ARTIFACTS_ROOT="${EASYSWIPE_ARTIFACTS_ROOT:-/Users/chris/Developer/EasySwipeArtifacts}"
 readonly RESULT_BUNDLE="${ARTIFACTS_ROOT}/EasySwipeTests.xcresult"
 readonly SUMMARY_FILE="${ARTIFACTS_ROOT}/EasySwipeTests-summary.json"
-readonly VERIFICATION_SUMMARY_FILE="${REMOTE_ROOT}/.remote-verification-summary.json"
 readonly STAGED_APP="${ARTIFACTS_ROOT}/EasySwipe.app"
 readonly REMOTE_SPARKLE_TOOLS="${RELEASE_DERIVED_DATA}/SourcePackages/artifacts/sparkle/Sparkle/bin"
 readonly STAGED_ZIP="${ARTIFACTS_ROOT}/EasySwipe-${PROJECT_VERSION}-development.zip"
 readonly LOCAL_APP="${REPOSITORY_ROOT}/artifacts/EasySwipe.app"
 readonly LOCAL_SPARKLE_TOOLS="${REPOSITORY_ROOT}/artifacts/sparkle-tools"
+readonly LOCAL_VERIFICATION_SUMMARY="${REPOSITORY_ROOT}/artifacts/EasySwipeTests-summary.json"
 readonly LOCAL_SIGNING_MANIFEST="${REPOSITORY_ROOT}/artifacts/signing-verification.json"
 readonly SSH_OPTIONS=(-o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes)
 
@@ -181,12 +181,14 @@ PY"
 
 verify_project() {
   test_project
-  # Keep the validated summary outside the release staging directory while the
-  # clean Universal 2 build replaces its artifacts.
-  remote "/bin/cp '${SUMMARY_FILE}' '${VERIFICATION_SUMMARY_FILE}'"
+  # Preserve the validated summary on the controlling Mac while the clean
+  # Universal 2 build replaces remote staging artifacts.
+  /bin/mkdir -p "${REPOSITORY_ROOT}/artifacts"
+  rsync -az "${REMOTE_HOST}:${SUMMARY_FILE}" "${LOCAL_VERIFICATION_SUMMARY}"
   release_project
+  rsync -az "${LOCAL_VERIFICATION_SUMMARY}" "${REMOTE_HOST}:${SUMMARY_FILE}"
   remote "set -eu
-    /usr/bin/python3 - '${VERIFICATION_SUMMARY_FILE}' '${REMOTE_ROOT}/.remote-source-revision' '${STAGED_APP}' '${ARTIFACTS_ROOT}/verification.json' <<'PY'
+    /usr/bin/python3 - '${SUMMARY_FILE}' '${REMOTE_ROOT}/.remote-source-revision' '${STAGED_APP}' '${ARTIFACTS_ROOT}/verification.json' <<'PY'
 import datetime
 import json
 import plistlib
