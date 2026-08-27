@@ -13,6 +13,7 @@ readonly RELEASE_DERIVED_DATA="${EASYSWIPE_RELEASE_DERIVED_DATA:-/Users/chris/De
 readonly ARTIFACTS_ROOT="${EASYSWIPE_ARTIFACTS_ROOT:-/Users/chris/Developer/EasySwipeArtifacts}"
 readonly RESULT_BUNDLE="${ARTIFACTS_ROOT}/EasySwipeTests.xcresult"
 readonly SUMMARY_FILE="${ARTIFACTS_ROOT}/EasySwipeTests-summary.json"
+readonly VERIFICATION_SUMMARY_FILE="${REMOTE_ROOT}/.remote-verification-summary.json"
 readonly STAGED_APP="${ARTIFACTS_ROOT}/EasySwipe.app"
 readonly REMOTE_SPARKLE_TOOLS="${RELEASE_DERIVED_DATA}/SourcePackages/artifacts/sparkle/Sparkle/bin"
 readonly STAGED_ZIP="${ARTIFACTS_ROOT}/EasySwipe-${PROJECT_VERSION}-development.zip"
@@ -180,9 +181,12 @@ PY"
 
 verify_project() {
   test_project
+  # Keep the validated summary outside the release staging directory while the
+  # clean Universal 2 build replaces its artifacts.
+  remote "/bin/cp '${SUMMARY_FILE}' '${VERIFICATION_SUMMARY_FILE}'"
   release_project
   remote "set -eu
-    /usr/bin/python3 - '${SUMMARY_FILE}' '${REMOTE_ROOT}/.remote-source-revision' '${STAGED_APP}' '${ARTIFACTS_ROOT}/verification.json' <<'PY'
+    /usr/bin/python3 - '${VERIFICATION_SUMMARY_FILE}' '${REMOTE_ROOT}/.remote-source-revision' '${STAGED_APP}' '${ARTIFACTS_ROOT}/verification.json' <<'PY'
 import datetime
 import json
 import plistlib
