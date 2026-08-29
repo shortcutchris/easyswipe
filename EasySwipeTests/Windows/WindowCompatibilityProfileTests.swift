@@ -77,87 +77,96 @@ final class WindowCompatibilityProfileTests: XCTestCase {
         }
     }
 
-    func testFinderUsesItsMeasuredUnifiedToolbarAsTitlebarRegion() {
-        let profile = WindowCompatibilityProfile(bundleIdentifier: "com.apple.finder")
+    func testApplicationsUseMeasuredTopToolbarsAsTitlebarRegions() {
         let policy = WindowToolbarRegionPolicy()
         let windowFrame = CGRect(x: 100, y: 80, width: 1_000, height: 700)
         let toolbarFrame = CGRect(x: 100, y: 80, width: 1_000, height: 58)
 
-        XCTAssertTrue(profile.usesMeasuredTopToolbarFrame)
-        XCTAssertTrue(profile.allowsInteractiveMeasuredTopToolbar)
-        XCTAssertEqual(profile.minimumTitlebarHeight, 38)
-        XCTAssertTrue(
-            self.policy.rejects(
-                role: "AXButton",
-                actionNames: ["AXPress"],
-                compatibility: profile
+        for bundleIdentifier in [
+            "com.apple.finder",
+            "com.apple.Safari",
+            "com.apple.systempreferences",
+            "com.example.SwiftUIApp",
+        ] {
+            let profile = WindowCompatibilityProfile(bundleIdentifier: bundleIdentifier)
+
+            XCTAssertTrue(profile.usesMeasuredTopToolbarFrame)
+            XCTAssertTrue(profile.allowsInteractiveMeasuredTopToolbar)
+            XCTAssertEqual(profile.minimumTitlebarHeight, 38)
+            XCTAssertTrue(
+                self.policy.rejects(
+                    role: "AXButton",
+                    actionNames: ["AXPress"],
+                    compatibility: profile
+                )
             )
-        )
-        XCTAssertTrue(
-            policy.accepts(
-                point: CGPoint(x: 600, y: 136),
-                toolbarFrame: toolbarFrame,
-                windowFrame: windowFrame,
-                compatibility: profile
+            XCTAssertTrue(
+                policy.accepts(
+                    point: CGPoint(x: 600, y: 136),
+                    toolbarFrame: toolbarFrame,
+                    windowFrame: windowFrame,
+                    compatibility: profile
+                )
             )
-        )
-        XCTAssertFalse(
-            policy.accepts(
-                point: CGPoint(x: 600, y: 150),
-                toolbarFrame: toolbarFrame,
-                windowFrame: windowFrame,
-                compatibility: profile
+            XCTAssertFalse(
+                policy.accepts(
+                    point: CGPoint(x: 600, y: 150),
+                    toolbarFrame: toolbarFrame,
+                    windowFrame: windowFrame,
+                    compatibility: profile
+                )
             )
-        )
+        }
     }
 
-    func testFinderAllowsInteractiveToolbarHitsOnlyInsideItsMeasuredToolbar() {
+    func testApplicationsAllowInteractiveHitsOnlyInsideMeasuredTopToolbar() {
         let policy = WindowToolbarRegionPolicy()
-        let finder = WindowCompatibilityProfile(bundleIdentifier: "com.apple.finder")
-        let safari = WindowCompatibilityProfile(bundleIdentifier: "com.apple.Safari")
 
-        XCTAssertTrue(
-            policy.acceptsInteractiveHit(
-                isInsideMeasuredTopToolbar: true,
-                compatibility: finder
+        for bundleIdentifier in [
+            "com.apple.finder",
+            "com.apple.Safari",
+            "com.apple.systempreferences",
+            "com.example.AppKitApp",
+        ] {
+            let profile = WindowCompatibilityProfile(bundleIdentifier: bundleIdentifier)
+
+            XCTAssertTrue(
+                policy.acceptsInteractiveHit(
+                    isInsideMeasuredTopToolbar: true,
+                    compatibility: profile
+                )
             )
-        )
-        XCTAssertFalse(
-            policy.acceptsInteractiveHit(
-                isInsideMeasuredTopToolbar: false,
-                compatibility: finder
+            XCTAssertFalse(
+                policy.acceptsInteractiveHit(
+                    isInsideMeasuredTopToolbar: false,
+                    compatibility: profile
+                )
             )
-        )
-        XCTAssertFalse(
-            policy.acceptsInteractiveHit(
-                isInsideMeasuredTopToolbar: true,
-                compatibility: safari
-            )
-        )
+        }
     }
 
-    func testFinderToolbarCompatibilityCannotAdmitContentToolbarsOrOtherApps() {
+    func testMeasuredToolbarCompatibilityCannotAdmitContentToolbars() {
         let policy = WindowToolbarRegionPolicy()
         let windowFrame = CGRect(x: 0, y: 0, width: 1_000, height: 700)
         let contentToolbarFrame = CGRect(x: 0, y: 140, width: 1_000, height: 48)
         let point = CGPoint(x: 500, y: 160)
 
-        XCTAssertFalse(
-            policy.accepts(
-                point: point,
-                toolbarFrame: contentToolbarFrame,
-                windowFrame: windowFrame,
-                compatibility: WindowCompatibilityProfile(bundleIdentifier: "com.apple.finder")
+        for bundleIdentifier in [
+            "com.apple.finder",
+            "com.apple.Safari",
+            "com.example.CustomApp",
+        ] {
+            XCTAssertFalse(
+                policy.accepts(
+                    point: point,
+                    toolbarFrame: contentToolbarFrame,
+                    windowFrame: windowFrame,
+                    compatibility: WindowCompatibilityProfile(
+                        bundleIdentifier: bundleIdentifier
+                    )
+                )
             )
-        )
-        XCTAssertFalse(
-            policy.accepts(
-                point: CGPoint(x: 500, y: 40),
-                toolbarFrame: CGRect(x: 0, y: 0, width: 1_000, height: 58),
-                windowFrame: windowFrame,
-                compatibility: WindowCompatibilityProfile(bundleIdentifier: "com.apple.Safari")
-            )
-        )
+        }
     }
 
     func testCommonCustomTitlebarContainersRemainEligibleAcrossAppFrameworks() {

@@ -104,8 +104,8 @@ export const translations = {
         copy: "Source code, issues, and contributions are public on GitHub under the MIT License.",
       },
       {
-        title: "Version 0.1.6",
-        copy: "Finder gestures now start anywhere across the unified toolbar, including its controls.",
+        title: "Version 0.1.7",
+        copy: "Native macOS toolbars now work across apps, including their integrated controls.",
       },
     ],
   },
@@ -161,8 +161,8 @@ export const translations = {
         copy: "Quellcode, Fehlerberichte und Beiträge sind unter der MIT-Lizenz auf GitHub öffentlich.",
       },
       {
-        title: "Version 0.1.6",
-        copy: "Finder-Gesten starten jetzt überall auf der vereinten Symbolleiste – auch über ihren Bedienelementen.",
+        title: "Version 0.1.7",
+        copy: "Native macOS-Symbolleisten funktionieren jetzt appübergreifend – inklusive ihrer Bedienelemente.",
       },
     ],
   },
@@ -218,8 +218,8 @@ export const translations = {
         copy: "Le code source, les problèmes et les contributions sont publics sur GitHub sous licence MIT.",
       },
       {
-        title: "Version 0.1.6",
-        copy: "Les gestes Finder démarrent partout dans la barre unifiée, même sur ses commandes.",
+        title: "Version 0.1.7",
+        copy: "Les barres d’outils macOS natives fonctionnent désormais dans toutes les apps, commandes incluses.",
       },
     ],
   },

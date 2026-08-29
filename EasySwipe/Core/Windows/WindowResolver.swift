@@ -19,7 +19,6 @@ struct WindowCompatibilityProfile: Equatable, Sendable {
     init(bundleIdentifier: String?) {
         let isWarp = bundleIdentifier?.hasPrefix("dev.warp.Warp") == true
         let isWhatsApp = bundleIdentifier?.hasPrefix("net.whatsapp.WhatsApp") == true
-        let isFinder = bundleIdentifier == "com.apple.finder"
         allowedTopRegionRoles =
             isWarp
             ? [
@@ -44,8 +43,12 @@ struct WindowCompatibilityProfile: Equatable, Sendable {
             : [:]
         minimumTitlebarHeight = isWarp || isWhatsApp ? 64 : 38
         maximumAncestorDepth = 48
-        usesMeasuredTopToolbarFrame = isFinder
-        allowsInteractiveMeasuredTopToolbar = isFinder
+        // AXToolbar is a system accessibility role shared by AppKit and
+        // SwiftUI windows. Geometry below ensures that only a toolbar which
+        // macOS actually places at the top of this window can extend the
+        // gesture surface or admit one of its interactive descendants.
+        usesMeasuredTopToolbarFrame = true
+        allowsInteractiveMeasuredTopToolbar = true
     }
 }
 
@@ -255,19 +258,27 @@ final class WindowResolver: WindowResolving {
             width: axFrame.width,
             height: min(titlebarHeight, axFrame.height)
         )
+        let isInsideTitlebar = titlebarFrame.contains(axPoint)
 
-        let isInsideMeasuredTopToolbar = measuredTopToolbarFrames(
-            in: window,
-            windowFrame: axFrame,
-            compatibility: compatibility
-        ).contains { toolbarFrame in
-            toolbarRegionPolicy.accepts(
-                point: axPoint,
-                toolbarFrame: toolbarFrame,
+        // The ordinary titlebar path remains cheap. Accessibility descendants
+        // are scanned only when the hit is interactive or lies below that
+        // standard titlebar estimate and therefore needs toolbar evidence.
+        let needsMeasuredTopToolbar =
+            hitResolution.encounteredInteractiveElement || !isInsideTitlebar
+        let isInsideMeasuredTopToolbar =
+            needsMeasuredTopToolbar
+            && measuredTopToolbarFrames(
+                in: window,
                 windowFrame: axFrame,
                 compatibility: compatibility
-            )
-        }
+            ).contains { toolbarFrame in
+                toolbarRegionPolicy.accepts(
+                    point: axPoint,
+                    toolbarFrame: toolbarFrame,
+                    windowFrame: axFrame,
+                    compatibility: compatibility
+                )
+            }
 
         if hitResolution.encounteredInteractiveElement,
             !toolbarRegionPolicy.acceptsInteractiveHit(
@@ -278,7 +289,7 @@ final class WindowResolver: WindowResolving {
             return nil
         }
 
-        guard titlebarFrame.contains(axPoint) || isInsideMeasuredTopToolbar else { return nil }
+        guard isInsideTitlebar || isInsideMeasuredTopToolbar else { return nil }
 
         return AXWindowTarget(
             element: window,

@@ -8,7 +8,7 @@ import worker from "../worker/index.js";
 test("uses the Swindoo transition brand and release metadata", () => {
   assert.equal(siteConfig.name, "Swindoo");
   assert.equal(siteConfig.previousName, "EasySwipe");
-  assert.equal(siteConfig.version, "0.1.6");
+  assert.equal(siteConfig.version, "0.1.7");
   assert.match(siteConfig.downloadUrl, /\/releases\/latest\/download\/Swindoo\.zip$/);
   assert.match(siteConfig.sourceUrl, /shortcutchris\/easyswipe$/);
 });
