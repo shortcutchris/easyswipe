@@ -278,7 +278,10 @@ publish_release() {
     "https://github.com/${RELEASE_REPOSITORY}/releases/latest/download/Swindoo.zip" >/dev/null
   local attempt
   local feed_ready=0
-  for attempt in {1..12}; do
+  # GitHub can serve the new branch head before the Contents API can resolve
+  # that exact commit. Give the immutable feed verification enough time to
+  # cross that propagation window instead of reporting a false release failure.
+  for attempt in {1..45}; do
     if gh api -H "Accept: application/vnd.github.raw+json" \
       "repos/${RELEASE_REPOSITORY}/contents/appcast.xml?ref=${published_revision}" \
       | /usr/bin/grep -Fq "${RELEASE_URL_PREFIX}${ARCHIVE_NAME}"; then
