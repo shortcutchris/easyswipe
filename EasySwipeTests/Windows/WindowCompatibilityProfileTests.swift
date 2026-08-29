@@ -84,6 +84,7 @@ final class WindowCompatibilityProfileTests: XCTestCase {
         let toolbarFrame = CGRect(x: 100, y: 80, width: 1_000, height: 58)
 
         XCTAssertTrue(profile.usesMeasuredTopToolbarFrame)
+        XCTAssertTrue(profile.allowsInteractiveMeasuredTopToolbar)
         XCTAssertEqual(profile.minimumTitlebarHeight, 38)
         XCTAssertTrue(
             self.policy.rejects(
@@ -106,6 +107,31 @@ final class WindowCompatibilityProfileTests: XCTestCase {
                 toolbarFrame: toolbarFrame,
                 windowFrame: windowFrame,
                 compatibility: profile
+            )
+        )
+    }
+
+    func testFinderAllowsInteractiveToolbarHitsOnlyInsideItsMeasuredToolbar() {
+        let policy = WindowToolbarRegionPolicy()
+        let finder = WindowCompatibilityProfile(bundleIdentifier: "com.apple.finder")
+        let safari = WindowCompatibilityProfile(bundleIdentifier: "com.apple.Safari")
+
+        XCTAssertTrue(
+            policy.acceptsInteractiveHit(
+                isInsideMeasuredTopToolbar: true,
+                compatibility: finder
+            )
+        )
+        XCTAssertFalse(
+            policy.acceptsInteractiveHit(
+                isInsideMeasuredTopToolbar: false,
+                compatibility: finder
+            )
+        )
+        XCTAssertFalse(
+            policy.acceptsInteractiveHit(
+                isInsideMeasuredTopToolbar: true,
+                compatibility: safari
             )
         )
     }

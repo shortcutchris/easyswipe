@@ -14,6 +14,7 @@ struct WindowCompatibilityProfile: Equatable, Sendable {
     let minimumTitlebarHeight: CGFloat
     let maximumAncestorDepth: Int
     let usesMeasuredTopToolbarFrame: Bool
+    let allowsInteractiveMeasuredTopToolbar: Bool
 
     init(bundleIdentifier: String?) {
         let isWarp = bundleIdentifier?.hasPrefix("dev.warp.Warp") == true
@@ -44,6 +45,7 @@ struct WindowCompatibilityProfile: Equatable, Sendable {
         minimumTitlebarHeight = isWarp || isWhatsApp ? 64 : 38
         maximumAncestorDepth = 48
         usesMeasuredTopToolbarFrame = isFinder
+        allowsInteractiveMeasuredTopToolbar = isFinder
     }
 }
 
@@ -68,6 +70,13 @@ struct WindowToolbarRegionPolicy: Sendable {
         }
 
         return toolbarFrame.intersection(windowFrame).contains(point)
+    }
+
+    func acceptsInteractiveHit(
+        isInsideMeasuredTopToolbar: Bool,
+        compatibility: WindowCompatibilityProfile
+    ) -> Bool {
+        compatibility.allowsInteractiveMeasuredTopToolbar && isInsideMeasuredTopToolbar
     }
 }
 
@@ -164,6 +173,11 @@ struct WindowEligibilityPolicy: Sendable {
 
 @MainActor
 final class WindowResolver: WindowResolving {
+    private struct HitResolution {
+        let window: AXUIElement
+        let encounteredInteractiveElement: Bool
+    }
+
     private let systemWideElement = AXUIElementCreateSystemWide()
     private let geometry: ScreenGeometryService
     private let ownProcessIdentifier: pid_t
@@ -210,11 +224,12 @@ final class WindowResolver: WindowResolving {
         let compatibility = WindowCompatibilityProfile(bundleIdentifier: bundleIdentifier)
 
         guard
-            let window = enclosingNonInteractiveWindow(
+            let hitResolution = enclosingWindow(
                 for: hitElement,
                 compatibility: compatibility
             )
         else { return nil }
+        let window = hitResolution.window
 
         var processIdentifier: pid_t = 0
         guard AXUIElementGetPid(window, &processIdentifier) == .success,
@@ -241,20 +256,26 @@ final class WindowResolver: WindowResolving {
             height: min(titlebarHeight, axFrame.height)
         )
 
-        let isInsideMeasuredTopToolbar = AXBridge.elements(
-            window,
-            attribute: kAXChildrenAttribute as CFString
-        ).contains { child in
-            AXBridge.string(child, attribute: kAXRoleAttribute as CFString)
-                == kAXToolbarRole as String
-                && AXBridge.frame(child).map {
-                    toolbarRegionPolicy.accepts(
-                        point: axPoint,
-                        toolbarFrame: $0,
-                        windowFrame: axFrame,
-                        compatibility: compatibility
-                    )
-                } == true
+        let isInsideMeasuredTopToolbar = measuredTopToolbarFrames(
+            in: window,
+            windowFrame: axFrame,
+            compatibility: compatibility
+        ).contains { toolbarFrame in
+            toolbarRegionPolicy.accepts(
+                point: axPoint,
+                toolbarFrame: toolbarFrame,
+                windowFrame: axFrame,
+                compatibility: compatibility
+            )
+        }
+
+        if hitResolution.encounteredInteractiveElement,
+            !toolbarRegionPolicy.acceptsInteractiveHit(
+                isInsideMeasuredTopToolbar: isInsideMeasuredTopToolbar,
+                compatibility: compatibility
+            )
+        {
+            return nil
         }
 
         guard titlebarFrame.contains(axPoint) || isInsideMeasuredTopToolbar else { return nil }
@@ -267,11 +288,12 @@ final class WindowResolver: WindowResolving {
         )
     }
 
-    private func enclosingNonInteractiveWindow(
+    private func enclosingWindow(
         for element: AXUIElement,
         compatibility: WindowCompatibilityProfile
-    ) -> AXUIElement? {
+    ) -> HitResolution? {
         var current: AXUIElement? = element
+        var encounteredInteractiveElement = false
         let directWindow = AXBridge.element(element, attribute: kAXWindowAttribute as CFString)
 
         for _ in 0..<compatibility.maximumAncestorDepth {
@@ -287,11 +309,17 @@ final class WindowResolver: WindowResolving {
                 actionNames: AXBridge.actionNames(candidate),
                 compatibility: compatibility
             ) {
-                return nil
+                guard compatibility.allowsInteractiveMeasuredTopToolbar else { return nil }
+                encounteredInteractiveElement = true
             }
 
             if role == kAXWindowRole as String {
-                return isEligibleWindow(candidate) ? candidate : nil
+                return isEligibleWindow(candidate)
+                    ? HitResolution(
+                        window: candidate,
+                        encounteredInteractiveElement: encounteredInteractiveElement
+                    )
+                    : nil
             }
 
             if let parent = AXBridge.element(candidate, attribute: kAXParentAttribute as CFString) {
@@ -301,12 +329,77 @@ final class WindowResolver: WindowResolving {
 
             // Some third-party accessibility trees omit parents but still
             // expose their containing window directly.
-            return directWindow.flatMap { isEligibleWindow($0) ? $0 : nil }
+            return directWindow.flatMap {
+                isEligibleWindow($0)
+                    ? HitResolution(
+                        window: $0,
+                        encounteredInteractiveElement: encounteredInteractiveElement
+                    )
+                    : nil
+            }
         }
 
         // Deep custom accessibility trees can exceed the conservative ancestor
         // walk even though the hit element exposes its window directly.
-        return directWindow.flatMap { isEligibleWindow($0) ? $0 : nil }
+        return directWindow.flatMap {
+            isEligibleWindow($0)
+                ? HitResolution(
+                    window: $0,
+                    encounteredInteractiveElement: encounteredInteractiveElement
+                )
+                : nil
+        }
+    }
+
+    private func measuredTopToolbarFrames(
+        in window: AXUIElement,
+        windowFrame: CGRect,
+        compatibility: WindowCompatibilityProfile
+    ) -> [CGRect] {
+        guard compatibility.usesMeasuredTopToolbarFrame else { return [] }
+
+        let maximumDepth = 4
+        let maximumElements = 64
+        var pending = AXBridge.elements(
+            window,
+            attribute: kAXChildrenAttribute as CFString
+        ).map { (element: $0, depth: 1) }
+        var frames: [CGRect] = []
+        var inspectedElements = 0
+
+        while !pending.isEmpty, inspectedElements < maximumElements {
+            let candidate = pending.removeFirst()
+            inspectedElements += 1
+
+            let role = AXBridge.string(candidate.element, attribute: kAXRoleAttribute as CFString)
+            if role == kAXToolbarRole as String, let frame = AXBridge.frame(candidate.element) {
+                if toolbarRegionPolicy.accepts(
+                    point: CGPoint(x: frame.midX, y: frame.midY),
+                    toolbarFrame: frame,
+                    windowFrame: windowFrame,
+                    compatibility: compatibility
+                ) {
+                    frames.append(frame)
+                }
+                continue
+            }
+
+            guard candidate.depth < maximumDepth else { continue }
+            if let frame = AXBridge.frame(candidate.element),
+                frame.minY > windowFrame.minY + 98
+            {
+                continue
+            }
+
+            pending.append(
+                contentsOf: AXBridge.elements(
+                    candidate.element,
+                    attribute: kAXChildrenAttribute as CFString
+                ).map { (element: $0, depth: candidate.depth + 1) }
+            )
+        }
+
+        return frames
     }
 
     private func isEligibleWindow(_ window: AXUIElement) -> Bool {
