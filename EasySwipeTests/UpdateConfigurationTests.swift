@@ -32,11 +32,11 @@ final class UpdateConfigurationTests: XCTestCase {
         )
         XCTAssertEqual(
             Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
-            "0.1.4"
+            "0.1.5"
         )
         XCTAssertEqual(
             Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String,
-            "12"
+            "13"
         )
         XCTAssertEqual(
             Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String,

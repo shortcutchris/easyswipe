@@ -104,8 +104,8 @@ export const translations = {
         copy: "Source code, issues, and contributions are public on GitHub under the MIT License.",
       },
       {
-        title: "Version 0.1.4",
-        copy: "Expanded title-bar compatibility for WhatsApp, Notion, and other custom macOS windows.",
+        title: "Version 0.1.5",
+        copy: "Reliable Finder gestures across the full unified title and toolbar surface.",
       },
     ],
   },
@@ -161,8 +161,8 @@ export const translations = {
         copy: "Quellcode, Fehlerberichte und Beiträge sind unter der MIT-Lizenz auf GitHub öffentlich.",
       },
       {
-        title: "Version 0.1.4",
-        copy: "Bessere Titelbar-Kompatibilität für WhatsApp, Notion und andere eigene macOS-Fenster.",
+        title: "Version 0.1.5",
+        copy: "Zuverlässige Finder-Gesten auf der gesamten zusammengeführten Titel- und Symbolleiste.",
       },
     ],
   },
@@ -218,8 +218,8 @@ export const translations = {
         copy: "Le code source, les problèmes et les contributions sont publics sur GitHub sous licence MIT.",
       },
       {
-        title: "Version 0.1.4",
-        copy: "Meilleure compatibilité avec WhatsApp, Notion et les fenêtres macOS personnalisées.",
+        title: "Version 0.1.5",
+        copy: "Gestes Finder fiables sur toute la barre unifiée de titre et d’outils.",
       },
     ],
   },
