@@ -269,6 +269,9 @@ publish_release() {
   git -C "${RELEASE_CHECKOUT}" commit -m "Publish Swindoo ${VERSION} (${BUILD})"
   git -C "${RELEASE_CHECKOUT}" push origin main
 
+  local published_revision
+  published_revision="$(git -C "${RELEASE_CHECKOUT}" rev-parse HEAD)"
+
   /usr/bin/curl --fail --silent --show-error --location \
     "${RELEASE_URL_PREFIX}${ARCHIVE_NAME}" >/dev/null
   /usr/bin/curl --fail --silent --show-error --location \
@@ -277,7 +280,7 @@ publish_release() {
   local feed_ready=0
   for attempt in {1..12}; do
     if gh api -H "Accept: application/vnd.github.raw+json" \
-      "repos/${RELEASE_REPOSITORY}/contents/appcast.xml?ref=main" \
+      "repos/${RELEASE_REPOSITORY}/contents/appcast.xml?ref=${published_revision}" \
       | /usr/bin/grep -Fq "${RELEASE_URL_PREFIX}${ARCHIVE_NAME}"; then
       feed_ready=1
       break
