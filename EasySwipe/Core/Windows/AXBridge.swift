@@ -19,6 +19,15 @@ enum AXBridge {
         return unsafeDowncast(value, to: AXUIElement.self)
     }
 
+    static func elements(_ element: AXUIElement, attribute: CFString) -> [AXUIElement] {
+        guard let value = value(element, attribute: attribute),
+            CFGetTypeID(value) == CFArrayGetTypeID()
+        else {
+            return []
+        }
+        return value as? [AXUIElement] ?? []
+    }
+
     static func string(_ element: AXUIElement, attribute: CFString) -> String? {
         value(element, attribute: attribute) as? String
     }

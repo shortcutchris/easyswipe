@@ -77,6 +77,63 @@ final class WindowCompatibilityProfileTests: XCTestCase {
         }
     }
 
+    func testFinderUsesItsMeasuredUnifiedToolbarAsTitlebarRegion() {
+        let profile = WindowCompatibilityProfile(bundleIdentifier: "com.apple.finder")
+        let policy = WindowToolbarRegionPolicy()
+        let windowFrame = CGRect(x: 100, y: 80, width: 1_000, height: 700)
+        let toolbarFrame = CGRect(x: 100, y: 80, width: 1_000, height: 58)
+
+        XCTAssertTrue(profile.usesMeasuredTopToolbarFrame)
+        XCTAssertEqual(profile.minimumTitlebarHeight, 38)
+        XCTAssertTrue(
+            self.policy.rejects(
+                role: "AXButton",
+                actionNames: ["AXPress"],
+                compatibility: profile
+            )
+        )
+        XCTAssertTrue(
+            policy.accepts(
+                point: CGPoint(x: 600, y: 136),
+                toolbarFrame: toolbarFrame,
+                windowFrame: windowFrame,
+                compatibility: profile
+            )
+        )
+        XCTAssertFalse(
+            policy.accepts(
+                point: CGPoint(x: 600, y: 150),
+                toolbarFrame: toolbarFrame,
+                windowFrame: windowFrame,
+                compatibility: profile
+            )
+        )
+    }
+
+    func testFinderToolbarCompatibilityCannotAdmitContentToolbarsOrOtherApps() {
+        let policy = WindowToolbarRegionPolicy()
+        let windowFrame = CGRect(x: 0, y: 0, width: 1_000, height: 700)
+        let contentToolbarFrame = CGRect(x: 0, y: 140, width: 1_000, height: 48)
+        let point = CGPoint(x: 500, y: 160)
+
+        XCTAssertFalse(
+            policy.accepts(
+                point: point,
+                toolbarFrame: contentToolbarFrame,
+                windowFrame: windowFrame,
+                compatibility: WindowCompatibilityProfile(bundleIdentifier: "com.apple.finder")
+            )
+        )
+        XCTAssertFalse(
+            policy.accepts(
+                point: CGPoint(x: 500, y: 40),
+                toolbarFrame: CGRect(x: 0, y: 0, width: 1_000, height: 58),
+                windowFrame: windowFrame,
+                compatibility: WindowCompatibilityProfile(bundleIdentifier: "com.apple.Safari")
+            )
+        )
+    }
+
     func testCommonCustomTitlebarContainersRemainEligibleAcrossAppFrameworks() {
         let containerRoles: Set<String> = [
             "AXBrowser", "AXGroup", "AXList", "AXOutline", "AXScrollArea", "AXTabGroup",

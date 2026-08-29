@@ -129,6 +129,8 @@ Electron-, Chromium-, Catalyst-, SwiftUI- und andere benutzerdefinierte Oberflä
 
 Die native WhatsApp-App verwendet eine Catalyst-Navigationsleiste, deren breite Kontaktkopf-Fläche als aktivierender `AXButton` mit dem Identifier `NavigationBar_HeaderViewButton` erscheint. Das WhatsApp-Kompatibilitätsprofil lässt nur diese Kopf-Fläche und nicht die danebenliegenden Anruf-, Video- oder Menübuttons als Gestenfläche zu. Die zugehörige 64 Punkte hohe obere Rahmenzone bleibt durch die normale geometrische Titelbarprüfung begrenzt.
 
+Der Finder verwendet eine zusammengeführte Titel- und Symbolleiste, die höher als die normale AppKit-Titelbar sein kann. Das Finder-Kompatibilitätsprofil übernimmt die tatsächlich von Accessibility gemeldete obere `AXToolbar`-Fläche als zusätzliche Gestenregion. Direkte Such-, Ansichts-, Teilen-, Aktions- und andere Bedienelemente bleiben durch dieselbe Interaktivitätsprüfung ausgeschlossen; Symbolleisten außerhalb des oberen Fensterbereichs werden nicht zugelassen.
+
 ### 6.3 Nicht unterstützte Fenster
 
 Folgende Fenster werden im MVP ohne Aktion und ohne HUD ignoriert:

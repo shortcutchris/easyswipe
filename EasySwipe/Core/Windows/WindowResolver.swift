@@ -13,10 +13,12 @@ struct WindowCompatibilityProfile: Equatable, Sendable {
     let allowedTopRegionActionsByRole: [String: Set<String>]
     let minimumTitlebarHeight: CGFloat
     let maximumAncestorDepth: Int
+    let usesMeasuredTopToolbarFrame: Bool
 
     init(bundleIdentifier: String?) {
         let isWarp = bundleIdentifier?.hasPrefix("dev.warp.Warp") == true
         let isWhatsApp = bundleIdentifier?.hasPrefix("net.whatsapp.WhatsApp") == true
+        let isFinder = bundleIdentifier == "com.apple.finder"
         allowedTopRegionRoles =
             isWarp
             ? [
@@ -41,6 +43,31 @@ struct WindowCompatibilityProfile: Equatable, Sendable {
             : [:]
         minimumTitlebarHeight = isWarp || isWhatsApp ? 64 : 38
         maximumAncestorDepth = 48
+        usesMeasuredTopToolbarFrame = isFinder
+    }
+}
+
+struct WindowToolbarRegionPolicy: Sendable {
+    private let maximumTopToolbarHeight: CGFloat = 96
+    private let frameTolerance: CGFloat = 2
+
+    func accepts(
+        point: CGPoint,
+        toolbarFrame: CGRect,
+        windowFrame: CGRect,
+        compatibility: WindowCompatibilityProfile
+    ) -> Bool {
+        guard compatibility.usesMeasuredTopToolbarFrame,
+            toolbarFrame.width > 0,
+            toolbarFrame.height > 0,
+            toolbarFrame.minY >= windowFrame.minY - frameTolerance,
+            toolbarFrame.maxY <= windowFrame.minY + maximumTopToolbarHeight + frameTolerance,
+            windowFrame.contains(point)
+        else {
+            return false
+        }
+
+        return toolbarFrame.intersection(windowFrame).contains(point)
     }
 }
 
@@ -142,6 +169,7 @@ final class WindowResolver: WindowResolving {
     private let ownProcessIdentifier: pid_t
     private let hitRegionPolicy = WindowHitRegionPolicy()
     private let windowEligibilityPolicy = WindowEligibilityPolicy()
+    private let toolbarRegionPolicy = WindowToolbarRegionPolicy()
 
     init(
         geometry: ScreenGeometryService,
@@ -213,7 +241,23 @@ final class WindowResolver: WindowResolving {
             height: min(titlebarHeight, axFrame.height)
         )
 
-        guard titlebarFrame.contains(axPoint) else { return nil }
+        let isInsideMeasuredTopToolbar = AXBridge.elements(
+            window,
+            attribute: kAXChildrenAttribute as CFString
+        ).contains { child in
+            AXBridge.string(child, attribute: kAXRoleAttribute as CFString)
+                == kAXToolbarRole as String
+                && AXBridge.frame(child).map {
+                    toolbarRegionPolicy.accepts(
+                        point: axPoint,
+                        toolbarFrame: $0,
+                        windowFrame: axFrame,
+                        compatibility: compatibility
+                    )
+                } == true
+        }
+
+        guard titlebarFrame.contains(axPoint) || isInsideMeasuredTopToolbar else { return nil }
 
         return AXWindowTarget(
             element: window,
