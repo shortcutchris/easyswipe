@@ -5,6 +5,7 @@ import Foundation
 final class AppPreferences: ObservableObject {
     private enum Key {
         static let enabled = "app.enabled"
+        static let hudAnimationsEnabled = "hud.animationsEnabled"
         static let onboardingCompleted = "onboarding.completed"
     }
 
@@ -16,6 +17,10 @@ final class AppPreferences: ObservableObject {
         didSet { defaults.set(hasCompletedOnboarding, forKey: Key.onboardingCompleted) }
     }
 
+    @Published var areHUDAnimationsEnabled: Bool {
+        didSet { defaults.set(areHUDAnimationsEnabled, forKey: Key.hudAnimationsEnabled) }
+    }
+
     private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {
@@ -24,6 +29,11 @@ final class AppPreferences: ObservableObject {
             isEnabled = true
         } else {
             isEnabled = defaults.bool(forKey: Key.enabled)
+        }
+        if defaults.object(forKey: Key.hudAnimationsEnabled) == nil {
+            areHUDAnimationsEnabled = true
+        } else {
+            areHUDAnimationsEnabled = defaults.bool(forKey: Key.hudAnimationsEnabled)
         }
         hasCompletedOnboarding = defaults.bool(forKey: Key.onboardingCompleted)
     }

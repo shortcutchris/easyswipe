@@ -189,14 +189,15 @@ Falls eine Ziel-App eine Mindestgröße erzwingt, darf sie das angeforderte Rech
 ### 8.2 Timing
 
 - Die HUD-Vorschau startet innerhalb von 100 ms nach Überschreiten der Totzone.
-- Einblenden: ungefähr 60 ms; danach bleibt die Vorschau bis zum Gestenende sichtbar.
+- Einblenden: ungefähr 90 ms mit dezenter Skalierung und einer Zwei-Punkte-Bewegung in Gestenrichtung; danach bleibt die Vorschau bis zum Gestenende sichtbar.
 - Die Fensteraktion startet innerhalb von 100 ms nach dem physischen Gestenende.
-- Erfolgsbestätigung nach dem Loslassen: ungefähr 380 ms, anschließend ungefähr 140 ms Ausblenden.
+- Erfolgsbestätigung nach dem Loslassen: 130 ms richtungsabhängige Symbolbewegung mit kurzer Akzentfarbe, insgesamt ungefähr 380 ms sichtbar und anschließend ungefähr 140 ms Ausblenden.
 - Eine neue Richtung oder Aktion ersetzt ein noch sichtbares HUD, statt mehrere HUDs zu stapeln.
+- Fensterposition und -größe werden nie verzögert oder animiert; die Bewegung betrifft ausschließlich das HUD.
 
 ### 8.3 Bedienungshilfen
 
-- Bei „Bewegung reduzieren“ wird nur über Deckkraft animiert.
+- Bei deaktivierter Menüoption „Animationen anzeigen“ oder aktiviertem „Bewegung reduzieren“ erscheint und verschwindet das HUD ohne animierten Übergang.
 - Bei „Transparenz reduzieren“ oder „Kontrast erhöhen“ wird ein deckenderer Systemhintergrund verwendet.
 - Wenn VoiceOver aktiv ist, kann eine kurze lokalisierte Accessibility-Ankündigung wie „Fenster links angeordnet“ ausgegeben werden; diese darf den Fokus nicht verändern.
 
@@ -216,6 +217,7 @@ Falls eine Ziel-App eine Mindestgröße erzwingt, darf sie das angeforderte Rech
 | --- | --- | --- | --- |
 | `menu.enabled` | Swindoo aktiv | Swindoo Enabled | globaler Ein/Aus-Schalter |
 | `menu.launchAtLogin` | Beim Anmelden starten | Launch at Login | Login-Item umschalten |
+| `menu.animations` | Animationen anzeigen | Show Animations | HUD-Bewegung umschalten; standardmäßig aktiv und dauerhaft gespeichert |
 | `menu.gestureGuide` | Gestenübersicht… | Gesture Guide… | kompakte Anleitung öffnen |
 | `menu.permissions` | Berechtigungen… | Permissions… | Status und Systemeinstellungen öffnen |
 | `menu.checkForUpdates` | Nach Updates suchen… | Check for Updates… | manuelle Sparkle-Prüfung |
@@ -455,9 +457,10 @@ Der MVP gilt als funktionsfähig, wenn alle folgenden Kriterien erfüllt sind:
 11. Die App arbeitet ausschließlich aus der Menüleiste und erscheint nicht regulär im Dock.
 12. Das Menü ist vollständig auf Deutsch und Englisch verfügbar und folgt der macOS-App-Sprache.
 13. „Beim Anmelden starten“ kann aus Menü und Onboarding aktiviert und deaktiviert werden.
-14. Eine manuelle Update-Prüfung über Sparkle ist aus dem Menü möglich.
-15. Ein signiertes, notarisiertes Testupdate kann über den Appcast installiert werden.
-16. Ohne die nötigen Berechtigungen wird keine teilweise oder unvorhersehbare Fensteraktion ausgeführt.
+14. HUD-Animationen können über eine dauerhaft gespeicherte Checkbox im Menü ein- und ausgeschaltet werden; „Bewegung reduzieren“ wird respektiert.
+15. Eine manuelle Update-Prüfung über Sparkle ist aus dem Menü möglich.
+16. Ein signiertes, notarisiertes Testupdate kann über den Appcast installiert werden.
+17. Ohne die nötigen Berechtigungen wird keine teilweise oder unvorhersehbare Fensteraktion ausgeführt.
 
 ## 21. Offene Entscheidungen vor öffentlicher Distribution
 
@@ -465,7 +468,6 @@ Der MVP gilt als funktionsfähig, wenn alle folgenden Kriterien erfüllt sind:
 - Developer-ID-Team, Notarisierungsprofil und Sparkle-EdDSA-Schlüsselpaar.
 - Exakte Titelbar-Fallback-Höhe nach breiten Hardware- und App-Kompatibilitätstests.
 - Finale Erkennungsschwellen getrennt nach Trackpad und Magic Mouse, falls Hardwaretests einen relevanten Unterschied zeigen.
-- HUD-Feintiming nach visuellem und praktischem Hardwaretest.
 
 ## 22. Referenzen
 

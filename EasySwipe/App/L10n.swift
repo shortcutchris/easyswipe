@@ -3,6 +3,7 @@ import Foundation
 enum L10n {
     static var menuEnabled: String { text("menu.enabled", "Swindoo Enabled") }
     static var menuLaunchAtLogin: String { text("menu.launchAtLogin", "Launch at Login") }
+    static var menuAnimations: String { text("menu.animations", "Show Animations") }
     static var menuGestureGuide: String { text("menu.gestureGuide", "Gesture Guide…") }
     static var menuPermissions: String { text("menu.permissions", "Permissions…") }
     static var menuCheckForUpdates: String { text("menu.checkForUpdates", "Check for Updates…") }

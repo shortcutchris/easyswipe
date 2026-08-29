@@ -1,5 +1,6 @@
 import AppKit
 import Foundation
+import QuartzCore
 
 @MainActor
 protocol HUDPresenting {
@@ -36,13 +37,21 @@ enum HUDPlacement {
 
 @MainActor
 final class HUDPresenter: HUDPresenting {
+    private enum PresentationPhase {
+        case preview
+        case confirmation
+    }
+
     private let panel: NSPanel
     private let visualEffectView: NSVisualEffectView
     private let imageView: NSImageView
+    private let animationsEnabled: @MainActor () -> Bool
     private var hideWorkItem: DispatchWorkItem?
+    private var accentWorkItem: DispatchWorkItem?
     private var presentationGeneration = 0
 
-    init() {
+    init(animationsEnabled: @escaping @MainActor () -> Bool = { true }) {
+        self.animationsEnabled = animationsEnabled
         panel = NSPanel(
             contentRect: CGRect(x: 0, y: 0, width: 36, height: 36),
             styleMask: [.borderless, .nonactivatingPanel],
@@ -71,6 +80,7 @@ final class HUDPresenter: HUDPresenting {
         imageView = NSImageView()
         imageView.imageScaling = .scaleProportionallyUpOrDown
         imageView.contentTintColor = .labelColor
+        imageView.wantsLayer = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
 
         guard let contentView = panel.contentView else { return }
@@ -90,13 +100,23 @@ final class HUDPresenter: HUDPresenting {
     }
 
     func showPreview(action: WindowGestureAction, near pointerLocation: CGPoint) {
-        _ = preparePresentation()
-        present(action: action, near: pointerLocation)
+        let generation = preparePresentation()
+        present(
+            action: action,
+            near: pointerLocation,
+            phase: .preview,
+            generation: generation
+        )
     }
 
     func confirm(action: WindowGestureAction, near pointerLocation: CGPoint) {
         let generation = preparePresentation()
-        present(action: action, near: pointerLocation)
+        present(
+            action: action,
+            near: pointerLocation,
+            phase: .confirmation,
+            generation: generation
+        )
 
         let workItem = DispatchWorkItem { [weak self] in
             MainActor.assumeIsolated {
@@ -111,6 +131,9 @@ final class HUDPresenter: HUDPresenting {
         presentationGeneration += 1
         hideWorkItem?.cancel()
         hideWorkItem = nil
+        accentWorkItem?.cancel()
+        accentWorkItem = nil
+        resetVisualState()
         panel.alphaValue = 0
         panel.orderOut(nil)
     }
@@ -120,10 +143,18 @@ final class HUDPresenter: HUDPresenting {
         presentationGeneration += 1
         hideWorkItem?.cancel()
         hideWorkItem = nil
+        accentWorkItem?.cancel()
+        accentWorkItem = nil
+        resetVisualState()
         return presentationGeneration
     }
 
-    private func present(action: WindowGestureAction, near pointerLocation: CGPoint) {
+    private func present(
+        action: WindowGestureAction,
+        near pointerLocation: CGPoint,
+        phase: PresentationPhase,
+        generation: Int
+    ) {
         let wasVisible = panel.isVisible
 
         imageView.image = image(for: action)
@@ -142,31 +173,148 @@ final class HUDPresenter: HUDPresenting {
         panel.setFrameOrigin(origin)
         panel.orderFrontRegardless()
 
-        let shouldReduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-        if shouldReduceMotion || wasVisible {
+        guard shouldAnimate else {
+            panel.alphaValue = 1
+            return
+        }
+
+        if wasVisible {
             panel.alphaValue = 1
         } else {
-            panel.alphaValue = 0
-            NSAnimationContext.runAnimationGroup { context in
-                context.duration = 0.06
-                panel.animator().alphaValue = 1
+            animateAppearance()
+        }
+
+        switch phase {
+        case .preview:
+            animatePreview(for: action)
+        case .confirmation:
+            animateConfirmation(for: action, generation: generation)
+        }
+    }
+
+    private var shouldAnimate: Bool {
+        SwindooMotion.shouldAnimate(
+            preferenceEnabled: animationsEnabled(),
+            reduceMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+        )
+    }
+
+    private func animateAppearance() {
+        if let layer = visualEffectView.layer {
+            let scale = CABasicAnimation(keyPath: "transform")
+            scale.fromValue = NSValue(
+                caTransform3D: CATransform3DMakeScale(
+                    SwindooMotion.appearanceScale,
+                    SwindooMotion.appearanceScale,
+                    1
+                )
+            )
+            scale.toValue = NSValue(caTransform3D: CATransform3DIdentity)
+            scale.duration = SwindooMotion.appearanceDuration
+            scale.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            layer.add(scale, forKey: "swindoo.hud.appearance")
+        }
+
+        panel.alphaValue = 0
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = SwindooMotion.appearanceDuration
+            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            panel.animator().alphaValue = 1
+        }
+    }
+
+    private func animatePreview(for action: WindowGestureAction) {
+        guard let layer = imageView.layer else { return }
+
+        let transform = CABasicAnimation(keyPath: "transform")
+        transform.fromValue = NSValue(
+            caTransform3D: layerTransform(
+                for: SwindooMotion.previewStartTransform(for: action)
+            )
+        )
+        transform.toValue = NSValue(caTransform3D: CATransform3DIdentity)
+        transform.duration = SwindooMotion.appearanceDuration
+        transform.timingFunction = CAMediaTimingFunction(name: .easeOut)
+        layer.add(transform, forKey: "swindoo.hud.preview.transform")
+
+        let opacity = CABasicAnimation(keyPath: "opacity")
+        opacity.fromValue = 0.55
+        opacity.toValue = 1
+        opacity.duration = SwindooMotion.appearanceDuration
+        opacity.timingFunction = CAMediaTimingFunction(name: .easeOut)
+        layer.add(opacity, forKey: "swindoo.hud.preview.opacity")
+    }
+
+    private func animateConfirmation(for action: WindowGestureAction, generation: Int) {
+        guard let layer = imageView.layer else { return }
+
+        let motion = CAKeyframeAnimation(keyPath: "transform")
+        motion.values = SwindooMotion.confirmationTransforms(for: action).map {
+            NSValue(caTransform3D: layerTransform(for: $0))
+        }
+        motion.keyTimes = [0, 0.58, 1]
+        motion.duration = SwindooMotion.feedbackDuration
+        motion.timingFunctions = [
+            CAMediaTimingFunction(name: .easeOut),
+            CAMediaTimingFunction(name: .easeInEaseOut),
+        ]
+        layer.add(motion, forKey: "swindoo.hud.confirmation")
+
+        imageView.contentTintColor = .controlAccentColor
+        let workItem = DispatchWorkItem { [weak self] in
+            MainActor.assumeIsolated {
+                guard self?.presentationGeneration == generation else { return }
+                self?.imageView.contentTintColor = .labelColor
+                self?.accentWorkItem = nil
             }
         }
+        accentWorkItem = workItem
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + SwindooMotion.feedbackDuration,
+            execute: workItem
+        )
+    }
+
+    private func layerTransform(for transform: HUDIconTransform) -> CATransform3D {
+        var result = CATransform3DMakeTranslation(
+            transform.translationX,
+            transform.translationY,
+            0
+        )
+        result = CATransform3DScale(result, transform.scaleX, transform.scaleY, 1)
+        return result
+    }
+
+    private func resetVisualState() {
+        visualEffectView.layer?.removeAllAnimations()
+        visualEffectView.layer?.setAffineTransform(.identity)
+        imageView.layer?.removeAllAnimations()
+        imageView.layer?.setAffineTransform(.identity)
+        imageView.alphaValue = 1
+        imageView.contentTintColor = .labelColor
     }
 
     private func hide(generation: Int) {
         guard generation == presentationGeneration else { return }
 
-        let duration = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? 0 : 0.14
-        NSAnimationContext.runAnimationGroup { context in
-            context.duration = duration
-            panel.animator().alphaValue = 0
+        let duration = shouldAnimate ? SwindooMotion.dismissalDuration : 0
+        if duration == 0 {
+            panel.alphaValue = 0
+        } else {
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = duration
+                context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                panel.animator().alphaValue = 0
+            }
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
             MainActor.assumeIsolated {
                 guard self?.presentationGeneration == generation else { return }
                 self?.panel.orderOut(nil)
                 self?.hideWorkItem = nil
+                self?.accentWorkItem?.cancel()
+                self?.accentWorkItem = nil
+                self?.resetVisualState()
             }
         }
     }
@@ -193,8 +341,8 @@ final class HUDPresenter: HUDPresenting {
             preferredName = "rectangle.righthalf.filled"
             fallbackName = "arrow.right"
         case .minimize:
-            preferredName = "minus"
-            fallbackName = "minus.circle"
+            preferredName = "rectangle.compress.vertical"
+            fallbackName = "minus"
         case .maximize:
             preferredName = "arrow.up.left.and.arrow.down.right"
             fallbackName = "rectangle"

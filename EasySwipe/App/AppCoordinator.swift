@@ -22,7 +22,9 @@ final class AppCoordinator {
         let geometry = ScreenGeometryService()
         let resolver = WindowResolver(geometry: geometry)
         let actionService = WindowActionService(geometry: geometry)
-        let hudPresenter = HUDPresenter()
+        let hudPresenter = HUDPresenter {
+            preferences.areHUDAnimationsEnabled
+        }
         let gestureCoordinator = GestureCoordinator(
             resolver: resolver,
             actionService: actionService,
@@ -93,6 +95,12 @@ final class AppCoordinator {
             showLoginItemErrorIfNeeded()
         }
 
+        statusMenu.onAnimationsEnabledChanged = { [weak self] enabled in
+            guard let self else { return }
+            preferences.areHUDAnimationsEnabled = enabled
+            updateStatusMenu()
+        }
+
         statusMenu.onShowGuide = { [weak self] in
             self?.windowController.showGuide()
         }
@@ -126,6 +134,7 @@ final class AppCoordinator {
         statusMenu.update(
             enabled: preferences.isEnabled,
             launchAtLogin: loginItem.isEnabled,
+            animationsEnabled: preferences.areHUDAnimationsEnabled,
             hasPermission: permissions.isTrusted
         )
     }

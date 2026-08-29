@@ -5,6 +5,7 @@ import Foundation
 final class StatusMenuController: NSObject, NSMenuDelegate {
     var onEnabledChanged: ((Bool) -> Void)?
     var onLaunchAtLoginChanged: ((Bool) -> Void)?
+    var onAnimationsEnabledChanged: ((Bool) -> Void)?
     var onShowGuide: (() -> Void)?
     var onShowPermissions: (() -> Void)?
     var onCheckForUpdates: (() -> Void)?
@@ -14,16 +15,19 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
     private let menu = NSMenu()
     private let enabledItem: NSMenuItem
     private let loginItem: NSMenuItem
+    private let animationsItem: NSMenuItem
     private let permissionItem: NSMenuItem
 
     private(set) var enabled = true
     private(set) var launchAtLogin = false
+    private(set) var animationsEnabled = true
     private(set) var hasPermission = false
 
     override init() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         enabledItem = NSMenuItem(title: L10n.menuEnabled, action: nil, keyEquivalent: "")
         loginItem = NSMenuItem(title: L10n.menuLaunchAtLogin, action: nil, keyEquivalent: "")
+        animationsItem = NSMenuItem(title: L10n.menuAnimations, action: nil, keyEquivalent: "")
         permissionItem = NSMenuItem(title: L10n.menuPermissions, action: nil, keyEquivalent: "")
         super.init()
 
@@ -31,9 +35,15 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         configureMenu()
     }
 
-    func update(enabled: Bool, launchAtLogin: Bool, hasPermission: Bool) {
+    func update(
+        enabled: Bool,
+        launchAtLogin: Bool,
+        animationsEnabled: Bool,
+        hasPermission: Bool
+    ) {
         self.enabled = enabled
         self.launchAtLogin = launchAtLogin
+        self.animationsEnabled = animationsEnabled
         self.hasPermission = hasPermission
         refreshAppearance()
     }
@@ -59,6 +69,10 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         loginItem.target = self
         loginItem.action = #selector(toggleLaunchAtLogin)
         menu.addItem(loginItem)
+
+        animationsItem.target = self
+        animationsItem.action = #selector(toggleAnimations)
+        menu.addItem(animationsItem)
 
         menu.addItem(.separator())
 
@@ -108,6 +122,7 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
     private func refreshAppearance() {
         enabledItem.state = enabled ? .on : .off
         loginItem.state = launchAtLogin ? .on : .off
+        animationsItem.state = animationsEnabled ? .on : .off
         permissionItem.state = hasPermission ? .on : .off
         refreshStatusImage()
     }
@@ -129,6 +144,10 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
 
     @objc private func toggleLaunchAtLogin() {
         onLaunchAtLoginChanged?(!launchAtLogin)
+    }
+
+    @objc private func toggleAnimations() {
+        onAnimationsEnabledChanged?(!animationsEnabled)
     }
 
     @objc private func showGuide() {

@@ -19,6 +19,7 @@ final class LocalizationTests: XCTestCase {
         "login.error.title",
         "login.requiresApproval",
         "menu.about",
+        "menu.animations",
         "menu.checkForUpdates",
         "menu.enabled",
         "menu.gestureGuide",

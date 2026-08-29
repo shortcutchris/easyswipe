@@ -104,8 +104,8 @@ export const translations = {
         copy: "Source code, issues, and contributions are public on GitHub under the MIT License.",
       },
       {
-        title: "Version 0.1.7",
-        copy: "Native macOS toolbars now work across apps, including their integrated controls.",
+        title: "Version 0.1.8",
+        copy: "Optional directional HUD animations provide clearer feedback and can be disabled from the menu.",
       },
     ],
   },
@@ -161,8 +161,8 @@ export const translations = {
         copy: "Quellcode, Fehlerberichte und Beiträge sind unter der MIT-Lizenz auf GitHub öffentlich.",
       },
       {
-        title: "Version 0.1.7",
-        copy: "Native macOS-Symbolleisten funktionieren jetzt appübergreifend – inklusive ihrer Bedienelemente.",
+        title: "Version 0.1.8",
+        copy: "Optionale richtungsabhängige HUD-Animationen geben klares Feedback und lassen sich im Menü abschalten.",
       },
     ],
   },
@@ -218,8 +218,8 @@ export const translations = {
         copy: "Le code source, les problèmes et les contributions sont publics sur GitHub sous licence MIT.",
       },
       {
-        title: "Version 0.1.7",
-        copy: "Les barres d’outils macOS natives fonctionnent désormais dans toutes les apps, commandes incluses.",
+        title: "Version 0.1.8",
+        copy: "Des animations HUD directionnelles facultatives clarifient l’action et peuvent être désactivées dans le menu.",
       },
     ],
   },
