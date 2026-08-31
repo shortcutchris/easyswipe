@@ -15,6 +15,7 @@ struct WindowCompatibilityProfile: Equatable, Sendable {
     let maximumAncestorDepth: Int
     let usesMeasuredTopToolbarFrame: Bool
     let allowsInteractiveMeasuredTopToolbar: Bool
+    let measuredTopRegionIdentifiers: Set<String>
 
     init(bundleIdentifier: String?) {
         let isWarp = bundleIdentifier?.hasPrefix("dev.warp.Warp") == true
@@ -49,6 +50,34 @@ struct WindowCompatibilityProfile: Equatable, Sendable {
         // gesture surface or admit one of its interactive descendants.
         usesMeasuredTopToolbarFrame = true
         allowsInteractiveMeasuredTopToolbar = true
+        // WhatsApp's split Catalyst chrome exposes the chat-list and active-chat
+        // headers as two AXGroup elements rather than native AXToolbar roles.
+        // Measuring both exact "Toolbar" regions keeps gestures available over
+        // the active chat header without widening the surface into message content.
+        measuredTopRegionIdentifiers = isWhatsApp ? ["Toolbar"] : []
+    }
+}
+
+struct WindowMeasuredTopRegion: Equatable, Sendable {
+    let frame: CGRect
+    let allowsInteractiveHits: Bool
+
+    init?(
+        role: String?,
+        identifier: String?,
+        frame: CGRect,
+        compatibility: WindowCompatibilityProfile
+    ) {
+        let isNativeToolbar = role == kAXToolbarRole as String
+        let isCompatibilityTopRegion = identifier.map {
+            compatibility.measuredTopRegionIdentifiers.contains($0)
+        } == true
+        guard isNativeToolbar || isCompatibilityTopRegion else { return nil }
+
+        self.frame = frame
+        // Compatibility regions such as WhatsApp's AXGroup header admit their
+        // explicitly allow-listed drag surface, but never generic controls.
+        allowsInteractiveHits = isNativeToolbar
     }
 }
 
@@ -265,24 +294,29 @@ final class WindowResolver: WindowResolving {
         // standard titlebar estimate and therefore needs toolbar evidence.
         let needsMeasuredTopToolbar =
             hitResolution.encounteredInteractiveElement || !isInsideTitlebar
-        let isInsideMeasuredTopToolbar =
+        let containingMeasuredTopRegions =
             needsMeasuredTopToolbar
-            && measuredTopToolbarFrames(
+            ? measuredTopRegions(
                 in: window,
                 windowFrame: axFrame,
                 compatibility: compatibility
-            ).contains { toolbarFrame in
+            ).filter { region in
                 toolbarRegionPolicy.accepts(
                     point: axPoint,
-                    toolbarFrame: toolbarFrame,
+                    toolbarFrame: region.frame,
                     windowFrame: axFrame,
                     compatibility: compatibility
                 )
             }
+            : []
+        let isInsideMeasuredTopToolbar = !containingMeasuredTopRegions.isEmpty
+        let isInsideInteractiveMeasuredTopToolbar = containingMeasuredTopRegions.contains {
+            $0.allowsInteractiveHits
+        }
 
         if hitResolution.encounteredInteractiveElement,
             !toolbarRegionPolicy.acceptsInteractiveHit(
-                isInsideMeasuredTopToolbar: isInsideMeasuredTopToolbar,
+                isInsideMeasuredTopToolbar: isInsideInteractiveMeasuredTopToolbar,
                 compatibility: compatibility
             )
         {
@@ -362,11 +396,11 @@ final class WindowResolver: WindowResolving {
         }
     }
 
-    private func measuredTopToolbarFrames(
+    private func measuredTopRegions(
         in window: AXUIElement,
         windowFrame: CGRect,
         compatibility: WindowCompatibilityProfile
-    ) -> [CGRect] {
+    ) -> [WindowMeasuredTopRegion] {
         guard compatibility.usesMeasuredTopToolbarFrame else { return [] }
 
         let maximumDepth = 4
@@ -375,7 +409,7 @@ final class WindowResolver: WindowResolving {
             window,
             attribute: kAXChildrenAttribute as CFString
         ).map { (element: $0, depth: 1) }
-        var frames: [CGRect] = []
+        var regions: [WindowMeasuredTopRegion] = []
         var inspectedElements = 0
 
         while !pending.isEmpty, inspectedElements < maximumElements {
@@ -383,14 +417,25 @@ final class WindowResolver: WindowResolving {
             inspectedElements += 1
 
             let role = AXBridge.string(candidate.element, attribute: kAXRoleAttribute as CFString)
-            if role == kAXToolbarRole as String, let frame = AXBridge.frame(candidate.element) {
+            let identifier = AXBridge.string(
+                candidate.element,
+                attribute: kAXIdentifierAttribute as CFString
+            )
+            if let frame = AXBridge.frame(candidate.element),
+                let region = WindowMeasuredTopRegion(
+                    role: role,
+                    identifier: identifier,
+                    frame: frame,
+                    compatibility: compatibility
+                )
+            {
                 if toolbarRegionPolicy.accepts(
                     point: CGPoint(x: frame.midX, y: frame.midY),
                     toolbarFrame: frame,
                     windowFrame: windowFrame,
                     compatibility: compatibility
                 ) {
-                    frames.append(frame)
+                    regions.append(region)
                 }
                 continue
             }
@@ -410,7 +455,7 @@ final class WindowResolver: WindowResolving {
             )
         }
 
-        return frames
+        return regions
     }
 
     private func isEligibleWindow(_ window: AXUIElement) -> Bool {

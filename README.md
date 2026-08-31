@@ -13,14 +13,14 @@ The gesture uses two fingers on a MacBook or Magic Trackpad and the continuous t
 
 ## Current release
 
-Version `0.1.8` implements the complete source-level MVP:
+Version `0.1.9` implements the complete source-level MVP:
 
 - title-bar targeting through the macOS Accessibility API;
 - left/right window snapping and normal-window maximization based on `NSScreen.visibleFrame`;
 - window minimization;
 - immediate cursor-adjacent HUD direction previews with subtle directional confirmation animations that can be disabled from the menu;
 - automatic support for measured top-edge macOS toolbars—including swipe starts over their controls—in Finder, Safari-style native windows, AppKit, SwiftUI, and compatible apps;
-- compatibility handling for custom title bars in WhatsApp, Notion, Warp, Electron, Chromium, and other deeply nested Accessibility hierarchies;
+- compatibility handling for split WhatsApp chat headers and custom title bars in Notion, Warp, Electron, Chromium, and other deeply nested Accessibility hierarchies;
 - safe filtering for controls, sheets, popovers, system dialogs, and borderless overlays;
 - support for app-constrained window sizes when a window cannot reach the exact requested frame;
 - a dedicated macOS application icon;

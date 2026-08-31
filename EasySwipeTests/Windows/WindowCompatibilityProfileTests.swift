@@ -38,6 +38,7 @@ final class WindowCompatibilityProfileTests: XCTestCase {
         XCTAssertTrue(
             profile.allowedTopRegionIdentifiers.contains("NavigationBar_HeaderViewButton")
         )
+        XCTAssertEqual(profile.measuredTopRegionIdentifiers, ["Toolbar"])
         XCTAssertFalse(
             policy.rejects(
                 role: "AXButton",
@@ -74,7 +75,56 @@ final class WindowCompatibilityProfileTests: XCTestCase {
             XCTAssertTrue(
                 profile.allowedTopRegionIdentifiers.contains("NavigationBar_HeaderViewButton")
             )
+            XCTAssertEqual(profile.measuredTopRegionIdentifiers, ["Toolbar"])
         }
+    }
+
+    func testWhatsAppMeasuresBothCustomToolbarsWithoutAdmittingTheirControls() throws {
+        let profile = WindowCompatibilityProfile(bundleIdentifier: "net.whatsapp.WhatsApp")
+        let customChatHeader = try XCTUnwrap(WindowMeasuredTopRegion(
+            role: "AXGroup",
+            identifier: "Toolbar",
+            frame: CGRect(x: 420, y: 80, width: 680, height: 58),
+            compatibility: profile
+        ))
+        let nativeToolbar = try XCTUnwrap(WindowMeasuredTopRegion(
+            role: "AXToolbar",
+            identifier: nil,
+            frame: CGRect(x: 100, y: 80, width: 320, height: 58),
+            compatibility: profile
+        ))
+        let toolbarPolicy = WindowToolbarRegionPolicy()
+
+        XCTAssertFalse(customChatHeader.allowsInteractiveHits)
+        XCTAssertTrue(nativeToolbar.allowsInteractiveHits)
+        XCTAssertNil(
+            WindowMeasuredTopRegion(
+                role: "AXGroup",
+                identifier: "ChatMessagesTableView",
+                frame: CGRect(x: 420, y: 138, width: 680, height: 600),
+                compatibility: profile
+            )
+        )
+        XCTAssertNil(
+            WindowMeasuredTopRegion(
+                role: "AXGroup",
+                identifier: "Toolbar",
+                frame: CGRect(x: 420, y: 80, width: 680, height: 58),
+                compatibility: WindowCompatibilityProfile(bundleIdentifier: "com.example.App")
+            )
+        )
+        XCTAssertFalse(
+            toolbarPolicy.acceptsInteractiveHit(
+                isInsideMeasuredTopToolbar: customChatHeader.allowsInteractiveHits,
+                compatibility: profile
+            )
+        )
+        XCTAssertTrue(
+            toolbarPolicy.acceptsInteractiveHit(
+                isInsideMeasuredTopToolbar: nativeToolbar.allowsInteractiveHits,
+                compatibility: profile
+            )
+        )
     }
 
     func testApplicationsUseMeasuredTopToolbarsAsTitlebarRegions() {
@@ -92,6 +142,7 @@ final class WindowCompatibilityProfileTests: XCTestCase {
 
             XCTAssertTrue(profile.usesMeasuredTopToolbarFrame)
             XCTAssertTrue(profile.allowsInteractiveMeasuredTopToolbar)
+            XCTAssertTrue(profile.measuredTopRegionIdentifiers.isEmpty)
             XCTAssertEqual(profile.minimumTitlebarHeight, 38)
             XCTAssertTrue(
                 self.policy.rejects(

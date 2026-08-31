@@ -104,8 +104,8 @@ export const translations = {
         copy: "Source code, issues, and contributions are public on GitHub under the MIT License.",
       },
       {
-        title: "Version 0.1.8",
-        copy: "Optional directional HUD animations provide clearer feedback and can be disabled from the menu.",
+        title: "Version 0.1.9",
+        copy: "Two-finger gestures now work directly on the active WhatsApp chat header while call and menu controls stay protected.",
       },
     ],
   },
@@ -161,8 +161,8 @@ export const translations = {
         copy: "Quellcode, Fehlerberichte und Beiträge sind unter der MIT-Lizenz auf GitHub öffentlich.",
       },
       {
-        title: "Version 0.1.8",
-        copy: "Optionale richtungsabhängige HUD-Animationen geben klares Feedback und lassen sich im Menü abschalten.",
+        title: "Version 0.1.9",
+        copy: "Zwei-Finger-Gesten funktionieren jetzt direkt auf dem aktiven WhatsApp-Chatkopf; Anruf- und Menütasten bleiben geschützt.",
       },
     ],
   },
@@ -218,8 +218,8 @@ export const translations = {
         copy: "Le code source, les problèmes et les contributions sont publics sur GitHub sous licence MIT.",
       },
       {
-        title: "Version 0.1.8",
-        copy: "Des animations HUD directionnelles facultatives clarifient l’action et peuvent être désactivées dans le menu.",
+        title: "Version 0.1.9",
+        copy: "Les gestes à deux doigts fonctionnent désormais sur l’en-tête du chat WhatsApp actif, sans inclure les commandes d’appel ou de menu.",
       },
     ],
   },
