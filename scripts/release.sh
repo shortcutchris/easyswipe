@@ -248,18 +248,19 @@ PY
   "${SPARKLE_TOOLS}/sign_update" \
     --account "${SPARKLE_ACCOUNT}" \
     --verify "${RELEASE_ARCHIVE}" "${signature}"
-  /usr/bin/shasum -a 256 "${RELEASE_ARCHIVE}" > "${RELEASE_ARCHIVE}.sha256"
+  (cd "${RELEASE_WORKSPACE}" && /usr/bin/shasum -a 256 "${ARCHIVE_NAME}") > "${RELEASE_ARCHIVE}.sha256"
 }
 
 publish_release() {
   /bin/cp "${RELEASE_ARCHIVE}" "${BRANDED_ARCHIVE}"
-  /usr/bin/shasum -a 256 "${BRANDED_ARCHIVE}" > "${BRANDED_CHECKSUM}"
+  (cd "${RELEASE_WORKSPACE}" && /usr/bin/shasum -a 256 Swindoo.zip) > "${BRANDED_CHECKSUM}"
 
   gh release create "${TAG}" \
     "${RELEASE_ARCHIVE}" "${RELEASE_ARCHIVE}.sha256" \
     "${BRANDED_ARCHIVE}" "${BRANDED_CHECKSUM}" \
     --repo "${RELEASE_REPOSITORY}" \
     --title "Swindoo ${VERSION}" \
+    --latest \
     --notes-file "${RELEASE_NOTES}"
 
   /bin/cp "${GENERATED_FEED}" "${RELEASE_CHECKOUT}/appcast.xml"
@@ -284,7 +285,7 @@ publish_release() {
   for attempt in {1..45}; do
     if gh api -H "Accept: application/vnd.github.raw+json" \
       "repos/${RELEASE_REPOSITORY}/contents/appcast.xml?ref=${published_revision}" \
-      | /usr/bin/grep -Fq "${RELEASE_URL_PREFIX}${ARCHIVE_NAME}"; then
+      | /usr/bin/grep -F "${RELEASE_URL_PREFIX}${ARCHIVE_NAME}" >/dev/null; then
       feed_ready=1
       break
     fi

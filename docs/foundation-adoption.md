@@ -10,7 +10,7 @@ Da das HUD als AppKit-`NSPanel` umgesetzt ist, verwendet Swindoo eine AppKit- un
 
 ## H1 – Sprache, Darstellung und Updates (0.1.10 / 18)
 
-- Basis: Foundation `a7b8abd`, gemeinsamer I/U-Standard und H0/H1-Plan vom 03.11.2026; Zielstandard-Ergänzung vom 04.11.2026.
+- Basis: Foundation `a7b8abd`, gemeinsamer I/U-Standard und H0/H1-Plan vom 03.11.2026; Zielstandard-Ergänzung und Abschluss in Foundation `22c7bc0` vom 04.11.2026.
 - Kompakte native Allgemein-/Updates-Ansicht, Menüzugang, ⌘, und gemeinsamer Update-Einstieg im Über-Fenster.
 - Neue Keys `interface.language` und `interface.appearance`; fehlende/unbekannte Werte werden als System aufgelöst. Vorhandene Aktivierung, Animationen und Onboarding werden nicht zurückgesetzt. Sparkle bleibt Owner seiner bisherigen Updatepräferenzen.
 - Eigene DE/EN-Texte werden dynamisch aus dem String Catalog gelesen. Regionale Formate bleiben systemgeführt; keine Änderung von `AppleLanguages` oder globalen macOS-Präferenzen im Produkt.
