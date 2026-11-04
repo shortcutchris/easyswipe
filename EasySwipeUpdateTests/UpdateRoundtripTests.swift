@@ -39,8 +39,8 @@ final class UpdateRoundtripTests: XCTestCase {
         XCTAssertTrue(app.windows["Einstellungen"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.popUpButtons["settings.language"].value as? String, "Deutsch")
         XCTAssertEqual(app.popUpButtons["settings.appearance"].value as? String, "Dunkel")
-        XCTAssertEqual(app.checkBoxes["Swindoo aktiv"].value as? String, "0")
-        XCTAssertEqual(app.checkBoxes["Animationen anzeigen"].value as? String, "0")
+        XCTAssertEqual((app.checkBoxes["Swindoo aktiv"].value as? NSNumber)?.intValue, 0)
+        XCTAssertEqual((app.checkBoxes["Animationen anzeigen"].value as? NSNumber)?.intValue, 0)
         let after = XCTAttachment(screenshot: app.windows["Einstellungen"].screenshot())
         after.name = "updated-settings-preserved"
         after.lifetime = .keepAlways
