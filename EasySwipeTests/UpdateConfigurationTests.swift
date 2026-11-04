@@ -8,7 +8,7 @@ final class UpdateConfigurationTests: XCTestCase {
         XCTAssertFalse(
             UpdateConfiguration(
                 feedURL: URL(string: "http://example.com/appcast.xml"),
-                publicKey: "public-key"
+                publicKey: Data(repeating: 1, count: 32).base64EncodedString()
             ).isConfigured
         )
         XCTAssertFalse(
@@ -20,7 +20,7 @@ final class UpdateConfigurationTests: XCTestCase {
         XCTAssertTrue(
             UpdateConfiguration(
                 feedURL: URL(string: "https://example.com/appcast.xml"),
-                publicKey: "public-key"
+                publicKey: Data(repeating: 1, count: 32).base64EncodedString()
             ).isConfigured
         )
     }
@@ -32,11 +32,11 @@ final class UpdateConfigurationTests: XCTestCase {
         )
         XCTAssertEqual(
             Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
-            "0.1.9"
+            "0.1.10"
         )
         XCTAssertEqual(
             Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String,
-            "17"
+            "18"
         )
         XCTAssertEqual(
             Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String,

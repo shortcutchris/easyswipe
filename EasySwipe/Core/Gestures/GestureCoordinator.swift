@@ -18,6 +18,12 @@ final class GestureCoordinator {
     private var fallbackEndTimer: Timer?
     private var previewedAction: WindowGestureAction?
     private var pointerLocation: CGPoint?
+    private var isApplyingAction = false
+
+    var isBusyForUpdate: Bool {
+        if case .tracking = state { return true }
+        return isApplyingAction
+    }
 
     init(
         resolver: any WindowResolving,
@@ -142,6 +148,8 @@ final class GestureCoordinator {
         previewedAction = nil
         self.pointerLocation = nil
 
+        isApplyingAction = true
+        defer { isApplyingAction = false }
         guard let action,
             let result = actionService.perform(action, on: target)
         else {

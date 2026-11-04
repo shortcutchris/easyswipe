@@ -34,10 +34,14 @@ Update `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in `project.yml`, then 
 Set the name of a `notarytool` Keychain profile and run:
 
 ```sh
-EASYSWIPE_NOTARY_PROFILE='EasySwipe' scripts/release.sh
+EASYSWIPE_NOTARY_PROFILE='EasySwipe' scripts/release.sh --prepare
 ```
 
-The script refuses to publish unless the source and release repositories are clean, the source commit is on `origin/main`, the full Mac Studio verification succeeds, the fetched Universal 2 app is Developer-ID-signed, Apple accepts the notarization, Gatekeeper accepts the stapled app, and Sparkle generates a valid EdDSA signature. It uploads the archive before committing the new appcast, so the public feed never points at a missing download.
+The script refuses to prepare unless the source and release repositories are clean, the source commit is on `origin/main`, the full Mac Studio unit/GUI verification succeeds, the fetched Universal 2 app is Developer-ID-signed, Apple accepts the notarization, Gatekeeper accepts the stapled app, and Sparkle generates a valid EdDSA signature. No public feed or asset changes during preparation.
+
+Test the immediately preceding signed public app against the staged signed archive through Sparkle on the Studio. Use an isolated app copy and restore any temporarily used app preferences. Retain the actual test result, installed version/signature and a comparison of synthetic preferences. Store `update-roundtrip.json` in the printed prepared directory with `result: Passed`, `archiveSHA256`, `sourceRevision` and `installedBuild` only after that test passes.
+
+Then set `EASYSWIPE_PREPARED_RELEASE` to that exact directory and run `scripts/release.sh --publish-prepared` with the same signing/notary configuration. Publication rechecks the current source, signature, notarization and candidate-bound update evidence. It uploads the archive before committing the new appcast, so the public feed never points at a missing download. If multiple Developer ID certificates exist, select the intended available fingerprint with `EASYSWIPE_CODE_SIGN_IDENTITY`; never copy a private key to the Studio.
 
 ## Manual production archive
 

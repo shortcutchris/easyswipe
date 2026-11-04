@@ -50,6 +50,17 @@
                ReferencedContainer = "container:EasySwipe.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "205293C2FAA8139ACDFBC25F"
+               BuildableName = "EasySwipeUITests.xctest"
+               BlueprintName = "EasySwipeUITests"
+               ReferencedContainer = "container:EasySwipe.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

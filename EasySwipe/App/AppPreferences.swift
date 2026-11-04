@@ -7,6 +7,8 @@ final class AppPreferences: ObservableObject {
         static let enabled = "app.enabled"
         static let hudAnimationsEnabled = "hud.animationsEnabled"
         static let onboardingCompleted = "onboarding.completed"
+        static let language = "interface.language"
+        static let appearance = "interface.appearance"
     }
 
     @Published var isEnabled: Bool {
@@ -23,8 +25,30 @@ final class AppPreferences: ObservableObject {
 
     private let defaults: UserDefaults
 
+    var onInterfaceChanged: (() -> Void)?
+    @Published var language: InterfaceLanguage {
+        didSet {
+            defaults.set(language.rawValue, forKey: Key.language)
+            onInterfaceChanged?()
+        }
+    }
+    @Published var appearance: InterfaceAppearance {
+        didSet {
+            defaults.set(appearance.rawValue, forKey: Key.appearance)
+            onInterfaceChanged?()
+        }
+    }
+    @Published private(set) var systemRevision = 0
+
+    func refreshSystemPreferences() {
+        onInterfaceChanged?()
+        systemRevision &+= 1
+    }
+
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+        language = InterfaceLanguage(rawValue: defaults.string(forKey: Key.language) ?? "") ?? .system
+        appearance = InterfaceAppearance(rawValue: defaults.string(forKey: Key.appearance) ?? "") ?? .system
         if defaults.object(forKey: Key.enabled) == nil {
             isEnabled = true
         } else {

@@ -11,14 +11,20 @@ final class AppCoordinator {
     private let windowController: AppWindowController
     private let scrollMonitor: GlobalScrollMonitor
     private let gestureCoordinator: GestureCoordinator
+    private var localeObserver: NSObjectProtocol?
+    private var settingsShortcutMonitor: Any?
+    private let isIsolatedQA = ProcessInfo.processInfo.environment["SWINDOO_QA_SUITE"]?.hasPrefix("Swindoo.QA.") == true
 
     init() {
-        let preferences = AppPreferences()
+        let qaSuite = ProcessInfo.processInfo.environment["SWINDOO_QA_SUITE"]
+        let defaults = qaSuite.flatMap { $0.hasPrefix("Swindoo.QA.") ? UserDefaults(suiteName: $0) : nil } ?? .standard
+        let preferences = AppPreferences(defaults: defaults)
+        L10n.language = preferences.language
         let permissions = AccessibilityPermissionController()
         let loginItem = LoginItemController()
-        let updateController = UpdateController()
+        let updateController = UpdateController(defaults: defaults)
         let statusMenu = StatusMenuController()
-        let windowController = AppWindowController()
+        let windowController = AppWindowController(preferences: preferences)
         let geometry = ScreenGeometryService()
         let resolver = WindowResolver(geometry: geometry)
         let actionService = WindowActionService(geometry: geometry)
@@ -44,6 +50,7 @@ final class AppCoordinator {
         self.scrollMonitor = scrollMonitor
 
         configureCallbacks()
+        updateController.isBusy = { [weak gestureCoordinator] in gestureCoordinator?.isBusyForUpdate ?? false }
     }
 
     func start() {
@@ -58,7 +65,29 @@ final class AppCoordinator {
             return
         }
 
+        settingsShortcutMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            if event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .command,
+               event.charactersIgnoringModifiers == "," {
+                MainActor.assumeIsolated { self?.showSettings() }
+                return nil
+            }
+            return event
+        }
+
+        if ProcessInfo.processInfo.environment["SWINDOO_QA_SUITE"]?.hasPrefix("Swindoo.QA.") == true {
+            windowController.refreshInterface()
+            updateStatusMenu()
+            showSettings()
+            return // Explicit isolated UI QA: no gesture monitoring, login writes or update polling.
+        }
+
         permissions.refresh()
+        windowController.refreshInterface()
+        updateController.start()
+        localeObserver = NotificationCenter.default.addObserver(forName: NSLocale.currentLocaleDidChangeNotification,
+                                                                object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.preferences.refreshSystemPreferences() }
+        }
         permissions.startPolling()
         loginItem.refresh()
         reconcileMonitoring()
@@ -73,9 +102,27 @@ final class AppCoordinator {
         scrollMonitor.stop()
         gestureCoordinator.cancel()
         permissions.stopPolling()
+        updateController.stop()
+        if let localeObserver { NotificationCenter.default.removeObserver(localeObserver) }
+        if let settingsShortcutMonitor { NSEvent.removeMonitor(settingsShortcutMonitor) }
     }
 
     private func configureCallbacks() {
+        preferences.onInterfaceChanged = { [weak self] in
+            guard let self else { return }
+            L10n.language = preferences.language
+            windowController.refreshInterface()
+            statusMenu.refreshLanguage()
+            loginItem.refresh()
+        }
+        statusMenu.onShowSettings = { [weak self] in self?.showSettings() }
+        statusMenu.onShowAbout = { [weak self] in
+            self?.windowController.showAbout { [weak self] in
+                guard let self else { return }
+                showSettings(page: .updates)
+                if !isIsolatedQA { updateController.checkForUpdates() }
+            }
+        }
         permissions.onTrustChanged = { [weak self] _ in
             self?.reconcileMonitoring()
             self?.updateStatusMenu()
@@ -89,7 +136,7 @@ final class AppCoordinator {
         }
 
         statusMenu.onLaunchAtLoginChanged = { [weak self] enabled in
-            guard let self else { return }
+            guard let self, !isIsolatedQA else { return }
             loginItem.setEnabled(enabled)
             updateStatusMenu()
             showLoginItemErrorIfNeeded()
@@ -110,7 +157,9 @@ final class AppCoordinator {
         }
 
         statusMenu.onCheckForUpdates = { [weak self] in
-            self?.updateController.checkForUpdates()
+            guard let self else { return }
+            showSettings(page: .updates)
+            if !isIsolatedQA { updateController.checkForUpdates() }
         }
 
         statusMenu.onWillOpen = { [weak self] in
@@ -121,7 +170,15 @@ final class AppCoordinator {
         }
     }
 
+    private func showSettings(page: SettingsNavigation.Page? = nil) {
+        windowController.showSettings(updates: updateController, loginItem: loginItem, page: page, onBehaviorChanged: { [weak self] in
+            self?.reconcileMonitoring()
+            self?.updateStatusMenu()
+        }, showGuide: { [weak self] in self?.windowController.showGuide() })
+    }
+
     private func reconcileMonitoring() {
+        guard !isIsolatedQA else { return }
         if preferences.isEnabled && permissions.isTrusted {
             scrollMonitor.start()
         } else {

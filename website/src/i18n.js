@@ -104,8 +104,8 @@ export const translations = {
         copy: "Source code, issues, and contributions are public on GitHub under the MIT License.",
       },
       {
-        title: "Version 0.1.9",
-        copy: "Two-finger gestures now work directly on the active WhatsApp chat header while call and menu controls stay protected.",
+        title: "Version 0.1.10",
+        copy: "Choose your language and light or dark appearance in the new settings, with clear update status and safe restarts.",
       },
     ],
   },
@@ -161,8 +161,8 @@ export const translations = {
         copy: "Quellcode, Fehlerberichte und Beiträge sind unter der MIT-Lizenz auf GitHub öffentlich.",
       },
       {
-        title: "Version 0.1.9",
-        copy: "Zwei-Finger-Gesten funktionieren jetzt direkt auf dem aktiven WhatsApp-Chatkopf; Anruf- und Menütasten bleiben geschützt.",
+        title: "Version 0.1.10",
+        copy: "Neue Einstellungen für Sprache und Hell/Dunkel, verständlicher Update-Status und sichere Neustarts nach laufenden Fenstergesten.",
       },
     ],
   },
@@ -218,8 +218,8 @@ export const translations = {
         copy: "Le code source, les problèmes et les contributions sont publics sur GitHub sous licence MIT.",
       },
       {
-        title: "Version 0.1.9",
-        copy: "Les gestes à deux doigts fonctionnent désormais sur l’en-tête du chat WhatsApp actif, sans inclure les commandes d’appel ou de menu.",
+        title: "Version 0.1.10",
+        copy: "Choisissez la langue et l’apparence claire ou sombre dans les nouveaux réglages, avec un état des mises à jour clair et un redémarrage sécurisé.",
       },
     ],
   },

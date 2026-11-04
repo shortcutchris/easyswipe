@@ -80,8 +80,10 @@ generate_project() {
 
 build_project() {
   generate_project
-  remote "cd '${REMOTE_ROOT}' && DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-    /usr/bin/caffeinate -dims \
+  remote "set -eu
+    cd '${REMOTE_ROOT}'
+    /usr/bin/caffeinate -dims -w \$\$ >/dev/null 2>&1 &
+    DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
     /usr/bin/xcodebuild build \
       -project EasySwipe.xcodeproj \
       -scheme EasySwipe \
@@ -97,8 +99,8 @@ release_project() {
     /bin/rm -rf '${STAGED_APP}'
     /bin/rm -f '${STAGED_ZIP}'
     cd '${REMOTE_ROOT}'
+    /usr/bin/caffeinate -dims -w \$\$ >/dev/null 2>&1 &
     DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-      /usr/bin/caffeinate -dims \
       /usr/bin/xcodebuild clean build \
         -project EasySwipe.xcodeproj \
         -scheme EasySwipe \
@@ -143,8 +145,10 @@ test_project() {
     /bin/mkdir -p '${ARTIFACTS_ROOT}'
     /bin/rm -rf '${RESULT_BUNDLE}'
     cd '${REMOTE_ROOT}'
-    DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-      /usr/bin/caffeinate -dims \
+    /usr/bin/caffeinate -dims -w \$\$ >/dev/null 2>&1 &
+    sudo -n launchctl asuser \$(id -u) sudo -n -u chris env \
+      HOME=/Users/chris USER=chris LOGNAME=chris \
+      DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
       /usr/bin/xcodebuild test \
         -project EasySwipe.xcodeproj \
         -scheme EasySwipe \
@@ -152,6 +156,7 @@ test_project() {
         -destination 'platform=macOS' \
         -derivedDataPath '${DERIVED_DATA}' \
         -enableCodeCoverage YES \
+        -parallel-testing-enabled NO \
         -resultBundlePath '${RESULT_BUNDLE}'
     DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
       /usr/bin/xcrun xcresulttool get test-results summary \

@@ -5,7 +5,15 @@ import ServiceManagement
 @MainActor
 final class LoginItemController: ObservableObject {
     @Published private(set) var isEnabled = false
-    @Published private(set) var lastError: String?
+    private enum Failure { case requiresApproval, registration }
+    @Published private var failure: Failure?
+    var lastError: String? {
+        switch failure {
+        case .requiresApproval: L10n.loginItemRequiresApproval
+        case .registration: L10n.text("login.error.message")
+        case nil: nil
+        }
+    }
 
     init() {
         refresh()
@@ -15,14 +23,16 @@ final class LoginItemController: ObservableObject {
         let status = SMAppService.mainApp.status
         isEnabled = status == .enabled
         if status == .requiresApproval {
-            lastError = L10n.loginItemRequiresApproval
+            failure = .requiresApproval
         } else if status == .enabled {
-            lastError = nil
+            failure = nil
+        } else if failure == .requiresApproval {
+            failure = nil
         }
     }
 
     func setEnabled(_ enabled: Bool) {
-        lastError = nil
+        failure = nil
 
         do {
             if enabled {
@@ -31,7 +41,7 @@ final class LoginItemController: ObservableObject {
                 try SMAppService.mainApp.unregister()
             }
         } catch {
-            lastError = error.localizedDescription
+            failure = .registration
         }
 
         refresh()

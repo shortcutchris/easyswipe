@@ -70,8 +70,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.shortcutchris.EasySwipe
         PRODUCT_NAME: EasySwipe
         PRODUCT_MODULE_NAME: EasySwipe
-        MARKETING_VERSION: 0.1.9
-        CURRENT_PROJECT_VERSION: 17
+        MARKETING_VERSION: 0.1.10
+        CURRENT_PROJECT_VERSION: 18
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: Config/Info.plist
         ENABLE_APP_SANDBOX: NO
@@ -80,6 +80,7 @@ targets:
     scheme:
       testTargets:
         - EasySwipeTests
+        - EasySwipeUITests
 
   EasySwipeTests:
     type: bundle.unit-test
@@ -94,3 +95,32 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/EasySwipe.app/Contents/MacOS/EasySwipe"
         BUNDLE_LOADER: "$(TEST_HOST)"
+
+  EasySwipeUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    sources:
+      - path: EasySwipeUITests
+    dependencies:
+      - target: EasySwipe
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.shortcutchris.EasySwipeUITests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: EasySwipe
+    scheme:
+      testTargets:
+        - EasySwipeUITests
+
+  EasySwipeUpdateTests:
+    type: bundle.ui-testing
+    platform: macOS
+    sources:
+      - path: EasySwipeUpdateTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.shortcutchris.EasySwipeUpdateTests
+        GENERATE_INFOPLIST_FILE: YES
+    scheme:
+      testTargets:
+        - EasySwipeUpdateTests

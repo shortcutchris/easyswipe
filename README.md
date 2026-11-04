@@ -13,7 +13,7 @@ The gesture uses two fingers on a MacBook or Magic Trackpad and the continuous t
 
 ## Current release
 
-Version `0.1.9` implements the complete source-level MVP:
+Version `0.1.10` adds the shared macOS settings standard to the complete source-level MVP:
 
 - title-bar targeting through the macOS Accessibility API;
 - left/right window snapping and normal-window maximization based on `NSScreen.visibleFrame`;
@@ -27,6 +27,9 @@ Version `0.1.9` implements the complete source-level MVP:
 - menu bar controls and first-run permission onboarding;
 - launch-at-login support through `SMAppService`;
 - English and German String Catalog localizations;
+- compact General/Updates settings, persistent System/German/English language and System/Light/Dark appearance choices;
+- live updates to app windows, menus and help without changing regional formats or other apps;
+- visible update status and safe restart deferral during an active window gesture;
 - Sparkle 2.9.6 update integration with a public signed update feed;
 - Universal 2 release builds for Apple Silicon and Intel.
 
@@ -75,7 +78,15 @@ Sparkle is integrated and every current build contains these public update setti
 
 The matching private Sparkle key remains in the local macOS Keychain. Developer ID and notarization credentials are also kept outside both repositories. See [docs/RELEASING.md](docs/RELEASING.md) for the guarded publication workflow.
 
-After storing Apple notarization credentials in a local `notarytool` Keychain profile, the complete verified release is published with `EASYSWIPE_NOTARY_PROFILE='EasySwipe' scripts/release.sh`.
+After storing Apple notarization credentials in a local `notarytool` Keychain profile, prepare the complete verified release with `EASYSWIPE_NOTARY_PROFILE='EasySwipe' scripts/release.sh --prepare`. The signed candidate is tested through Sparkle before `--publish-prepared` can publish it. See the release guide for the evidence contract.
+
+## Settings and help
+
+Open **Settings…** from the menu bar, or press **⌘,** while a Swindoo window is active. General contains language, appearance and the existing behavior controls. **Updates** contains version/build, last successful check, manual checking and supported automatic options. Existing menu shortcuts remain available. **About Swindoo** uses the same update action.
+
+Language and appearance apply only to Swindoo. Regional date/number formats remain those of macOS. Sparkle and system dialogs use the macOS app language, which may differ from the in-app selection. System appearance removes the app override, including on already open windows. The direction HUD intentionally retains its contrasting transient overlay design.
+
+The full Studio test gate includes an isolated GUI test for live language/appearance changes, the open gesture guide, ⌘, and restart persistence. `SWINDOO_QA_SUITE=Swindoo.QA.<name>` opens settings with a separate preferences store and disables gesture monitoring, login writes and automatic update polling; this is a test-only launch mode, not an alternative release channel.
 
 ## Documentation
 

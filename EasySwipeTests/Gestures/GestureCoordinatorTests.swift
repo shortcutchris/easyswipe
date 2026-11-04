@@ -5,6 +5,17 @@ import XCTest
 
 @MainActor
 final class GestureCoordinatorTests: XCTestCase {
+    func testUpdateBusyStateEndsOnCompletionAndCancellation() {
+        let harness = Harness()
+        XCTAssertFalse(harness.coordinator.isBusyForUpdate)
+        harness.coordinator.handle(sample(deltaX: 30, phase: .began))
+        XCTAssertTrue(harness.coordinator.isBusyForUpdate)
+        harness.coordinator.handle(sample(deltaX: 30, phase: .ended))
+        XCTAssertFalse(harness.coordinator.isBusyForUpdate)
+        harness.coordinator.handle(sample(deltaX: 30, phase: .began))
+        harness.coordinator.cancel()
+        XCTAssertFalse(harness.coordinator.isBusyForUpdate)
+    }
     func testCommitsExactlyOnceAtPhysicalEnd() {
         let harness = Harness()
 

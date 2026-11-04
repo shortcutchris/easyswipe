@@ -1,6 +1,9 @@
 import Foundation
 
+@MainActor
 enum L10n {
+    static var language: InterfaceLanguage = .system
+    static var settings: String { text("menu.settings", "Settings…") }
     static var menuEnabled: String { text("menu.enabled", "Swindoo Enabled") }
     static var menuLaunchAtLogin: String { text("menu.launchAtLogin", "Launch at Login") }
     static var menuAnimations: String { text("menu.animations", "Show Animations") }
@@ -69,7 +72,10 @@ enum L10n {
     static var hudMinimizeAnnouncement: String { text("hud.minimize", "Window minimized") }
     static var hudMaximizeAnnouncement: String { text("hud.maximize", "Window maximized") }
 
-    private static func text(_ key: String, _ fallback: String) -> String {
-        NSLocalizedString(key, tableName: nil, bundle: .main, value: fallback, comment: "")
+    static func text(_ key: String, _ fallback: String = "") -> String {
+        let resolved = language.resolved()
+        let bundle = Bundle.main.path(forResource: resolved, ofType: "lproj")
+            .flatMap(Bundle.init(path:)) ?? .main
+        return bundle.localizedString(forKey: key, value: fallback.isEmpty ? key : fallback, table: nil)
     }
 }

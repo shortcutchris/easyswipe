@@ -274,7 +274,7 @@ Diskrete Mausradereignisse sind nicht Teil des MVP. Eine klassische Scrollrad-Ma
 - Entwicklungs- und Fallback-Sprache: Englisch (USA), `en-US`.
 - Vollständige Erstlokalisierung: Deutsch, `de`.
 - Architektur bereit für weitere Sprach- und Regionsvarianten.
-- Die App folgt der in macOS pro App oder systemweit gewählten Sprache; kein eigener Sprachumschalter im MVP.
+- Seit 0.1.10: Einstellungen → Allgemein bietet System / Deutsch / English. System bleibt der Ausgangspunkt; eine explizite Auswahl gilt sofort für App-Fenster, Menü und Hilfe. Regionale Formate bleiben unabhängig.
 
 ### 12.2 Technische Regeln
 
@@ -305,13 +305,13 @@ Sparkles Standardoberfläche wird in der zum System passenden, von Sparkle angeb
 - Sparkle 2 über Swift Package Manager.
 - Beim Implementierungsbeginn aktuelle stabile Sparkle-2-Version verwenden und in `Package.resolved` festhalten.
 - Standardintegration über `SPUStandardUpdaterController`.
-- Menüpunkt „Nach Updates suchen…“ beziehungsweise „Check for Updates…“ ist mit `checkForUpdates(_:)` verbunden.
+- Menüpunkt „Nach Updates suchen…“ beziehungsweise „Check for Updates…“ öffnet Einstellungen → Updates und ruft Sparkles `checkForUpdates(_:)` auf. Die gleiche Aktion ist im Über-Fenster verfügbar.
 - Automatische Update-Prüfung folgt Sparkles Zustimmungs- und Einstellungsmodell; keine erzwungene Prüfung bei jedem App-Start.
 - MVP verwendet ausschließlich einen stabilen Release-Kanal.
 
 ### 14.2 Appcast und Sicherheit
 
-- Appcast wird über HTTPS von einem noch festzulegenden statischen Update-Host ausgeliefert.
+- Appcast wird über HTTPS aus `shortcutchris/easyswipe-releases` ausgeliefert; Download, Signaturprüfung und Installation bleiben bei Sparkle.
 - `SUFeedURL` wird in der App-Konfiguration gesetzt.
 - Updates werden mit Sparkles EdDSA-Verfahren signiert; der öffentliche Schlüssel liegt als `SUPublicEDKey` in der App.
 - Der private EdDSA-Schlüssel darf weder im Repository noch auf dem öffentlichen Update-Host liegen.
@@ -455,7 +455,7 @@ Der MVP gilt als funktionsfähig, wenn alle folgenden Kriterien erfüllt sind:
 9. Jede erkannte Richtung zeigt während der Geste ein nicht fokussierendes HUD; eine erfolgreiche Aktion bestätigt sie kurz nach dem Loslassen.
 10. Snapping und Maximieren respektieren Menüleiste, Dock, Kameraaussparung und den aktuellen Bildschirm.
 11. Die App arbeitet ausschließlich aus der Menüleiste und erscheint nicht regulär im Dock.
-12. Das Menü ist vollständig auf Deutsch und Englisch verfügbar und folgt der macOS-App-Sprache.
+12. Das Menü ist vollständig auf Deutsch und Englisch verfügbar und folgt der gespeicherten App-Sprachwahl (System als Standard).
 13. „Beim Anmelden starten“ kann aus Menü und Onboarding aktiviert und deaktiviert werden.
 14. HUD-Animationen können über eine dauerhaft gespeicherte Checkbox im Menü ein- und ausgeschaltet werden; „Bewegung reduzieren“ wird respektiert.
 15. Eine manuelle Update-Prüfung über Sparkle ist aus dem Menü möglich.

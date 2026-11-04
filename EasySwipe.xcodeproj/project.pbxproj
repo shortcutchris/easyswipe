@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00BD065EEE63CD96023ACC82 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A4F77002FE9927B6817FADDA /* Assets.xcassets */; };
+		037471633E61C9D6B1EA2B57 /* InterfaceStandardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E2E52F403018DEF7FB1483 /* InterfaceStandardTests.swift */; };
 		07E6F1AB9A064015EB26A48E /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A71169A6F999B1290C018A /* L10n.swift */; };
 		0C0ECE5E713F6C15BDD4BD97 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC974291A1964E6FE634C827 /* AppDelegate.swift */; };
 		115C8CBA563EF6995CC5D4A4 /* AccessibilityPermissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8204F4A12F0DBD92B18E4D5C /* AccessibilityPermissionController.swift */; };
@@ -24,8 +25,10 @@
 		54C8D897CD83934BE50056DD /* GestureGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E101BAF778CF57BD9DA2A82 /* GestureGuideView.swift */; };
 		56318EB1AE1D7C73D095CDE2 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC90E0893722792752738E5F /* AppCoordinator.swift */; };
 		5D1D6D6A66C0A28B5F405A6B /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 50C59CAF7BCC111D4A74DF67 /* Sparkle */; };
+		6A5AEA0ED084F61C1A759848 /* InterfaceUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E3744E94F0C0B8985A575C /* InterfaceUITests.swift */; };
 		6C60F0161D167BC98FEA8257 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9268527CEBB562E4C34CB9B /* AppPreferences.swift */; };
 		72A8D32F5999167594C31EA2 /* AXWindowTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5C8CEF21CDD8118E2B3B3FA /* AXWindowTarget.swift */; };
+		74498B374EAC0E319D99C8C1 /* InterfacePreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8178EF05C54597985DA97769 /* InterfacePreferences.swift */; };
 		76DCF5DE180268116B5B493D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EE71A22E7CC49F2EDF86A55 /* main.swift */; };
 		7B7ABCD0C4B88F2F366D0690 /* ScreenGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662B85D798CD834EFDE01FE7 /* ScreenGeometry.swift */; };
 		8044BDE698C8EEC59A59E299 /* UpdateConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC27652E89B7D91B8FFB8EE /* UpdateConfigurationTests.swift */; };
@@ -33,6 +36,7 @@
 		81A88A0BD7DCB1178C724EE7 /* WindowGestureAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048ED7868B7C96DDA4B3E8D4 /* WindowGestureAction.swift */; };
 		8D69FA45DEBCD18FEA5BD274 /* ScreenGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14BE95BBF838AD12C14A5937 /* ScreenGeometryTests.swift */; };
 		9168786DEBB05C090E809953 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 1D9551373A73765B38BF1ADF /* LICENSE */; };
+		9399614782E5A5D227300C3F /* UpdateRoundtripTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB03A30F305A03EF7672EE1C /* UpdateRoundtripTests.swift */; };
 		9C4973B6888C71BC2258ABD8 /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435C1F8CD1BCDDA0B2A3EC48 /* StatusMenuController.swift */; };
 		9E60BCC7BD6548DA0AFB7551 /* sparkle.txt in Resources */ = {isa = PBXBuildFile; fileRef = D4CC20DFBEA1D3825E6F2935 /* sparkle.txt */; };
 		A7E1CCF3AD232439C898FA1C /* LoginItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F969AE7461E97F90A4DD5B /* LoginItemController.swift */; };
@@ -45,12 +49,20 @@
 		D362E5DEA2EF5D9A514E81C0 /* WindowFrameApplier.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F1383174BBFC1F1F0908DC /* WindowFrameApplier.swift */; };
 		D5F51372B8C22E0EB05E8F07 /* GestureCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0790D9A964AB1A5229F1FD01 /* GestureCoordinatorTests.swift */; };
 		DFD6204CD3CEE221DEB3DDB8 /* SwipeGestureRecognizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6F7E1743DA794690069270 /* SwipeGestureRecognizerTests.swift */; };
+		ECC5AFBB0D29DFB6D0408236 /* AppSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473E4C4A9E907C4AE0B6C8BD /* AppSettingsView.swift */; };
 		EEECCB38615E5EE30284D64F /* WindowResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321C38F9C8B16F77F55A7C57 /* WindowResolver.swift */; };
 		F0F0501DF6A199C0FA7F2B91 /* ScrollDeltaNormalizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0ADCB2A1BE453237EFF00C /* ScrollDeltaNormalizerTests.swift */; };
 		F429BE4282C7239987936A09 /* AppPreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2473917F36CFA29AA87C2E58 /* AppPreferencesTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		797895DA7DA460D256CD364F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 308AFE93C418BF47E00D42AE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AFADF57608E25B0792FB5DAC;
+			remoteInfo = EasySwipe;
+		};
 		FCC0285E1FF275C1B1EB0B8E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 308AFE93C418BF47E00D42AE /* Project object */;
@@ -63,6 +75,7 @@
 /* Begin PBXFileReference section */
 		048ED7868B7C96DDA4B3E8D4 /* WindowGestureAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowGestureAction.swift; sourceTree = "<group>"; };
 		0790D9A964AB1A5229F1FD01 /* GestureCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestureCoordinatorTests.swift; sourceTree = "<group>"; };
+		0B688483D4A49932818A0D68 /* EasySwipeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EasySwipeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D100F2BC07440CEE981D2AD /* EasySwipeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EasySwipeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		11B3B64CB09436AAC0A50297 /* WindowActionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowActionService.swift; sourceTree = "<group>"; };
 		14BE95BBF838AD12C14A5937 /* ScreenGeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenGeometryTests.swift; sourceTree = "<group>"; };
@@ -74,16 +87,20 @@
 		37901B83BB08BB431A30E76D /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		3A6F7E1743DA794690069270 /* SwipeGestureRecognizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGestureRecognizerTests.swift; sourceTree = "<group>"; };
 		435C1F8CD1BCDDA0B2A3EC48 /* StatusMenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMenuController.swift; sourceTree = "<group>"; };
+		473E4C4A9E907C4AE0B6C8BD /* AppSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsView.swift; sourceTree = "<group>"; };
 		5049649D557832BE4E0239A2 /* GlobalScrollMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalScrollMonitor.swift; sourceTree = "<group>"; };
 		5C5F0377EA42F79A3B05845C /* WindowFrameApplierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowFrameApplierTests.swift; sourceTree = "<group>"; };
 		5E101BAF778CF57BD9DA2A82 /* GestureGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestureGuideView.swift; sourceTree = "<group>"; };
+		64E3744E94F0C0B8985A575C /* InterfaceUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceUITests.swift; sourceTree = "<group>"; };
 		662B85D798CD834EFDE01FE7 /* ScreenGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenGeometry.swift; sourceTree = "<group>"; };
 		68E447BD0B7E94EE63A7DDC1 /* LocalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationTests.swift; sourceTree = "<group>"; };
 		6B8FC8BFB189927229592CD0 /* GestureCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestureCoordinator.swift; sourceTree = "<group>"; };
 		70F969AE7461E97F90A4DD5B /* LoginItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItemController.swift; sourceTree = "<group>"; };
 		728C6CDB3F95C4171B4F1A87 /* EasySwipe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EasySwipe.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		73E2E52F403018DEF7FB1483 /* InterfaceStandardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceStandardTests.swift; sourceTree = "<group>"; };
 		7EE71A22E7CC49F2EDF86A55 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		8177C74CF51DB00A9E73330D /* SwipeGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeGestureRecognizer.swift; sourceTree = "<group>"; };
+		8178EF05C54597985DA97769 /* InterfacePreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfacePreferences.swift; sourceTree = "<group>"; };
 		8204F4A12F0DBD92B18E4D5C /* AccessibilityPermissionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityPermissionController.swift; sourceTree = "<group>"; };
 		88A71169A6F999B1290C018A /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
 		922B64731AC6D49C82D6B130 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
@@ -96,6 +113,7 @@
 		C9A530A28D42AF59BB4B6C51 /* UpdateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateController.swift; sourceTree = "<group>"; };
 		CC5E832F809223499BA2A016 /* WindowCompatibilityProfileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowCompatibilityProfileTests.swift; sourceTree = "<group>"; };
 		D4CC20DFBEA1D3825E6F2935 /* sparkle.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = sparkle.txt; sourceTree = "<group>"; };
+		E12FC988A2559CD88CFA14E9 /* EasySwipeUpdateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EasySwipeUpdateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E51C32C14CB6112FBAE8CB5B /* HUDPlacementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDPlacementTests.swift; sourceTree = "<group>"; };
 		E5F87AAEB8AFD6698248875C /* ScrollSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollSample.swift; sourceTree = "<group>"; };
 		E9268527CEBB562E4C34CB9B /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
@@ -103,6 +121,7 @@
 		EC974291A1964E6FE634C827 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F3B9D2106B61A573113458F5 /* SwindooMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwindooMotion.swift; sourceTree = "<group>"; };
 		F51474B7921424D5B0A8C9F1 /* HUDPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDPresenter.swift; sourceTree = "<group>"; };
+		FB03A30F305A03EF7672EE1C /* UpdateRoundtripTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateRoundtripTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +161,7 @@
 				EC90E0893722792752738E5F /* AppCoordinator.swift */,
 				EC974291A1964E6FE634C827 /* AppDelegate.swift */,
 				E9268527CEBB562E4C34CB9B /* AppPreferences.swift */,
+				8178EF05C54597985DA97769 /* InterfacePreferences.swift */,
 				88A71169A6F999B1290C018A /* L10n.swift */,
 			);
 			path = App;
@@ -153,9 +173,19 @@
 				1D9551373A73765B38BF1ADF /* LICENSE */,
 				A5563C0A8262D977F71ECBD6 /* EasySwipe */,
 				E6019C1E84E5798EB981B4DA /* EasySwipeTests */,
+				CAE2AB5664BE306352EB94D1 /* EasySwipeUITests */,
+				2C86167BA9C20B59F85D238D /* EasySwipeUpdateTests */,
 				5CECFAA8FC32FDC69C3D305F /* website */,
 				D59BC2A71417BE1E0D630524 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		2C86167BA9C20B59F85D238D /* EasySwipeUpdateTests */ = {
+			isa = PBXGroup;
+			children = (
+				FB03A30F305A03EF7672EE1C /* UpdateRoundtripTests.swift */,
+			);
+			path = EasySwipeUpdateTests;
 			sourceTree = "<group>";
 		};
 		367573FDCC9E8ACE844615DC /* Windows */ = {
@@ -203,6 +233,7 @@
 		6B36F581E679221841B66309 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				473E4C4A9E907C4AE0B6C8BD /* AppSettingsView.swift */,
 				9D3719B8F439A62E15854C7B /* AppWindowController.swift */,
 				5E101BAF778CF57BD9DA2A82 /* GestureGuideView.swift */,
 				F51474B7921424D5B0A8C9F1 /* HUDPresenter.swift */,
@@ -279,11 +310,21 @@
 			path = Windows;
 			sourceTree = "<group>";
 		};
+		CAE2AB5664BE306352EB94D1 /* EasySwipeUITests */ = {
+			isa = PBXGroup;
+			children = (
+				64E3744E94F0C0B8985A575C /* InterfaceUITests.swift */,
+			);
+			path = EasySwipeUITests;
+			sourceTree = "<group>";
+		};
 		D59BC2A71417BE1E0D630524 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				728C6CDB3F95C4171B4F1A87 /* EasySwipe.app */,
 				0D100F2BC07440CEE981D2AD /* EasySwipeTests.xctest */,
+				0B688483D4A49932818A0D68 /* EasySwipeUITests.xctest */,
+				E12FC988A2559CD88CFA14E9 /* EasySwipeUpdateTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -292,6 +333,7 @@
 			isa = PBXGroup;
 			children = (
 				2473917F36CFA29AA87C2E58 /* AppPreferencesTests.swift */,
+				73E2E52F403018DEF7FB1483 /* InterfaceStandardTests.swift */,
 				68E447BD0B7E94EE63A7DDC1 /* LocalizationTests.swift */,
 				1BC27652E89B7D91B8FFB8EE /* UpdateConfigurationTests.swift */,
 				100C9CE758BD0C0269096B1D /* Gestures */,
@@ -312,6 +354,41 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		205293C2FAA8139ACDFBC25F /* EasySwipeUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 509B011CF928DC4BD5B0F88D /* Build configuration list for PBXNativeTarget "EasySwipeUITests" */;
+			buildPhases = (
+				3156DF2E4207C458F50D5DD5 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F1223228D61C2DE8FF58A9A5 /* PBXTargetDependency */,
+			);
+			name = EasySwipeUITests;
+			packageProductDependencies = (
+			);
+			productName = EasySwipeUITests;
+			productReference = 0B688483D4A49932818A0D68 /* EasySwipeUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		4913099B50438928E21076E1 /* EasySwipeUpdateTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C2CC9E57458B39D90953234 /* Build configuration list for PBXNativeTarget "EasySwipeUpdateTests" */;
+			buildPhases = (
+				C3506CE7FC5A9D0927BD0537 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EasySwipeUpdateTests;
+			packageProductDependencies = (
+			);
+			productName = EasySwipeUpdateTests;
+			productReference = E12FC988A2559CD88CFA14E9 /* EasySwipeUpdateTests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		8ACF8B6C3C63C8BEC6F40327 /* EasySwipeTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3740D5988235548360419368 /* Build configuration list for PBXNativeTarget "EasySwipeTests" */;
@@ -359,6 +436,15 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
+					205293C2FAA8139ACDFBC25F = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Manual;
+						TestTargetID = AFADF57608E25B0792FB5DAC;
+					};
+					4913099B50438928E21076E1 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Manual;
+					};
 					8ACF8B6C3C63C8BEC6F40327 = {
 						DevelopmentTeam = "";
 						ProvisioningStyle = Manual;
@@ -389,6 +475,8 @@
 			targets = (
 				AFADF57608E25B0792FB5DAC /* EasySwipe */,
 				8ACF8B6C3C63C8BEC6F40327 /* EasySwipeTests */,
+				205293C2FAA8139ACDFBC25F /* EasySwipeUITests */,
+				4913099B50438928E21076E1 /* EasySwipeUpdateTests */,
 			);
 		};
 /* End PBXProject section */
@@ -418,11 +506,13 @@
 				56318EB1AE1D7C73D095CDE2 /* AppCoordinator.swift in Sources */,
 				0C0ECE5E713F6C15BDD4BD97 /* AppDelegate.swift in Sources */,
 				6C60F0161D167BC98FEA8257 /* AppPreferences.swift in Sources */,
+				ECC5AFBB0D29DFB6D0408236 /* AppSettingsView.swift in Sources */,
 				2D8F0DA237D59EEDB85D0859 /* AppWindowController.swift in Sources */,
 				80F234868424DA885CE6D7B1 /* GestureCoordinator.swift in Sources */,
 				54C8D897CD83934BE50056DD /* GestureGuideView.swift in Sources */,
 				19F4880A77D30FE2528BB19F /* GlobalScrollMonitor.swift in Sources */,
 				1AFDE9441E769DAD928AC1B1 /* HUDPresenter.swift in Sources */,
+				74498B374EAC0E319D99C8C1 /* InterfacePreferences.swift in Sources */,
 				07E6F1AB9A064015EB26A48E /* L10n.swift in Sources */,
 				A7E1CCF3AD232439C898FA1C /* LoginItemController.swift in Sources */,
 				D2D064339A960D5492C5A1BC /* OnboardingView.swift in Sources */,
@@ -440,6 +530,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3156DF2E4207C458F50D5DD5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6A5AEA0ED084F61C1A759848 /* InterfaceUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		86548F0C41577D9EE41026D0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -447,6 +545,7 @@
 				F429BE4282C7239987936A09 /* AppPreferencesTests.swift in Sources */,
 				D5F51372B8C22E0EB05E8F07 /* GestureCoordinatorTests.swift in Sources */,
 				BE143CE79EADEE96907DE8D7 /* HUDPlacementTests.swift in Sources */,
+				037471633E61C9D6B1EA2B57 /* InterfaceStandardTests.swift in Sources */,
 				26E9807422EDA5941D1F1109 /* LocalizationTests.swift in Sources */,
 				8D69FA45DEBCD18FEA5BD274 /* ScreenGeometryTests.swift in Sources */,
 				F0F0501DF6A199C0FA7F2B91 /* ScrollDeltaNormalizerTests.swift in Sources */,
@@ -458,6 +557,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C3506CE7FC5A9D0927BD0537 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9399614782E5A5D227300C3F /* UpdateRoundtripTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -465,6 +572,11 @@
 			isa = PBXTargetDependency;
 			target = AFADF57608E25B0792FB5DAC /* EasySwipe */;
 			targetProxy = FCC0285E1FF275C1B1EB0B8E /* PBXContainerItemProxy */;
+		};
+		F1223228D61C2DE8FF58A9A5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AFADF57608E25B0792FB5DAC /* EasySwipe */;
+			targetProxy = 797895DA7DA460D256CD364F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -538,7 +650,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Config/EasySwipe.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				EASYSWIPE_FEED_URL = "https://raw.githubusercontent.com/shortcutchris/easyswipe-releases/main/appcast.xml";
 				EASYSWIPE_SPARKLE_PUBLIC_KEY = "a5+ZLh811liNfhGI69w0MTTkEr1OfVJOGer3M8FhMGA=";
 				ENABLE_APP_SANDBOX = NO;
@@ -548,11 +660,28 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1.9;
+				MARKETING_VERSION = 0.1.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.shortcutchris.EasySwipe;
 				PRODUCT_MODULE_NAME = EasySwipe;
 				PRODUCT_NAME = EasySwipe;
 				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		2F451140184FCAF5FF7C1960 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.shortcutchris.EasySwipeUITests;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = EasySwipe;
 			};
 			name = Release;
 		};
@@ -562,7 +691,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Config/EasySwipe.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				EASYSWIPE_FEED_URL = "https://raw.githubusercontent.com/shortcutchris/easyswipe-releases/main/appcast.xml";
 				EASYSWIPE_SPARKLE_PUBLIC_KEY = "a5+ZLh811liNfhGI69w0MTTkEr1OfVJOGer3M8FhMGA=";
 				ENABLE_APP_SANDBOX = NO;
@@ -572,7 +701,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1.9;
+				MARKETING_VERSION = 0.1.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.shortcutchris.EasySwipe;
 				PRODUCT_MODULE_NAME = EasySwipe;
 				PRODUCT_NAME = EasySwipe;
@@ -594,6 +723,22 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.shortcutchris.EasySwipeTests;
 				SDKROOT = macosx;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EasySwipe.app/Contents/MacOS/EasySwipe";
+			};
+			name = Release;
+		};
+		6B1804E847C28A7AF72BFF22 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.shortcutchris.EasySwipeUpdateTests;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -665,6 +810,23 @@
 			};
 			name = Debug;
 		};
+		BA3B51A46330A638271B9E7D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.shortcutchris.EasySwipeUITests;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = EasySwipe;
+			};
+			name = Debug;
+		};
 		BFF499B77536C3B49AA65C0B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -682,14 +844,48 @@
 			};
 			name = Debug;
 		};
+		EE381D8AD43FF81EC0A87968 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.shortcutchris.EasySwipeUpdateTests;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2C2CC9E57458B39D90953234 /* Build configuration list for PBXNativeTarget "EasySwipeUpdateTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EE381D8AD43FF81EC0A87968 /* Debug */,
+				6B1804E847C28A7AF72BFF22 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		3740D5988235548360419368 /* Build configuration list for PBXNativeTarget "EasySwipeTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BFF499B77536C3B49AA65C0B /* Debug */,
 				47B8A7702D5232E46D6DEB82 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		509B011CF928DC4BD5B0F88D /* Build configuration list for PBXNativeTarget "EasySwipeUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BA3B51A46330A638271B9E7D /* Debug */,
+				2F451140184FCAF5FF7C1960 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

@@ -7,6 +7,8 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
     var onLaunchAtLoginChanged: ((Bool) -> Void)?
     var onAnimationsEnabledChanged: ((Bool) -> Void)?
     var onShowGuide: (() -> Void)?
+    var onShowSettings: (() -> Void)?
+    var onShowAbout: (() -> Void)?
     var onShowPermissions: (() -> Void)?
     var onCheckForUpdates: (() -> Void)?
     var onWillOpen: (() -> Void)?
@@ -61,6 +63,12 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
 
     private func configureMenu() {
         menu.delegate = self
+        menu.removeAllItems()
+
+        enabledItem.title = L10n.menuEnabled
+        loginItem.title = L10n.menuLaunchAtLogin
+        animationsItem.title = L10n.menuAnimations
+        permissionItem.title = L10n.menuPermissions
 
         enabledItem.target = self
         enabledItem.action = #selector(toggleEnabled)
@@ -75,6 +83,10 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         menu.addItem(animationsItem)
 
         menu.addItem(.separator())
+
+        let settingsItem = NSMenuItem(title: L10n.settings, action: #selector(showSettings), keyEquivalent: ",")
+        settingsItem.target = self
+        menu.addItem(settingsItem)
 
         let guideItem = NSMenuItem(
             title: L10n.menuGestureGuide,
@@ -118,6 +130,10 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
 
         refreshAppearance()
     }
+
+    func refreshLanguage() { configureMenu() }
+
+    @objc private func showSettings() { onShowSettings?() }
 
     private func refreshAppearance() {
         enabledItem.state = enabled ? .on : .off
@@ -163,8 +179,7 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
     }
 
     @objc private func showAbout() {
-        NSApp.orderFrontStandardAboutPanel(nil)
-        NSApp.activate(ignoringOtherApps: true)
+        onShowAbout?()
     }
 
     @objc private func quit() {

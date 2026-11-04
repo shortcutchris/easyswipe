@@ -20,7 +20,7 @@ readonly SPARKLE_TOOLS="${REPOSITORY_ROOT}/artifacts/sparkle-tools"
 readonly ARCHIVE_NAME="EasySwipe-${VERSION}-${BUILD}.zip"
 readonly RELEASES_ROOT="${REPOSITORY_ROOT}/artifacts/releases"
 readonly RELEASE_RUN_ID="$(/bin/date -u +%Y%m%dT%H%M%SZ)"
-readonly RELEASE_WORKSPACE="${RELEASES_ROOT}/${VERSION}-${BUILD}-${RELEASE_RUN_ID}"
+readonly RELEASE_WORKSPACE="${EASYSWIPE_PREPARED_RELEASE:-${RELEASES_ROOT}/${VERSION}-${BUILD}-${RELEASE_RUN_ID}}"
 readonly RELEASE_APP="${RELEASE_WORKSPACE}/EasySwipe.app"
 readonly RELEASE_ARCHIVE="${RELEASE_WORKSPACE}/${ARCHIVE_NAME}"
 readonly BRANDED_ARCHIVE="${RELEASE_WORKSPACE}/Swindoo.zip"
@@ -299,13 +299,38 @@ main() {
     print "Release prerequisites are ready. No build or publication was performed."
     return
   fi
-  [[ $# == 0 ]] || fail "Usage: scripts/release.sh [--check]"
+  [[ $# == 0 || "${1:-}" == --prepare || "${1:-}" == --publish-prepared ]] \
+    || fail "Usage: scripts/release.sh [--check|--prepare|--publish-prepared]"
+
+  if [[ "${1:-}" == --publish-prepared ]]; then
+    [[ -n "${EASYSWIPE_PREPARED_RELEASE:-}" && "${RELEASE_WORKSPACE}" == "${RELEASES_ROOT}/${VERSION}-${BUILD}-"* ]] \
+      || fail "Prepared release must be an owned versioned release workspace."
+    validate_verification_manifest
+    /usr/bin/codesign --verify --deep --strict --verbose=2 "${RELEASE_APP}"
+    xcrun stapler validate "${RELEASE_APP}"
+    /usr/sbin/spctl --assess --type execute --verbose=2 "${RELEASE_APP}"
+    /usr/bin/python3 - "${RELEASE_WORKSPACE}/update-roundtrip.json" "${RELEASE_ARCHIVE}" "$(git -C "${REPOSITORY_ROOT}" rev-parse HEAD)" "${BUILD}" <<'PY'
+import hashlib, json, sys
+with open(sys.argv[1]) as handle:
+    evidence = json.load(handle)
+with open(sys.argv[2], 'rb') as handle:
+    digest = hashlib.sha256(handle.read()).hexdigest()
+assert evidence['result'] == 'Passed'
+assert evidence['archiveSHA256'] == digest
+assert evidence['sourceRevision'] == sys.argv[3]
+assert str(evidence['installedBuild']) == sys.argv[4]
+PY
+    generate_and_validate_feed
+    publish_release
+    print "Swindoo ${VERSION} (${BUILD}) is published and live in the Sparkle feed."
+    return
+  fi
 
   verify_and_sign
   stage_and_notarize
   generate_and_validate_feed
-  publish_release
-  print "Swindoo ${VERSION} (${BUILD}) is published and live in the Sparkle feed."
+  print "Prepared signed release: ${RELEASE_WORKSPACE}"
+  print "Run the isolated N-1 → N update test, then publish with EASYSWIPE_PREPARED_RELEASE and --publish-prepared."
 }
 
 main "$@"
